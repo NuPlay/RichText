@@ -8,17 +8,18 @@ public struct RichText: View {
     var imageRadius : CGFloat = 0
     
     var colorScheme : colorScheme
-    public init(html: String,lineHeight : CGFloat = 170, imageRadius : CGFloat = 0, colorScheme : colorScheme) {
+    
+    var colorImportant : Bool = false
+    public init(html: String,lineHeight : CGFloat = 170, imageRadius : CGFloat = 0, colorScheme : colorScheme,colorImportant : Bool = false) {
         self.html = html
         self.lineHeight = lineHeight
         self.imageRadius = imageRadius
         self.colorScheme = colorScheme
+        self.colorImportant = colorImportant
     }
     
-    
-    
     public var body: some View {
-        Webview(dynamicHeight: $dynamicHeight, html: html, lineHeight: lineHeight, imageRadius: imageRadius,colorScheme: colorScheme)
+        Webview(dynamicHeight: $dynamicHeight, html: html, lineHeight: lineHeight, imageRadius: imageRadius,colorScheme: colorScheme,colorImportant: colorImportant)
             .frame(height: dynamicHeight)
     }
 }
