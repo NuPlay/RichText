@@ -1,2 +1,3 @@
 # RichText
-Swiftui RichText
+
+A description of this package.
