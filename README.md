@@ -99,7 +99,7 @@ struct RichText_Test: View {
     
     var body: some View {
         ScrollView{
-            RichText(html: html, lineHeight: 170, imageRadius: 12, colorScheme: .light)
+            RichText(html: html, lineHeight: 170, imageRadius: 12, colorScheme: .light,colorImportant : false)
                 .disabled(true)// if you don't want interaction
                 .frame(width: UIScreen.main.bounds.width)
         }
@@ -126,9 +126,10 @@ struct RichText_Test_Previews: PreviewProvider {
 Variable explanation
 
  - html : which you want to show (String type)   
- - lineHeight(optional,default: 170) : Height of each line  
- - imageRadius(optional,default: 0)  : Radius of image corner 
+ - lineHeight (optional, default: 170) : Height of each line  
+ - imageRadius (optional, default: 0)  : Radius of image corner 
  - colorScheme : light or dark mode (it changes text color)    
+ - colorImportant (optional, default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
 
 ### Planned (Future work): 
 placeholder, dynamicColorScheme, moreOption
