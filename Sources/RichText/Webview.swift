@@ -59,7 +59,7 @@ struct Webview : UIViewRepresentable {
             </head>
             <style type='text/css'>
                 img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p{text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName)'; color: \(colorScheme == .light ? "#000000" : "#F2F2F2") !important;"}
+            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName)'; color: \(colorScheme == .light ? "#000000" : "#F2F2F2") !important;"}
                 iframe{width:100%; height:250px;}
             </style>
             <BODY>
