@@ -127,6 +127,8 @@ struct RichText_Test_Previews: PreviewProvider {
 Variable explanation
 
  - html : which you want to show (String type)   
+
+### Optional
  - lineHeight (optional, default: 170) : Height of each line  
  - imageRadius (optional, default: 0)  : Radius of image corner 
  - fontType(optional, default : default): Font type in html view but not yet working properly
