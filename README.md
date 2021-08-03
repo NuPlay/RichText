@@ -15,14 +15,12 @@ struct RichText_Test: View {
     @State var  html = ""
     
     var body: some View {
-        ScrollView{
-            RichText(html: html, imageRadius: 12, colorScheme: .light)
-            .disabled(true)// if you don't want interaction
-            .frame(width: UIScreen.main.bounds.width)
+       ScrollView{
+            RichText(html: html, lineHeight: 170, imageRadius: 0, fontType: .default, colorScheme: .automatic, colorImportant: false)
+                .placeholder {
+                    Text("loading")
+                }
         }
-//        .background(
-//            Color.black.ignoresSafeArea()
-//        )
     }
 }
 
@@ -99,9 +97,12 @@ struct RichText_Test: View {
     
     var body: some View {
         ScrollView{
-            RichText(html: html, lineHeight: 170, imageRadius: 12, colorScheme: .light,colorImportant : false)
-                .disabled(true)// if you don't want interaction
-                .frame(width: UIScreen.main.bounds.width)
+            RichText(html: html, lineHeight: 170, imageRadius: 16, fontType: .default, colorScheme: .automatic, colorImportant: false)
+                .placeholder {
+                    Text("loading")
+                }
+                    .disabled(true)// if you don't want interaction
+                    .padding(.horizontal, 16)
         }
         //        .background(
         //            Color.black.ignoresSafeArea()
@@ -128,11 +129,13 @@ Variable explanation
  - html : which you want to show (String type)   
  - lineHeight (optional, default: 170) : Height of each line  
  - imageRadius (optional, default: 0)  : Radius of image corner 
- - colorScheme : light or dark mode (it changes text color)    
+ - fontType(optional, default : default): Font type in html view but not yet working properly
+ - colorScheme(optional, default : automatic) : light or dark mode (it changes text color) 
  - colorImportant (optional, default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
+ - placeholder(optional,default: EmptyView()) : What to display until Richtext views are completely drawn (View type)
 
 ### Planned (Future work): 
-placeholder, dynamicColorScheme, moreOption
+moreOption
 
 
 
