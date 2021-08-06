@@ -1,9 +1,21 @@
 # RichText
+![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
+
+
+<p align="center">
+    <a href="https://swift.org/">
+        <img src="https://img.shields.io/badge/Swift-5.1+-F05138?labelColor=303840" alt="Swift: 5.1+">
+    </a>
+    <a href="https://www.apple.com/ios/">
+        <img src="https://img.shields.io/badge/iOS-13.0+-007AFF?labelColor=303840" alt="iOS: 13.0+">
+    </a>
+</p>
 
 
 | <img width="1436" alt="스크린샷 2021-07-25 오후 3 22 03" src="https://user-images.githubusercontent.com/73557895/126889821-a346bb72-c65a-47ae-9492-fc4dcfe79f02.png"> 	| <img width="1431" alt="스크린샷 2021-07-25 오후 3 22 11" src="https://user-images.githubusercontent.com/73557895/126889824-9e5c6b48-6d75-42bb-b3f2-69c469dd5e86.png"> 	|
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------	|
-| LightMode                                                                                                                                                                 	| DarkMode                                                                                                                        	|                                                                                               	|
+| LightMode                                                                                                                                                                 	| DarkMode                                                                                                                        	|                   
+
 
 
 ## Code
@@ -33,7 +45,7 @@ struct RichText_Test_Previews: PreviewProvider {
 ```
 ## Sample Text
 <details>
-<summary>Sample</summary>
+<summary>Click</summary>
 <div markdown="1">
 
 ```swift
