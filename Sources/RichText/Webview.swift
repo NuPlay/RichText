@@ -1,22 +1,25 @@
 import SwiftUI
-
 import WebKit
+import SafariServices
+
 
 struct Webview : UIViewRepresentable {
     
-    @Binding var dynamicHeight: CGFloat//뷰의 높이를 측정하기 위해서 사용
+    @Binding var dynamicHeight: CGFloat
     private var webview: WKWebView = WKWebView()
     
-    var html : String //들어갈 내용
+    let html : String
     
-    var lineHeight : CGFloat = 170
-    var imageRadius : CGFloat = 0
-    var fontType : fontType = .default
+    let lineHeight : CGFloat
+    let imageRadius : CGFloat
+    let fontType : fontType
     
-    var colorScheme : colorScheme = .automatic
-    var colorImportant : Bool = false
+    let colorScheme : colorScheme
+    let colorImportant : Bool
     
-    public init(dynamicHeight:Binding<CGFloat>, webview : WKWebView = WKWebView(), html: String, lineHeight : CGFloat = 170,imageRadius : CGFloat = 0, fontType: fontType = .default, colorScheme : colorScheme = .automatic, colorImportant : Bool = false) {
+    let linkOpenType : linkOpenType
+    
+    public init(dynamicHeight:Binding<CGFloat>, webview : WKWebView = WKWebView(), html: String, lineHeight : CGFloat = 170,imageRadius : CGFloat = 0, fontType: fontType = .default, colorScheme : colorScheme = .automatic, colorImportant : Bool = false, linkOpenType: linkOpenType = .SFSafariView) {
         self._dynamicHeight = dynamicHeight
         self.webview = webview
         
@@ -28,6 +31,8 @@ struct Webview : UIViewRepresentable {
         
         self.colorScheme = colorScheme
         self.colorImportant = colorImportant
+        
+        self.linkOpenType = linkOpenType
     }
     
     
@@ -44,6 +49,31 @@ struct Webview : UIViewRepresentable {
                     self.parent.dynamicHeight = height as! CGFloat
                 }
             })
+        }
+        
+        
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            if navigationAction.navigationType == WKNavigationType.linkActivated {
+                if let url = navigationAction.request.url{
+                    
+                    let root = UIApplication.shared.windows.first?.rootViewController
+                    switch self.parent.linkOpenType {
+                    case .SFSafariView:
+                        root?.present(SFSafariViewController(url: url), animated: true, completion: nil)
+                        
+                    case .Safari :
+                        UIApplication.shared.open(url)
+                    case .none :
+                        print(url)
+                        
+                    }
+                }
+                
+                decisionHandler(WKNavigationActionPolicy.cancel)
+                return
+            }
+            print("no link")
+            decisionHandler(WKNavigationActionPolicy.allow)
         }
     }
     
@@ -72,6 +102,7 @@ struct Webview : UIViewRepresentable {
     }
     
     public func updateUIView(_ uiView: WKWebView, context: Context) {
+        
     }
     
     func css(colorScheme: colorScheme) -> String {
@@ -114,6 +145,7 @@ struct Webview : UIViewRepresentable {
             """
         }
     }
+    
     func fontName(fontType: fontType) -> String {
         switch fontType {
         case .default:
