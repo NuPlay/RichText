@@ -28,7 +28,13 @@ struct RichText_Test: View {
     
     var body: some View {
        ScrollView{
-            RichText(html: html, lineHeight: 170, imageRadius: 0, fontType: .default, colorScheme: .automatic, colorImportant: false)
+            RichText(html: html)
+                .lineHeight(170)
+                .imageRadius(12)
+                .fontType(.default)
+                .colorScheme(.automatic)
+                .colorImportant(true)
+                .linkOpenType(.SFSafariView)
                 .placeholder {
                     Text("loading")
                 }
@@ -109,16 +115,17 @@ struct RichText_Test: View {
     
     var body: some View {
         ScrollView{
-            RichText(html: html, lineHeight: 170, imageRadius: 16, fontType: .default, colorScheme: .automatic, colorImportant: false)
+            RichText(html: html)
+                .lineHeight(170)
+                .imageRadius(12)
+                .fontType(.default)
+                .colorScheme(.automatic)
+                .colorImportant(true)
+                .linkOpenType(.SFSafariView)
                 .placeholder {
                     Text("loading")
                 }
-                    .disabled(true)// if you don't want interaction
-                    .padding(.horizontal, 16)
         }
-        //        .background(
-        //            Color.black.ignoresSafeArea()
-        //        )
     }
 }
 
@@ -141,15 +148,17 @@ Variable explanation
  - html : which you want to show (String type)   
 
 ### Optional
- - lineHeight (optional, default: 170) : Height of each line  
- - imageRadius (optional, default: 0)  : Radius of image corner 
- - fontType(optional, default : default): Font type in html view but not yet working properly
- - colorScheme(optional, default : automatic) : light or dark mode (it changes text color) 
- - colorImportant (optional, default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
- - placeholder(optional,default: EmptyView()) : What to display until Richtext views are completely drawn (View type)
+ - lineHeight (default: 170) : Height of each line  
+ - imageRadius (default: 0)  : Radius of image corner 
+ - fontType(default : default): Font type in html view but not yet working properly
+ - colorScheme(default : automatic) : light or dark mode (it changes text color) 
+ - colorImportant (default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
+ - placeholder (default: EmptyView()) : What to display until Richtext views are completely drawn (View type)
+ - linkOpenType (default: SFSafariView) : When the user clicks the link contained in html, Way to Show Webview
 
 ### Planned (Future work): 
-moreOption
+
+Content of alert when link is clicked
 
 
 
