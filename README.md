@@ -33,7 +33,7 @@ struct RichText_Test: View {
             RichText(html: html)
                 .lineHeight(170)
                 .imageRadius(12)
-                .fontType(.default)
+                .fontType(.system)
                 .colorScheme(.automatic)
                 .colorImportant(true)
                 .linkOpenType(.SFSafariView)
@@ -120,7 +120,7 @@ struct RichText_Test: View {
             RichText(html: html)
                 .lineHeight(170)
                 .imageRadius(12)
-                .fontType(.default)
+                .fontType(.system)
                 .colorScheme(.automatic)
                 .colorImportant(true)
                 .linkOpenType(.SFSafariView)
@@ -149,18 +149,28 @@ Variable explanation
 
  - html : which you want to show (String type)   
 
-### Optional
+### Modifier
+Modifier | Default
+--- | ---
+`.lineHeight(_ lineHeight: CGFloat)` | `170`
+`.imageRadius(_ imageRadius: CGFloat)` | `0`
+`.fontType(_ fontType: fontType)` | `.system`
+`.colorScheme(_ colorScheme: colorScheme)` | `.automatic`
+`.colorImportant(_ colorImportant: Bool)` | `false`
+`.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
+`.linkOpenType(_ linkOpenType: linkOpenType)` | `.SFSafariView`
+`.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF")`
+
+
  - lineHeight (default: 170) : Height of each line  
  - imageRadius (default: 0)  : Radius of image corner 
- - fontType(default : default): Font type in html view but not yet working properly
- - colorScheme(default : automatic) : light or dark mode (it changes text color) 
+ - fontType(default : .system): Font type in html view but not yet working properly
+ - colorScheme(default : .automatic) : light or dark mode (it changes text color) 
  - colorImportant (default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
- - placeholder (default: EmptyView()) : What to display until Richtext views are completely drawn (View type)
- - linkOpenType (default: SFSafariView) : When the user clicks the link contained in html, Way to Show Webview
+ - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type)
+ - linkOpenType (default: .SFSafariView) : When the user clicks the link contained in html, Way to Show Webview
+ - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (hexColor)
 
 ### Planned (Future work): 
-
-Content of alert when link is clicked
-
-
-
+A variety of options. 
+If you need any options, leave them in the issues or discussion.
