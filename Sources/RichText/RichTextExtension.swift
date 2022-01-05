@@ -57,4 +57,11 @@ extension RichText {
         result.linkOpenType = linkOpenType
         return result
     }
+    
+    public func linkColor(_ linkColor: ColorSet) -> RichText {
+        var result = self
+        
+        result.linkColor = linkColor
+        return result
+    }
 }

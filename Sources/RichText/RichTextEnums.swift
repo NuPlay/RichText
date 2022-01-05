@@ -14,9 +14,12 @@ public enum colorScheme: String {
 }
 
 public enum fontType : String {
-    case `default` = "default"
+    case system = "system"
     case monospaced = "monospaced"
     case italic = "italic"
+    
+    @available(*, deprecated, renamed: "system")
+    case `default` = "default"
 }
 
 public enum linkOpenType: String {
