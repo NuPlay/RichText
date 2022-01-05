@@ -37,6 +37,7 @@ struct RichText_Test: View {
                 .colorScheme(.automatic)
                 .colorImportant(true)
                 .linkOpenType(.SFSafariView)
+                .linkColor(ColorSet(light: "#007AFF", dark: "#0A84FF"))
                 .placeholder {
                     Text("loading")
                 }
@@ -124,6 +125,7 @@ struct RichText_Test: View {
                 .colorScheme(.automatic)
                 .colorImportant(true)
                 .linkOpenType(.SFSafariView)
+                .linkColor(ColorSet(light: "#007AFF", dark: "#0A84FF"))
                 .placeholder {
                     Text("loading")
                 }
@@ -164,7 +166,7 @@ Modifier | Default
 
  - lineHeight (default: 170) : Height of each line  
  - imageRadius (default: 0)  : Radius of image corner 
- - fontType(default : .system): Font type in html view but not yet working properly
+ - fontType(default : .system): Font type in html view
  - colorScheme(default : .automatic) : light or dark mode (it changes text color) 
  - colorImportant (default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
  - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type)
