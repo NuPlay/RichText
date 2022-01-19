@@ -63,7 +63,10 @@ struct Webview : UIViewRepresentable {
                     switch self.parent.linkOpenType {
                     case .SFSafariView:
                         root?.present(SFSafariViewController(url: url), animated: true, completion: nil)
-                        
+                    case .SFSafariViewWithReader:
+                        let configuration = SFSafariViewController.Configuration()
+                        configuration.entersReaderIfAvailable = true
+                        root?.present(SFSafariViewController(url: url, configuration: configuration), animated: true, completion: nil)
                     case .Safari :
                         UIApplication.shared.open(url)
                     case .none :
