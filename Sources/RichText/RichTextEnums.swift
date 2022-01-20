@@ -24,6 +24,7 @@ public enum fontType : String {
 
 public enum linkOpenType: String {
     case SFSafariView = "SFSafariView"
+    case SFSafariViewWithReader = "SFSafariViewWithReader"
     case Safari = "Safari"
     case none = "none"
 }
