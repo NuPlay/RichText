@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SafariServices
 
 public enum colorScheme: String {
     case light = "light"
@@ -13,7 +14,7 @@ public enum colorScheme: String {
     case automatic = "automatic"
 }
 
-public enum fontType : String {
+public enum fontType: String {
     case system = "system"
     case monospaced = "monospaced"
     case italic = "italic"
@@ -22,9 +23,8 @@ public enum fontType : String {
     case `default` = "default"
 }
 
-public enum linkOpenType: String {
-    case SFSafariView = "SFSafariView"
-    case SFSafariViewWithReader = "SFSafariViewWithReader"
-    case Safari = "Safari"
-    case none = "none"
+public enum linkOpenType {
+    case SFSafariView(configuration: SFSafariViewController.Configuration = SFSafariViewController.Configuration(), isAnimated: Bool = true)
+    case Safari
+    case none
 }
