@@ -64,4 +64,11 @@ extension RichText {
         result.linkColor = linkColor
         return result
     }
+    
+    public func customCSS(_ customCSS: String) -> RichText {
+        var result = self
+        
+        result.customCSS += customCSS
+        return result
+    }
 }
