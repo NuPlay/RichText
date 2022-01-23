@@ -4,6 +4,7 @@ public struct RichText: View {
     @State private var dynamicHeight: CGFloat = .zero
     
     let html: String
+    var customCSS = ""
     
     var lineHeight: CGFloat = 170
     var imageRadius: CGFloat = 0
@@ -14,7 +15,7 @@ public struct RichText: View {
     
     var placeholder: AnyView?
     
-    var linkOpenType: linkOpenType = .SFSafariView
+    var linkOpenType: linkOpenType = .SFSafariView()
     var linkColor: ColorSet = ColorSet(light: "#007AFF", dark: "#0A84FF")
     
     public init(html: String) {
@@ -23,7 +24,7 @@ public struct RichText: View {
     
     public var body: some View {
         ZStack(alignment: .top){
-            Webview(dynamicHeight: $dynamicHeight, html: html, lineHeight: lineHeight, imageRadius: imageRadius,fontType: fontType, colorScheme: colorScheme, colorImportant: colorImportant,linkOpenType: linkOpenType, linkColor: linkColor)
+            Webview(dynamicHeight: $dynamicHeight, html: html, customCSS: customCSS, lineHeight: lineHeight, imageRadius: imageRadius,fontType: fontType, colorScheme: colorScheme, colorImportant: colorImportant,linkOpenType: linkOpenType, linkColor: linkColor)
                 .frame(height: dynamicHeight)
             
             if self.dynamicHeight == 0 {
