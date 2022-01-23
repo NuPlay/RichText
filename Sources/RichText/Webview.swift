@@ -9,6 +9,7 @@ struct Webview : UIViewRepresentable {
     private var webview: WKWebView = WKWebView()
     
     let html: String
+    let customCSS: String
     
     let lineHeight: CGFloat
     let imageRadius: CGFloat
@@ -21,11 +22,12 @@ struct Webview : UIViewRepresentable {
     let linkColor: ColorSet
     
     
-    public init(dynamicHeight:Binding<CGFloat>, webview : WKWebView = WKWebView(), html: String, lineHeight : CGFloat,imageRadius : CGFloat, fontType: fontType, colorScheme : colorScheme, colorImportant : Bool, linkOpenType: linkOpenType,linkColor: ColorSet) {
+    public init(dynamicHeight: Binding<CGFloat>, webview: WKWebView = WKWebView(), html: String, customCSS: String, lineHeight: CGFloat,imageRadius: CGFloat, fontType: fontType, colorScheme: colorScheme, colorImportant: Bool, linkOpenType: linkOpenType, linkColor: ColorSet) {
         self._dynamicHeight = dynamicHeight
         self.webview = webview
         
         self.html = html
+        self.customCSS = customCSS
         
         self.lineHeight = lineHeight
         self.imageRadius = imageRadius
@@ -61,12 +63,8 @@ struct Webview : UIViewRepresentable {
                     
                     let root = UIApplication.shared.windows.first?.rootViewController
                     switch self.parent.linkOpenType {
-                    case .SFSafariView:
-                        root?.present(SFSafariViewController(url: url), animated: true, completion: nil)
-                    case .SFSafariViewWithReader:
-                        let configuration = SFSafariViewController.Configuration()
-                        configuration.entersReaderIfAvailable = true
-                        root?.present(SFSafariViewController(url: url, configuration: configuration), animated: true, completion: nil)
+                    case .SFSafariView(let conf, let isAnimated):
+                        root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
                     case .Safari :
                         UIApplication.shared.open(url)
                     case .none :
@@ -98,7 +96,7 @@ struct Webview : UIViewRepresentable {
             </head>
             """
         let htmlEnd = "</BODY></HTML>"
-        let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme))\(html)\(htmlEnd)"
+        let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme, customCSS: self.customCSS))\(html)\(htmlEnd)"
         webview.loadHTMLString(htmlString, baseURL:  nil)
         webview.isOpaque = false
         webview.backgroundColor = UIColor.clear
@@ -111,7 +109,7 @@ struct Webview : UIViewRepresentable {
         
     }
     
-    func css(colorScheme: colorScheme) -> String {
+    func css(colorScheme: colorScheme, customCSS: String) -> String {
         switch colorScheme {
         case .light:
             return """
@@ -121,6 +119,7 @@ struct Webview : UIViewRepresentable {
                 iframe{width:100%; height:250px;}
             a:link {color: \(linkColor.light);}
             A {text-decoration: none;}
+            \(customCSS)
             </style>
             <BODY>
             """
@@ -132,6 +131,7 @@ struct Webview : UIViewRepresentable {
                 iframe{width:100%; height:250px;}
             a:link {color: \(linkColor.dark);}
             A {text-decoration: none;}
+            \(customCSS)
             </style>
             <BODY>
             """
@@ -151,6 +151,7 @@ struct Webview : UIViewRepresentable {
                 iframe{width:100%; height:250px;}
             a:link {color: \(linkColor.dark);}
             A {text-decoration: none;}
+            \(customCSS)
             }
             </style>
             <BODY>
