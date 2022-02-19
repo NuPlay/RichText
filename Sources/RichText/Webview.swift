@@ -76,7 +76,6 @@ struct Webview : UIViewRepresentable {
                 decisionHandler(WKNavigationActionPolicy.cancel)
                 return
             }
-            print("no link")
             decisionHandler(WKNavigationActionPolicy.allow)
         }
     }
