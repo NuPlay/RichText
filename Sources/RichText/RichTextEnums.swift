@@ -1,9 +1,9 @@
 //
-//  SwiftUIView.swift
+//  RichTextEnums.swift
 //
 //
-//  Created by 이웅재 on 2021/07/26.
-//
+//  Created by 이웅재(NuPlay) on 2021/07/26.
+//  https://github.com/NuPlay/RichText
 
 import Foundation
 import SafariServices
@@ -18,7 +18,7 @@ public enum fontType: String {
     case system = "system"
     case monospaced = "monospaced"
     case italic = "italic"
-    
+
     @available(*, deprecated, renamed: "system")
     case `default` = "default"
 }
