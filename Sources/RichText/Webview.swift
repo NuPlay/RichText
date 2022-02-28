@@ -108,7 +108,15 @@ struct Webview : UIViewRepresentable {
     }
     
     public func updateUIView(_ uiView: WKWebView, context: Context) {
-        
+        let htmlStart = """
+            <HTML>
+            <head>
+                <meta name='viewport' content='width=device-width, shrink-to-fit=YES, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+            </head>
+            """
+        let htmlEnd = "</BODY></HTML>"
+        let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme))\(html)\(htmlEnd)"
+        uiView.loadHTMLString(htmlString, baseURL: nil)
     }
     
     func css(colorScheme: colorScheme) -> String {
