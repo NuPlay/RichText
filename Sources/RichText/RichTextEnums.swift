@@ -1,9 +1,9 @@
 //
-//  SwiftUIView.swift
+//  RichTextEnums.swift
 //
 //
-//  Created by 이웅재 on 2021/07/26.
-//
+//  Created by 이웅재(NuPlay) on 2021/07/26.
+//  https://github.com/NuPlay/RichText
 
 import Foundation
 
@@ -13,11 +13,11 @@ public enum colorScheme: String {
     case automatic = "automatic"
 }
 
-public enum fontType : String {
+public enum fontType: String {
     case system = "system"
     case monospaced = "monospaced"
     case italic = "italic"
-    
+
     @available(*, deprecated, renamed: "system")
     case `default` = "default"
 }
