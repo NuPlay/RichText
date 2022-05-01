@@ -98,7 +98,7 @@ struct Webview: UIViewRepresentable {
             """
         let htmlEnd = "</BODY></HTML>"
         let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme, customCSS: self.customCSS))\(html)\(htmlEnd)"
-        webview.loadHTMLString(htmlString, baseURL:  nil)
+        webview.loadHTMLString(htmlString, baseURL: nil)
         webview.isOpaque = false
         webview.backgroundColor = UIColor.clear
         webview.scrollView.backgroundColor = UIColor.clear
@@ -114,7 +114,7 @@ struct Webview: UIViewRepresentable {
             </head>
             """
         let htmlEnd = "</BODY></HTML>"
-        let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme))\(html)\(htmlEnd)"
+        let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme, customCSS: customCSS))\(html)\(htmlEnd)"
         uiView.loadHTMLString(htmlString, baseURL: nil)
     }
     
