@@ -8,6 +8,7 @@
 import SwiftUI
 
 public struct RichText: View {
+    @Environment(\.multilineTextAlignment) var multilineTextAlignment
     @State private var dynamicHeight: CGFloat = .zero
 
     let html: String
@@ -31,7 +32,7 @@ public struct RichText: View {
 
     public var body: some View {
         ZStack(alignment: .top) {
-            Webview(dynamicHeight: $dynamicHeight, html: html, customCSS: customCSS, lineHeight: lineHeight, imageRadius: imageRadius,fontType: fontType, colorScheme: colorScheme, colorImportant: colorImportant,linkOpenType: linkOpenType, linkColor: linkColor)
+            Webview(dynamicHeight: $dynamicHeight, html: html, customCSS: customCSS, lineHeight: lineHeight, imageRadius: imageRadius,fontType: fontType, colorScheme: colorScheme, colorImportant: colorImportant,linkOpenType: linkOpenType, linkColor: linkColor, alignment: multilineTextAlignment)
                 .frame(height: dynamicHeight)
 
             if self.dynamicHeight == 0 {
