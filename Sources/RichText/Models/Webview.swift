@@ -11,7 +11,6 @@ import SafariServices
 
 struct Webview: UIViewRepresentable {
     @Binding var dynamicHeight: CGFloat
-    private var webview: WKWebView = WKWebView()
 
     let html: String
     let customCSS: String
@@ -27,9 +26,8 @@ struct Webview: UIViewRepresentable {
     let linkColor: ColorSet
     let alignment: TextAlignment
 
-    init(dynamicHeight: Binding<CGFloat>, webview: WKWebView = WKWebView(), html: String, customCSS: String, lineHeight: CGFloat,imageRadius: CGFloat, fontType: fontType, colorScheme: colorScheme, colorImportant: Bool, linkOpenType: linkOpenType, linkColor: ColorSet, alignment: TextAlignment) {
+    init(dynamicHeight: Binding<CGFloat>, html: String, customCSS: String, lineHeight: CGFloat,imageRadius: CGFloat, fontType: FontType, colorScheme: ColorScheme, colorImportant: Bool, linkOpenType: LinkOpenType, linkColor: ColorSet, alignment: TextAlignment) {
         self._dynamicHeight = dynamicHeight
-        self.webview = webview
 
         self.html = html
         self.customCSS = customCSS
@@ -47,12 +45,16 @@ struct Webview: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> WKWebView {
+        let webview = WKWebView()
+        
         webview.scrollView.bounces = false
         webview.navigationDelegate = context.coordinator
         webview.scrollView.isScrollEnabled = false
+        
         DispatchQueue.main.async {
             webview.loadHTMLString(generateHTML(), baseURL: nil)
         }
+        
         webview.isOpaque = false
         webview.backgroundColor = UIColor.clear
         webview.scrollView.backgroundColor = UIColor.clear
@@ -64,13 +66,6 @@ struct Webview: UIViewRepresentable {
         DispatchQueue.main.async {
             uiView.loadHTMLString(generateHTML(), baseURL: nil)
         }
-    }
-    
-    static func dismantleUIView(_ uiView: UIScrollView, coordinator: Coordinator) {
-        uiView.delegate = nil
-        coordinator.parent.webview.stopLoading()
-        coordinator.parent.webview.navigationDelegate = nil
-        coordinator.parent.webview.scrollView.delegate = nil
     }
     
     func makeCoordinator() -> Coordinator {
