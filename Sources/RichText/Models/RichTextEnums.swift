@@ -8,12 +8,6 @@
 import Foundation
 import SafariServices
 
-public enum ColorScheme: String {
-    case light = "light"
-    case dark = "dark"
-    case automatic = "automatic"
-}
-
 public enum FontType: String {
     case system = "system"
     case monospaced = "monospaced"
@@ -35,7 +29,13 @@ public enum FontType: String {
 }
 
 public enum LinkOpenType {
-    case SFSafariView(configuration: SFSafariViewController.Configuration = SFSafariViewController.Configuration(), isAnimated: Bool = true)
+    case SFSafariView(configuration: SFSafariViewController.Configuration = .init(), isReaderActivated: Bool = false, isAnimated: Bool = true)
     case Safari
+    case none
+}
+
+public enum ColorPreference {
+    case all
+    case onlyLinks
     case none
 }

@@ -8,67 +8,77 @@
 import SwiftUI
 
 extension RichText {
-
+    public func customCSS(_ customCSS: String) -> RichText {
+        var result = self
+        result.configuration.customCSS += customCSS
+        return result
+    }
+    
     public func lineHeight(_ lineHeight: CGFloat) -> RichText {
         var result = self
-
-        result.lineHeight = lineHeight
+        result.configuration.lineHeight = lineHeight
         return result
     }
 
     public func imageRadius(_ imageRadius: CGFloat) -> RichText {
         var result = self
-
-        result.imageRadius = imageRadius
+        result.configuration.imageRadius = imageRadius
         return result
     }
 
     public func fontType(_ fontType: FontType) -> RichText {
         var result = self
-
-        result.fontType = fontType
+        result.configuration.fontType = fontType
         return result
     }
-
-    public func colorScheme(_ colorScheme: ColorScheme) -> RichText {
+    
+    @available(iOS 14.0, *)
+    public func foregroundColor(lightColor light: Color, darkColor dark: Color) -> RichText {
         var result = self
-
-        result.colorScheme = colorScheme
+        result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
-
-    public func colorImportant(_ colorImportant: Bool) -> RichText {
+    
+    public func foregroundColor(lightColor light: UIColor, darkColor dark: UIColor) -> RichText {
         var result = self
-
-        result.colorImportant = colorImportant
+        result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
-
-    public func placeholder<T>(@ViewBuilder content: () -> T) -> RichText where T: View {
+    
+    public func linkColor(_ linkColor: ColorSet) -> RichText {
         var result = self
-
-        result.placeholder = AnyView(content())
+        result.configuration.linkColor = linkColor
         return result
     }
 
     public func linkOpenType(_ linkOpenType: LinkOpenType) -> RichText {
         var result = self
-
-        result.linkOpenType = linkOpenType
-        return result
-    }
-
-    public func linkColor(_ linkColor: ColorSet) -> RichText {
-        var result = self
-
-        result.linkColor = linkColor
+        result.configuration.linkOpenType = linkOpenType
         return result
     }
     
-    public func customCSS(_ customCSS: String) -> RichText {
+    public func colorPreference(_ preference: ColorPreference) -> RichText {
         var result = self
+        result.configuration.isColorsImportant = preference
         
-        result.customCSS += customCSS
+        switch preference {
+        case .all:
+            result.configuration.linkColor.isImportant = true
+            result.configuration.fontColor.isImportant = true
+        case .onlyLinks:
+            result.configuration.linkColor.isImportant = true
+            result.configuration.fontColor.isImportant = false
+        case .none:
+            result.configuration.linkColor.isImportant = false
+            result.configuration.fontColor.isImportant = false
+        }
+        
+        return result
+    }
+    
+    public func placeholder<T>(@ViewBuilder content: () -> T) -> RichText where T: View {
+        var result = self
+        result.placeholder = AnyView(content())
         return result
     }
 }

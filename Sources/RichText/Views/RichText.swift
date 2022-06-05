@@ -10,29 +10,19 @@ import SwiftUI
 public struct RichText: View {
     @Environment(\.multilineTextAlignment) var multilineTextAlignment
     @State private var dynamicHeight: CGFloat = .zero
-
-    let html: String
-    var customCSS = ""
     
-    var lineHeight: CGFloat = 170
-    var imageRadius: CGFloat = 0
-    var fontType: FontType = .system
-
-    var colorScheme: ColorScheme = .automatic
-    var colorImportant: Bool = false
-
+    let html: String
+    var configuration = Configuration()
+    
     var placeholder: AnyView?
     
-    var linkOpenType: LinkOpenType = .SFSafariView()
-    var linkColor: ColorSet = ColorSet(light: "#007AFF", dark: "#0A84FF")
-
     public init(html: String) {
         self.html = html
     }
 
     public var body: some View {
         ZStack(alignment: .top) {
-            Webview(dynamicHeight: $dynamicHeight, html: html, customCSS: customCSS, lineHeight: lineHeight, imageRadius: imageRadius,fontType: fontType, colorScheme: colorScheme, colorImportant: colorImportant,linkOpenType: linkOpenType, linkColor: linkColor, alignment: multilineTextAlignment)
+            Webview(dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
                 .frame(height: dynamicHeight)
 
             if self.dynamicHeight == 0 {

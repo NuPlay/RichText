@@ -10,38 +10,17 @@ import WebKit
 import SafariServices
 
 struct Webview: UIViewRepresentable {
+    @Environment(\.colorScheme) var colorScheme
     @Binding var dynamicHeight: CGFloat
 
     let html: String
-    let customCSS: String
-    
-    let lineHeight: CGFloat
-    let imageRadius: CGFloat
-    let fontType: FontType
+    let conf: Configuration
 
-    let colorScheme: ColorScheme
-    let colorImportant: Bool
-
-    let linkOpenType: LinkOpenType
-    let linkColor: ColorSet
-    let alignment: TextAlignment
-
-    init(dynamicHeight: Binding<CGFloat>, html: String, customCSS: String, lineHeight: CGFloat,imageRadius: CGFloat, fontType: FontType, colorScheme: ColorScheme, colorImportant: Bool, linkOpenType: LinkOpenType, linkColor: ColorSet, alignment: TextAlignment) {
+    init(dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
         self._dynamicHeight = dynamicHeight
 
         self.html = html
-        self.customCSS = customCSS
-        
-        self.lineHeight = lineHeight
-        self.imageRadius = imageRadius
-        self.fontType = fontType
-
-        self.colorScheme = colorScheme
-        self.colorImportant = colorImportant
-
-        self.linkOpenType = linkOpenType
-        self.linkColor = linkColor
-        self.alignment = alignment
+        self.conf = configuration
     }
 
     func makeUIView(context: Context) -> WKWebView {
@@ -93,8 +72,9 @@ extension Webview {
             if navigationAction.navigationType == WKNavigationType.linkActivated {
                 if let url = navigationAction.request.url {
                     let root = UIApplication.shared.windows.first?.rootViewController
-                    switch self.parent.linkOpenType {
-                    case .SFSafariView(let conf, let isAnimated):
+                    switch self.parent.conf.linkOpenType {
+                    case .SFSafariView(let conf, let isReaderActivated, let isAnimated):
+                        conf.entersReaderIfAvailable = isReaderActivated
                         root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
                     case .Safari:
                         UIApplication.shared.open(url)
@@ -128,32 +108,22 @@ extension Webview {
     func generateCSS() -> String {
         switch colorScheme {
         case .light:
-            return "<style type='text/css'>\(css(isLight: true))\(customCSS)</style><BODY>"
-        case .dark :
-            return "<style type='text/css'>\(css(isLight: false))\(customCSS)</style><BODY>"
-        case .automatic:
+            return "<style type='text/css'>\(conf.css(isLight: true))\(conf.customCSS)</style><BODY>"
+        case .dark:
+            return "<style type='text/css'>\(conf.css(isLight: false))\(conf.customCSS)</style><BODY>"
+        @unknown default:
             return """
             <style type='text/css'>
             @media (prefers-color-scheme: light) {
-                \(css(isLight: true))
+                \(conf.css(isLight: true))
             }
             @media (prefers-color-scheme: dark) {
-                \(css(isLight: false))
+                \(conf.css(isLight: false))
             }
-            \(customCSS)
+            \(conf.customCSS)
             </style>
             <BODY>
             """
         }
-    }
-    
-    func css(isLight: Bool) -> String {
-        """
-        img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-        h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote {text-align:\(alignment.htmlDescription); line-height: \(lineHeight)%; font-family: '\(fontType.name)' !important; color: #\(isLight ? "000000" : "F2F2F2") \(colorImportant == false ? "" : "!important"); }
-        iframe{width:100%; height:250px;}
-        a:link {color: \(isLight ? linkColor.light : linkColor.dark);}
-        A {text-decoration: none;}
-        """
     }
 }
