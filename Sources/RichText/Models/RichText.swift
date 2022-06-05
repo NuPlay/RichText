@@ -16,14 +16,14 @@ public struct RichText: View {
     
     var lineHeight: CGFloat = 170
     var imageRadius: CGFloat = 0
-    var fontType: fontType = .system
+    var fontType: FontType = .system
 
-    var colorScheme: colorScheme = .automatic
+    var colorScheme: ColorScheme = .automatic
     var colorImportant: Bool = false
 
     var placeholder: AnyView?
     
-    var linkOpenType: linkOpenType = .SFSafariView()
+    var linkOpenType: LinkOpenType = .SFSafariView()
     var linkColor: ColorSet = ColorSet(light: "#007AFF", dark: "#0A84FF")
 
     public init(html: String) {

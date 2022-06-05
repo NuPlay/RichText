@@ -17,12 +17,12 @@ struct Webview: UIViewRepresentable {
     
     let lineHeight: CGFloat
     let imageRadius: CGFloat
-    let fontType: fontType
+    let fontType: FontType
 
-    let colorScheme: colorScheme
+    let colorScheme: ColorScheme
     let colorImportant: Bool
 
-    let linkOpenType: linkOpenType
+    let linkOpenType: LinkOpenType
     let linkColor: ColorSet
     let alignment: TextAlignment
 
@@ -126,35 +126,19 @@ extension Webview {
     }
     
     func generateCSS() -> String {
-        let light = """
-            img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote {text-align:\(alignment.htmlDescription); line-height: \(lineHeight)%; font-family: '\(fontName)' !important; color: #000000 \(colorImportant == false ? "" : "!important"); }
-            iframe{width:100%; height:250px;}
-            a:link {color: \(linkColor.light);}
-            A {text-decoration: none;}
-            """
-        
-        let dark = """
-            img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote {text-align:\(alignment.htmlDescription); line-height: \(lineHeight)%; font-family: '\(fontName)' !important; color: #F2F2F2 \(colorImportant == false ? "" : "!important"); }
-            iframe{width:100%; height:250px;}
-            a:link {color: \(linkColor.dark);}
-            A {text-decoration: none;}
-            """
-        
         switch colorScheme {
         case .light:
-            return "<style type='text/css'>\(light)\(customCSS)</style><BODY>"
+            return "<style type='text/css'>\(css(isLight: true))\(customCSS)</style><BODY>"
         case .dark :
-            return "<style type='text/css'>\(dark)\(customCSS)</style><BODY>"
+            return "<style type='text/css'>\(css(isLight: false))\(customCSS)</style><BODY>"
         case .automatic:
             return """
             <style type='text/css'>
             @media (prefers-color-scheme: light) {
-                \(light)
+                \(css(isLight: true))
             }
             @media (prefers-color-scheme: dark) {
-                \(dark)
+                \(css(isLight: false))
             }
             \(customCSS)
             </style>
@@ -162,15 +146,14 @@ extension Webview {
             """
         }
     }
-
-    var fontName: String {
-        switch fontType {
-        case .monospaced:
-            return UIFont.monospacedSystemFont(ofSize: 17, weight: .regular).fontName
-        case .italic:
-            return UIFont.italicSystemFont(ofSize: 17).fontName
-        default:
-            return "-apple-system"
-        }
+    
+    func css(isLight: Bool) -> String {
+        """
+        img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
+        h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote {text-align:\(alignment.htmlDescription); line-height: \(lineHeight)%; font-family: '\(fontType.name)' !important; color: #\(isLight ? "000000" : "F2F2F2") \(colorImportant == false ? "" : "!important"); }
+        iframe{width:100%; height:250px;}
+        a:link {color: \(isLight ? linkColor.light : linkColor.dark);}
+        A {text-decoration: none;}
+        """
     }
 }

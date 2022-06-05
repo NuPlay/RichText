@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  TextAlignment+Extension.swift
 //  
 //
 //  Created by MacBookator on 18.05.2022.

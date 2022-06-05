@@ -23,14 +23,14 @@ extension RichText {
         return result
     }
 
-    public func fontType(_ fontType: fontType) -> RichText {
+    public func fontType(_ fontType: FontType) -> RichText {
         var result = self
 
         result.fontType = fontType
         return result
     }
 
-    public func colorScheme(_ colorScheme: colorScheme) -> RichText {
+    public func colorScheme(_ colorScheme: ColorScheme) -> RichText {
         var result = self
 
         result.colorScheme = colorScheme
@@ -51,7 +51,7 @@ extension RichText {
         return result
     }
 
-    public func linkOpenType(_ linkOpenType: linkOpenType) -> RichText {
+    public func linkOpenType(_ linkOpenType: LinkOpenType) -> RichText {
         var result = self
 
         result.linkOpenType = linkOpenType
