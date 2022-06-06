@@ -8,11 +8,10 @@
 import SwiftUI
 
 public struct RichText: View {
-    @Environment(\.multilineTextAlignment) var multilineTextAlignment
     @State private var dynamicHeight: CGFloat = .zero
     
     let html: String
-    var configuration = Configuration()
+    var configuration: Configuration = .init()
     
     var placeholder: AnyView?
     

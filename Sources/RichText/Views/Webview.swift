@@ -10,7 +10,7 @@ import WebKit
 import SafariServices
 
 struct Webview: UIViewRepresentable {
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.multilineTextAlignment) var alignment
     @Binding var dynamicHeight: CGFloat
 
     let html: String
@@ -74,7 +74,9 @@ extension Webview {
                     let root = UIApplication.shared.windows.first?.rootViewController
                     switch self.parent.conf.linkOpenType {
                     case .SFSafariView(let conf, let isReaderActivated, let isAnimated):
-                        conf.entersReaderIfAvailable = isReaderActivated
+                        if let reader = isReaderActivated {
+                            conf.entersReaderIfAvailable = reader
+                        }
                         root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
                     case .Safari:
                         UIApplication.shared.open(url)
@@ -106,19 +108,19 @@ extension Webview {
     }
     
     func generateCSS() -> String {
-        switch colorScheme {
+        switch conf.colorScheme {
         case .light:
-            return "<style type='text/css'>\(conf.css(isLight: true))\(conf.customCSS)</style><BODY>"
+            return "<style type='text/css'>\(conf.css(isLight: true, alignment: alignment))\(conf.customCSS)</style><BODY>"
         case .dark:
-            return "<style type='text/css'>\(conf.css(isLight: false))\(conf.customCSS)</style><BODY>"
-        @unknown default:
+            return "<style type='text/css'>\(conf.css(isLight: false, alignment: alignment))\(conf.customCSS)</style><BODY>"
+        case .auto:
             return """
             <style type='text/css'>
             @media (prefers-color-scheme: light) {
-                \(conf.css(isLight: true))
+                \(conf.css(isLight: true, alignment: alignment))
             }
             @media (prefers-color-scheme: dark) {
-                \(conf.css(isLight: false))
+                \(conf.css(isLight: false, alignment: alignment))
             }
             \(conf.customCSS)
             </style>

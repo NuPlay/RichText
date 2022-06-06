@@ -18,13 +18,6 @@ public struct ColorSet {
         self.isImportant = isImportant
     }
     
-    @available(iOS 14.0, *)
-    public init(light: Color, dark: Color, isImportant: Bool = false) {
-        self.light = UIColor(light).hex ?? "000000"
-        self.dark = UIColor(dark).hex ?? "F2F2F2"
-        self.isImportant = isImportant
-    }
-    
     public init(light: UIColor, dark: UIColor, isImportant: Bool = false) {
         self.light = light.hex ?? "000000"
         self.dark = dark.hex ?? "F2F2F2"

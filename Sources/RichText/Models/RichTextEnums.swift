@@ -8,13 +8,13 @@
 import Foundation
 import SafariServices
 
-public enum FontType: String {
-    case system = "system"
-    case monospaced = "monospaced"
-    case italic = "italic"
+public enum FontType {
+    case system
+    case monospaced
+    case italic
 
     @available(*, deprecated, renamed: "system")
-    case `default` = "default"
+    case `default`
     
     var name: String {
         switch self {
@@ -29,7 +29,7 @@ public enum FontType: String {
 }
 
 public enum LinkOpenType {
-    case SFSafariView(configuration: SFSafariViewController.Configuration = .init(), isReaderActivated: Bool = false, isAnimated: Bool = true)
+    case SFSafariView(configuration: SFSafariViewController.Configuration = .init(), isReaderActivated: Bool? = nil, isAnimated: Bool = true)
     case Safari
     case none
 }
@@ -38,4 +38,37 @@ public enum ColorPreference {
     case all
     case onlyLinks
     case none
+}
+
+public enum ColorScheme {
+    case light
+    case dark
+    case auto
+}
+
+// MARK: - Deprected Enums
+
+@available(*, deprecated, renamed: "ColorScheme")
+public enum colorScheme: String {
+    case light = "light"
+    case dark = "dark"
+    case automatic = "automatic"
+}
+
+@available(*, deprecated, renamed: "FontType")
+public enum fontType: String {
+    case system = "system"
+    case monospaced = "monospaced"
+    case italic = "italic"
+
+    @available(*, deprecated, renamed: "system")
+    case `default` = "default"
+}
+
+@available(*, deprecated, renamed: "LinkOpenType")
+public enum linkOpenType: String {
+    case SFSafariView = "SFSafariView"
+    case SFSafariViewWithReader = "SFSafariViewWithReader"
+    case Safari = "Safari"
+    case none = "none"
 }
