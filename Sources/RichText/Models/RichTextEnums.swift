@@ -12,6 +12,8 @@ public enum FontType {
     case system
     case monospaced
     case italic
+    case custom(UIFont)
+    case customName(String)
 
     @available(*, deprecated, renamed: "system")
     case `default`
@@ -22,6 +24,10 @@ public enum FontType {
             return UIFont.monospacedSystemFont(ofSize: 17, weight: .regular).fontName
         case .italic:
             return UIFont.italicSystemFont(ofSize: 17).fontName
+        case .custom(let font):
+            return font.fontName
+        case .customName(let name):
+            return name
         default:
             return "-apple-system"
         }
