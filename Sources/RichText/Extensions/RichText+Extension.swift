@@ -39,21 +39,28 @@ extension RichText {
     }
     
     @available(iOS 14.0, *)
-    public func foregroundColor(lightColor light: Color, darkColor dark: Color) -> RichText {
+    public func foregroundColor(light: Color, dark: Color) -> RichText {
         var result = self
-        result.configuration.linkColor = .init(light: UIColor(light), dark: UIColor(dark))
+        result.configuration.fontColor = .init(light: UIColor(light), dark: UIColor(dark))
         return result
     }
     
     public func foregroundColor(lightColor light: UIColor, darkColor dark: UIColor) -> RichText {
         var result = self
-        result.configuration.linkColor = .init(light: light, dark: dark)
+        result.configuration.fontColor = .init(light: light, dark: dark)
         return result
     }
     
-    public func linkColor(_ linkColor: ColorSet) -> RichText {
+    @available(iOS 14.0, *)
+    public func linkColor(light: Color, dark: Color) -> RichText {
         var result = self
-        result.configuration.linkColor = linkColor
+        result.configuration.linkColor = .init(light: UIColor(light), dark: UIColor(dark))
+        return result
+    }
+    
+    public func linkColor(light: UIColor, dark: UIColor) -> RichText {
+        var result = self
+        result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
 
@@ -63,7 +70,7 @@ extension RichText {
         return result
     }
     
-    public func colorPreference(_ preference: ColorPreference) -> RichText {
+    public func colorPreference(forceColor: ColorPreference) -> RichText {
         var result = self
         result.configuration.isColorsImportant = preference
         

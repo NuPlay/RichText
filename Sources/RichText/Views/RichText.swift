@@ -21,7 +21,7 @@ public struct RichText: View {
 
     public var body: some View {
         ZStack(alignment: .top) {
-            Webview(dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
+            WebView(dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
                 .frame(height: dynamicHeight)
 
             if self.dynamicHeight == 0 {

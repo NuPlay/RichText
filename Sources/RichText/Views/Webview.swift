@@ -1,5 +1,5 @@
 //
-//  Webview.swift
+//  WebView.swift
 //
 //
 //  Created by 이웅재(NuPlay) on 2021/07/26.
@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 import SafariServices
 
-struct Webview: UIViewRepresentable {
+struct WebView: UIViewRepresentable {
     @Environment(\.multilineTextAlignment) var alignment
     @Binding var dynamicHeight: CGFloat
 
@@ -52,11 +52,11 @@ struct Webview: UIViewRepresentable {
     }
 }
 
-extension Webview {
+extension WebView {
     class Coordinator: NSObject, WKNavigationDelegate {
-        var parent: Webview
+        var parent: WebView
 
-        init(_ parent: Webview) {
+        init(_ parent: WebView) {
             self.parent = parent
         }
 
@@ -93,7 +93,7 @@ extension Webview {
     }
 }
 
-extension Webview {
+extension WebView {
     func generateHTML() -> String {
         return """
             <HTML>
