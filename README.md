@@ -12,7 +12,7 @@
 </p>
 
 
-| <img width="1440" alt="스크린샷 2021-08-28 오전 12 14 09" src="https://user-images.githubusercontent.com/73557895/131149958-bbc28435-02e2-4a02-8ad5-43627cd333e0.png"> 	| <img width="1440" alt="스크린샷 2021-08-28 오전 12 13 59" src="https://user-images.githubusercontent.com/73557895/131149926-211e2111-6d6e-4aac-94b8-44c7230b6244.png"> 	|
+| <img width="1440" alt="스크린샷 2021-08-28 오전 12 14 09" src="https://user-images.githubusercontent.com/73557895/131149958-bbc28435-02e2-4a02-8ad5-43627cd333e0.png"> 	| <img width="1440" alt="스크린샷 2021-08-28 오전 12 13 59" src="https://user-images.githubusercontent.com/73557895/131149926-211e2111-6d6e-4aac-94b8-44c7230b6244.png"> 	|
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------:	|:------------------------------------------------------------------------------------------------------------------------------:	|
 | LightMode                                                                                                                                                                 	| DarkMode                                                                                                                        	|                   
 
@@ -32,7 +32,7 @@ struct RichText_Test: View {
                 .fontType(.system)
                 .colorScheme(.automatic)
                 .colorImportant(true)
-                .linkOpenType(.SFSafariView)
+                .linkOpenType(.SFSafariView())
                 .linkColor(ColorSet(light: "#007AFF", dark: "#0A84FF"))
                 .placeholder {
                     Text("loading")
@@ -132,7 +132,7 @@ struct RichText_Test: View {
                 .fontType(.system)
                 .colorScheme(.automatic)
                 .colorImportant(true)
-                .linkOpenType(.SFSafariView)
+                .linkOpenType(.SFSafariView())
                 .linkColor(ColorSet(light: "#007AFF", dark: "#0A84FF"))
                 .placeholder {
                     Text("loading")
@@ -168,7 +168,7 @@ Modifier | Default
 `.colorScheme(_ colorScheme: colorScheme)` | `.automatic`
 `.colorImportant(_ colorImportant: Bool)` | `false`
 `.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
-`.linkOpenType(_ linkOpenType: linkOpenType)` | `.SFSafariView`
+`.linkOpenType(_ linkOpenType: linkOpenType)` | `.SFSafariView()`
 `.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF")`
 
 
@@ -178,7 +178,7 @@ Modifier | Default
  - colorScheme(default : .automatic) : light or dark mode (it changes text color) 
  - colorImportant (default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
  - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type)
- - linkOpenType (default: .SFSafariView) : When the user clicks the link contained in html, Way to Show Webview
+ - linkOpenType (default: .SFSafariView()) : When the user clicks the link contained in html, Way to Show Webview
  - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (hexColor)
 
 ### Planned (Future work): 
