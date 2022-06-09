@@ -28,12 +28,13 @@ struct RichText_Test: View {
        ScrollView{
             RichText(html: html)
                 .lineHeight(170)
+                .colorScheme(ColorScheme.auto)
                 .imageRadius(12)
-                .fontType(.system)
-                .colorScheme(.automatic)
-                .colorImportant(true)
-                .linkOpenType(.SFSafariView())
-                .linkColor(ColorSet(light: "#007AFF", dark: "#0A84FF"))
+                .fontType(FontType.system)
+                .foregroundColor(light: Color.primary, dark: Color.primary)
+                .linkColor(light: Color.blue, dark: Color.blue)
+                .colorPreference(forceColor: .onlyLinks)
+                .customCSS("")
                 .placeholder {
                     Text("loading")
                 }
@@ -126,14 +127,15 @@ struct RichText_Test: View {
     
     var body: some View {
         ScrollView{
-            RichText(html: html)
+           RichText(html: html)
                 .lineHeight(170)
+                .colorScheme(ColorScheme.auto)
                 .imageRadius(12)
-                .fontType(.system)
-                .colorScheme(.automatic)
-                .colorImportant(true)
-                .linkOpenType(.SFSafariView())
-                .linkColor(ColorSet(light: "#007AFF", dark: "#0A84FF"))
+                .fontType(FontType.system)
+                .foregroundColor(light: Color.primary, dark: Color.primary)
+                .linkColor(light: Color.blue, dark: Color.blue)
+                .colorPreference(forceColor: .onlyLinks)
+                .customCSS("")
                 .placeholder {
                     Text("loading")
                 }
@@ -164,12 +166,12 @@ Modifier | Default
 --- | ---
 `.lineHeight(_ lineHeight: CGFloat)` | `170`
 `.imageRadius(_ imageRadius: CGFloat)` | `0`
-`.fontType(_ fontType: fontType)` | `.system`
-`.colorScheme(_ colorScheme: colorScheme)` | `.automatic`
+`.fontType(_ fontType: FontType)` | `.system`
+`.colorScheme(_ colorScheme: ColorScheme)` | `.auto`
 `.colorImportant(_ colorImportant: Bool)` | `false`
 `.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
-`.linkOpenType(_ linkOpenType: linkOpenType)` | `.SFSafariView()`
-`.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF")`
+`.linkOpenType(_ linkOpenType: LinkOpenType)` | `.SFSafariView()`
+`.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF", isImportant: true)`
 
 
  - lineHeight (default: 170) : Height of each line  
@@ -179,7 +181,14 @@ Modifier | Default
  - colorImportant (default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
  - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type)
  - linkOpenType (default: .SFSafariView()) : When the user clicks the link contained in html, Way to Show Webview
- - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (hexColor)
+ - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color, UIColor)
+
+
+### Known Issues
+`Ambiguous use of ''`
+The problem occurred by renaming the enum.
+For now, please use it like `FontType.system`.
+
 
 ### Planned (Future work): 
 A variety of options. 
