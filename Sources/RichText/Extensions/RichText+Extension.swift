@@ -45,7 +45,7 @@ extension RichText {
         return result
     }
     
-    public func foregroundColor(lightColor light: UIColor, darkColor dark: UIColor) -> RichText {
+    public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
         result.configuration.fontColor = .init(light: light, dark: dark)
         return result
@@ -72,9 +72,9 @@ extension RichText {
     
     public func colorPreference(forceColor: ColorPreference) -> RichText {
         var result = self
-        result.configuration.isColorsImportant = preference
+        result.configuration.isColorsImportant = forceColor
         
-        switch preference {
+        switch forceColor {
         case .all:
             result.configuration.linkColor.isImportant = true
             result.configuration.fontColor.isImportant = true
