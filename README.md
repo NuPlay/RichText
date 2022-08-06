@@ -57,7 +57,7 @@ Once you have your Swift package set up, adding RichText as a dependency is as e
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "1.7.0"))
+    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "2.0.0"))
 ]
 ```
 
@@ -185,10 +185,7 @@ Modifier | Default
 
 
 ### Known Issues
-`Ambiguous use of ''`
-The problem occurred by renaming the enum.
-For now, please use it like `FontType.system`.
-
+If you are trying to display very large content, it may not be displayed.
 
 ### Planned (Future work): 
 A variety of options. 
