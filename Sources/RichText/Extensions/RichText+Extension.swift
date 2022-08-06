@@ -97,7 +97,7 @@ extension RichText {
 }
 
 // MARK: - Deprected Functions
-
+/*
 public extension RichText {
     @available(*, deprecated, renamed: "colorScheme(_:)")
     func colorScheme(_ colorScheme: colorScheme) -> RichText {
@@ -158,3 +158,4 @@ public extension RichText {
         return result
     }
 }
+*/

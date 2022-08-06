@@ -53,7 +53,7 @@ public enum ColorScheme {
 }
 
 // MARK: - Deprected Enums
-
+/*
 @available(*, deprecated, renamed: "ColorScheme")
 public enum colorScheme: String {
     case light = "light"
@@ -78,3 +78,4 @@ public enum linkOpenType: String {
     case Safari = "Safari"
     case none = "none"
 }
+*/
