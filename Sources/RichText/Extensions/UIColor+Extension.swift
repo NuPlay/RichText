@@ -22,14 +22,14 @@ extension UIColor {
         
         if alpha == 1.0 {
             return String(
-                format: "#%02lX%02lX%02lX",
+                format: "%02lX%02lX%02lX",
                 Int(red * multiplier),
                 Int(green * multiplier),
                 Int(blue * multiplier)
             )
         } else {
             return String(
-                format: "#%02lX%02lX%02lX%02lX",
+                format: "%02lX%02lX%02lX%02lX",
                 Int(red * multiplier),
                 Int(green * multiplier),
                 Int(blue * multiplier),
