@@ -11,12 +11,13 @@ public struct RichText: View {
     @State private var dynamicHeight: CGFloat = .zero
     
     let html: String
-    var configuration: Configuration = .init()
-    
+    var configuration: Configuration
     var placeholder: AnyView?
     
-    public init(html: String) {
+    public init(html: String, configuration: Configuration = .init(), placeholder: AnyView? = nil) {
         self.html = html
+        self.configuration = configuration
+        self.placeholder = placeholder
     }
 
     public var body: some View {

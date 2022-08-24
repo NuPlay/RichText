@@ -7,21 +7,44 @@
 
 import SwiftUI
 
-struct Configuration {
-    var customCSS: String = ""
+public struct Configuration {
     
-    var fontType: FontType = .system
-    var fontColor: ColorSet = .init(light: "000000", dark: "F2F2F2")
-    var lineHeight: CGFloat = 170
+    public var customCSS: String
     
-    var colorScheme: ColorScheme = .auto
+    public var fontType: FontType
+    public var fontColor: ColorSet
+    public var lineHeight: CGFloat
     
-    var imageRadius: CGFloat = 0
+    public var colorScheme: ColorScheme
     
-    var linkOpenType: LinkOpenType = .SFSafariView()
-    var linkColor: ColorSet = .init(light: "007AFF", dark: "0A84FF", isImportant: true)
+    public var imageRadius: CGFloat
     
-    var isColorsImportant: ColorPreference = .onlyLinks
+    public var linkOpenType: LinkOpenType
+    public var linkColor: ColorSet
+    
+    public var isColorsImportant: ColorPreference
+    
+    public init(
+        customCSS: String = "",
+        fontType: FontType = .system,
+        fontColor: ColorSet = .init(light: "000000", dark: "F2F2F2"),
+        lineHeight: CGFloat = 170,
+        colorScheme: ColorScheme = .auto,
+        imageRadius: CGFloat = 0,
+        linkOpenType: LinkOpenType = .SFSafariView(),
+        linkColor: ColorSet = .init(light: "007AFF", dark: "0A84FF", isImportant: true),
+        isColorsImportant: ColorPreference = .onlyLinks
+    ) {
+        self.customCSS = customCSS
+        self.fontType = fontType
+        self.fontColor = fontColor
+        self.lineHeight = lineHeight
+        self.colorScheme = colorScheme
+        self.imageRadius = imageRadius
+        self.linkOpenType = linkOpenType
+        self.linkColor = linkColor
+        self.isColorsImportant = isColorsImportant
+    }
     
     func css(isLight: Bool, alignment: TextAlignment) -> String {
         """
