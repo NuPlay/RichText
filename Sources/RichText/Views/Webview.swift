@@ -8,6 +8,7 @@
 import SwiftUI
 import WebKit
 import SafariServices
+import MessageUI
 
 struct WebView: UIViewRepresentable {
     @Environment(\.multilineTextAlignment) var alignment
@@ -55,11 +56,11 @@ struct WebView: UIViewRepresentable {
 extension WebView {
     class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebView
-
+        
         init(_ parent: WebView) {
             self.parent = parent
         }
-
+        
         public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, _) in
                 DispatchQueue.main.async {
@@ -67,28 +68,40 @@ extension WebView {
                 }
             })
         }
-
+        
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-            if navigationAction.navigationType == WKNavigationType.linkActivated {
-                if let url = navigationAction.request.url {
-                    let root = UIApplication.shared.windows.first?.rootViewController
-                    switch self.parent.conf.linkOpenType {
-                    case .SFSafariView(let conf, let isReaderActivated, let isAnimated):
-                        if let reader = isReaderActivated {
-                            conf.entersReaderIfAvailable = reader
-                        }
-                        root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
-                    case .Safari:
-                        UIApplication.shared.open(url)
-                    case .none:
-                        print("WebView Content Link: \(url)")
-                    }
-                }
-
-                decisionHandler(WKNavigationActionPolicy.cancel)
+            guard navigationAction.navigationType == WKNavigationType.linkActivated,
+                  var url = navigationAction.request.url else {
+                decisionHandler(WKNavigationActionPolicy.allow)
                 return
             }
-            decisionHandler(WKNavigationActionPolicy.allow)
+            
+            if url.scheme == nil {
+                guard let httpsURL = URL(string: "https://\(url.absoluteString)") else { return }
+                url = httpsURL
+            }
+            
+            switch url.scheme {
+            case "mailto", "tel":
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            case "http", "https":
+                switch self.parent.conf.linkOpenType {
+                case .SFSafariView(let conf, let isReaderActivated, let isAnimated):
+                    if let reader = isReaderActivated {
+                        conf.entersReaderIfAvailable = reader
+                    }
+                    let root = UIApplication.shared.windows.first?.rootViewController
+                    root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
+                case .Safari:
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                case .none:
+                    break
+                }
+            default:
+                return
+            }
+        
+            decisionHandler(WKNavigationActionPolicy.cancel)
         }
     }
 }
