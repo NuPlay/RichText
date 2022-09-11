@@ -28,12 +28,13 @@ struct RichText_Test: View {
        ScrollView{
             RichText(html: html)
                 .lineHeight(170)
-                .colorScheme(ColorScheme.auto)
+                .colorScheme(.auto)
                 .imageRadius(12)
-                .fontType(FontType.system)
+                .fontType(.system)
                 .foregroundColor(light: Color.primary, dark: Color.primary)
                 .linkColor(light: Color.blue, dark: Color.blue)
                 .colorPreference(forceColor: .onlyLinks)
+                .linkOpenType(.SFSafariView())
                 .customCSS("")
                 .placeholder {
                     Text("loading")
@@ -59,6 +60,42 @@ Once you have your Swift package set up, adding RichText as a dependency is as e
 dependencies: [
     .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "2.0.0"))
 ]
+```
+
+## More
+```swift
+import SwiftUI
+import RichText
+
+struct RichText_Test: View {
+    @State var  html = ""
+    
+    let config: Configuration = Configuration(customCSS: String, fontType: FontType, fontColor: ColorSet, lineHeight: CGFloat, colorScheme: ColorScheme, imageRadius: CGFloat, linkOpenType: LinkOpenType, linkColor: ColorSet, isColorsImportant: ColorPreference)
+    
+    var body: some View {
+       ScrollView{
+        RichText(html: text, configuration: config, placeholder: AnyView?)
+                .lineHeight(170)
+                .colorScheme(.auto)
+                .imageRadius(12)
+                .fontType(.system)
+                .foregroundColor(light: Color.primary, dark: Color.primary)
+                .linkColor(light: Color.blue, dark: Color.blue)
+                .colorPreference(forceColor: .onlyLinks)
+                .linkOpenType(.SFSafariView())
+                .customCSS("")
+                .placeholder {
+                    Text("loading")
+                }
+        }
+    }
+}
+
+struct RichText_Test_Previews: PreviewProvider {
+    static var previews: some View {
+        RichText_Test()
+    }
+}
 ```
 
 ## Sample Text
@@ -129,13 +166,14 @@ struct RichText_Test: View {
         ScrollView{
            RichText(html: html)
                 .lineHeight(170)
-                .colorScheme(ColorScheme.auto)
+                .colorScheme(.auto)
                 .imageRadius(12)
-                .fontType(FontType.system)
+                .fontType(.system)
                 .foregroundColor(light: Color.primary, dark: Color.primary)
                 .linkColor(light: Color.blue, dark: Color.blue)
                 .colorPreference(forceColor: .onlyLinks)
                 .customCSS("")
+                .linkOpenType(.SFSafariView())
                 .placeholder {
                     Text("loading")
                 }
@@ -164,25 +202,28 @@ Variable explanation
 ### Modifier
 Modifier | Default
 --- | ---
-`.lineHeight(_ lineHeight: CGFloat)` | `170`
+`.foregroundColor(light: Color, dark: Color)` | `(light: "000000", dark: "F2F2F2")`
 `.imageRadius(_ imageRadius: CGFloat)` | `0`
-`.fontType(_ fontType: FontType)` | `.system`
+`.customCSS(_ customCSS: String)` | `""`
+`.lineHeight(_ lineHeight: CGFloat)` | `170`
 `.colorScheme(_ colorScheme: ColorScheme)` | `.auto`
-`.colorImportant(_ colorImportant: Bool)` | `false`
-`.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
-`.linkOpenType(_ linkOpenType: LinkOpenType)` | `.SFSafariView()`
+`.fontType(_ fontType: FontType)` | `.system`
 `.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF", isImportant: true)`
+`.linkOpenType(_ linkOpenType: LinkOpenType)` | `.SFSafariView()`
+`.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
+`.colorPreference(forceColor: ColorPreference)` | `.onlyLinks`
 
 
- - lineHeight (default: 170) : Height of each line  
- - imageRadius (default: 0)  : Radius of image corner 
- - fontType(default : .system): Font type in html view
- - colorScheme(default : .automatic) : light or dark mode (it changes text color) 
- - colorImportant (default: false) : css '!important', It ignores the color in variable 'html' when colorImportant is true.
- - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type)
+ - foregroundColor (default: (light: "000000", dark: "F2F2F2")) : Color of Text
+ - imageRadius (default: 0)  : Radius of image corner
+ - customCSS(default: ""): You can add CSS if you want
+ - lineHeight (default: 170)  : Height of each line
+ - colorScheme(default: .auto) : light or dark mode (it changes text color)
+ - fontType(default: .system): Font type in RichText view
+ - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color or UIColor)
  - linkOpenType (default: .SFSafariView()) : When the user clicks the link contained in html, Way to Show Webview
- - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color, UIColor)
-
+ - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type) 
+ - colorPreference(default: .onlyLinks) : css '!important', It ignores the color in variable 'html'
 
 ### Known Issues
 If you are trying to display very large content, it may not be displayed.
