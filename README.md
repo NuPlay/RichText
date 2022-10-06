@@ -98,6 +98,35 @@ struct RichText_Test_Previews: PreviewProvider {
 }
 ```
 
+## Custom Font
+```swift
+import SwiftUI
+import RichText
+
+struct RichText_Test: View {
+    @State private var  html = ""
+    
+    var body: some View {
+       ScrollView{
+        RichText(html: html)
+        .fontType(.customName("Noto Sans"))
+        .customCSS("""
+                 @font-face {
+                        font-family: 'Noto Sans';
+                        src: url("NotoSans-Regular.ttf") format('truetype');
+                            }
+                """)
+        }
+    }
+}
+
+struct RichText_Test_Previews: PreviewProvider {
+    static var previews: some View {
+        RichText_Test()
+    }
+}
+```
+
 ## Sample Text
 <details>
 <summary>Click</summary>

@@ -32,7 +32,8 @@ struct WebView: UIViewRepresentable {
         webview.scrollView.isScrollEnabled = false
         
         DispatchQueue.main.async {
-            webview.loadHTMLString(generateHTML(), baseURL: nil)
+            let bundleURL = Bundle.main.bundleURL
+            webview.loadHTMLString(generateHTML(), baseURL: bundleURL)
         }
         
         webview.isOpaque = false
@@ -44,7 +45,8 @@ struct WebView: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         DispatchQueue.main.async {
-            uiView.loadHTMLString(generateHTML(), baseURL: nil)
+            let bundleURL = Bundle.main.bundleURL
+            uiView.loadHTMLString(generateHTML(), baseURL: bundleURL)
         }
     }
     
