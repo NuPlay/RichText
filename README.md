@@ -39,6 +39,7 @@ struct RichText_Test: View {
                 .placeholder {
                     Text("loading")
                 }
+                .transition(.easeOut)
         }
     }
 }
@@ -87,6 +88,7 @@ struct RichText_Test: View {
                 .placeholder {
                     Text("loading")
                 }
+                .transition(.easeOut)
         }
     }
 }
@@ -206,6 +208,7 @@ struct RichText_Test: View {
                 .placeholder {
                     Text("loading")
                 }
+                .transition(.easeOut)
         }
     }
 }
@@ -241,6 +244,7 @@ Modifier | Default
 `.linkOpenType(_ linkOpenType: LinkOpenType)` | `.SFSafariView()`
 `.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
 `.colorPreference(forceColor: ColorPreference)` | `.onlyLinks`
+`.transition(_ transition: Animation?)` | `.none`
 
 
  - foregroundColor (default: (light: "000000", dark: "F2F2F2")) : Color of Text
@@ -252,6 +256,7 @@ Modifier | Default
  - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color or UIColor)
  - linkOpenType (default: .SFSafariView()) : When the user clicks the link contained in html, Way to Show Webview
  - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type) 
+ - transition(default: .none) : Transition between PlaceHolder and Content
  - colorPreference(default: .onlyLinks) : css '!important', It ignores the color in variable 'html'
 
 ### Known Issues
