@@ -102,7 +102,9 @@ extension WebView {
                     break
                 }
             default:
-                return
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
             }
         
             decisionHandler(WKNavigationActionPolicy.cancel)
