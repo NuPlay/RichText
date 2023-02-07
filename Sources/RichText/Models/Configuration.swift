@@ -24,6 +24,8 @@ public struct Configuration {
     
     public var isColorsImportant: ColorPreference
     
+    public var transition: Animation?
+    
     public init(
         customCSS: String = "",
         fontType: FontType = .system,
@@ -33,7 +35,8 @@ public struct Configuration {
         imageRadius: CGFloat = 0,
         linkOpenType: LinkOpenType = .SFSafariView(),
         linkColor: ColorSet = .init(light: "007AFF", dark: "0A84FF", isImportant: true),
-        isColorsImportant: ColorPreference = .onlyLinks
+        isColorsImportant: ColorPreference = .onlyLinks,
+        transition: Animation? = .none
     ) {
         self.customCSS = customCSS
         self.fontType = fontType
@@ -44,6 +47,7 @@ public struct Configuration {
         self.linkOpenType = linkOpenType
         self.linkColor = linkColor
         self.isColorsImportant = isColorsImportant
+        self.transition = transition
     }
     
     func css(isLight: Bool, alignment: TextAlignment) -> String {

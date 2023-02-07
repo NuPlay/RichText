@@ -94,6 +94,12 @@ extension RichText {
         result.placeholder = AnyView(content())
         return result
     }
+    
+    public func transition(_ transition: Animation?) -> RichText {
+        var result = self
+        result.configuration.transition = transition
+        return result
+    }
 }
 
 // MARK: - Deprected Functions
