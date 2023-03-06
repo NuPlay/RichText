@@ -64,7 +64,7 @@ extension WebView {
         }
         
         public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, _) in
+            webView.evaluateJavaScript("document.getElementById(\"element\").offsetHeight", completionHandler: { (height, _) in
                 DispatchQueue.main.async {
                     withAnimation(self.parent.conf.transition) {
                         self.parent.dynamicHeight = height as! CGFloat
@@ -120,7 +120,7 @@ extension WebView {
                 <meta name='viewport' content='width=device-width, shrink-to-fit=YES, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
             </head>
             \(generateCSS())
-            <div>\(html)</div>
+            <div id ="element">\(html)</div>
             </BODY>
             </HTML>
             """
@@ -129,9 +129,29 @@ extension WebView {
     func generateCSS() -> String {
         switch conf.colorScheme {
         case .light:
-            return "<style type='text/css'>\(conf.css(isLight: true, alignment: alignment))\(conf.customCSS)</style><BODY>"
+            return """
+            <style type='text/css'>
+                \(conf.css(isLight: true, alignment: alignment))
+                \(conf.customCSS)
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+            </style>
+            <BODY>
+            """
         case .dark:
-            return "<style type='text/css'>\(conf.css(isLight: false, alignment: alignment))\(conf.customCSS)</style><BODY>"
+            return """
+            <style type='text/css'>
+                \(conf.css(isLight: false, alignment: alignment))
+                \(conf.customCSS)
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+            </style>
+            <BODY>
+            """
         case .auto:
             return """
             <style type='text/css'>
@@ -142,6 +162,10 @@ extension WebView {
                 \(conf.css(isLight: false, alignment: alignment))
             }
             \(conf.customCSS)
+            body {
+                margin: 0;
+                padding: 0;
+            }
             </style>
             <BODY>
             """
