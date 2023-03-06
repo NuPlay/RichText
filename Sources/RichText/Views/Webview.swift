@@ -64,7 +64,7 @@ extension WebView {
         }
         
         public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            webView.evaluateJavaScript("document.getElementById(\"element\").offsetHeight", completionHandler: { (height, _) in
+            webView.evaluateJavaScript("document.getElementById(\"NuPlay_RichText\").offsetHeight", completionHandler: { (height, _) in
                 DispatchQueue.main.async {
                     withAnimation(self.parent.conf.transition) {
                         self.parent.dynamicHeight = height as! CGFloat
@@ -120,7 +120,7 @@ extension WebView {
                 <meta name='viewport' content='width=device-width, shrink-to-fit=YES, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
             </head>
             \(generateCSS())
-            <div id ="element">\(html)</div>
+            <div id="NuPlay_RichText">\(html)</div>
             </BODY>
             </HTML>
             """
