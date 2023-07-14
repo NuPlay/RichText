@@ -73,7 +73,7 @@ extension WebView: NSViewRepresentable {
             let bundleURL = Bundle.main.bundleURL
             webview.loadHTMLString(generateHTML(), baseURL: bundleURL)
         }
-        webview.underPageBackgroundColor = NSColor.clear
+        webview.setValue(false, forKey: "drawsBackground")
 
         return webview
     }
