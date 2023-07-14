@@ -35,8 +35,8 @@ public enum FontType {
             return NSFont(descriptor: NSFont.systemFont(ofSize: 17).fontDescriptor.withSymbolicTraits(.italic), size: 17)?.fontName ?? ""
             #endif
         #if canImport(UIKit)
-            case let .custom(font):
-                return font.fontName
+        case let .custom(font):
+            return font.fontName
         #endif
         case let .customName(name):
             return name
