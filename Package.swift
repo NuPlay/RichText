@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "RichText",
     platforms: [
-        .iOS("13.0")
+        .iOS("13.0"),
+        .macOS("10.15")
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
