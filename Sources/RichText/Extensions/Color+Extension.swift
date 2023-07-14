@@ -68,7 +68,7 @@ extension NSColor {
         self.init(red: components.R, green: components.G, blue: components.B, alpha: components.a)
     }
 
-    func toHex(alpha: Bool = false) -> String? {
+    var hex: String? {
         guard let components = cgColor.components, components.count >= 3 else {
             return nil
         }
@@ -90,24 +90,3 @@ extension NSColor {
     }
 }
 #endif
-
-import SwiftUI
-
-extension Color {
-    init(hex: String) {
-        let scanner = Scanner(string: hex)
-        scanner.scanLocation = 0
-        var rgbValue: UInt64 = 0
-        scanner.scanHexInt64(&rgbValue)
-
-        let r = (rgbValue & 0xFF0000) >> 16
-        let g = (rgbValue & 0xFF00) >> 8
-        let b = rgbValue & 0xFF
-
-        self.init(
-            red: CGFloat(r) / 0xFF,
-            green: CGFloat(g) / 0xFF,
-            blue: CGFloat(b) / 0xFF, opacity: 1
-        )
-    }
-}

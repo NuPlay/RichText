@@ -37,33 +37,31 @@ extension RichText {
         result.configuration.fontType = fontType
         return result
     }
-    
-    @available(iOS 14.0, *)
-    public func foregroundColor(light: Color, dark: Color) -> RichText {
-        var result = self
-        result.configuration.fontColor = .init(light: light, dark: dark)
-        return result
-    }
 
     #if canImport(UIKit)
     public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
-        result.configuration.fontColor = .init(light: Color(light), dark: Color(dark))
+        result.configuration.fontColor = .init(light: light.hex, dark: dark.hex)
+        return result
+    }
+    #else
+    public func foregroundColor(light: NSColor, dark: NSColor) -> RichText {
+        var result = self
+        result.configuration.fontColor = .init(light: light.hex, dark: dark.hex)
         return result
     }
     #endif
 
-    @available(iOS 14.0, *)
-    public func linkColor(light: Color, dark: Color) -> RichText {
-        var result = self
-        result.configuration.linkColor = .init(light: light, dark: dark)
-        return result
-    }
-
     #if canImport(UIKit)
     public func linkColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
-        result.configuration.linkColor = .init(light: Color(light), dark: Color(dark))
+        result.configuration.linkColor = .init(light: light.hex, dark: dark.hex)
+        return result
+    }
+    #else
+    public func linkColor(light: NSColor, dark: NSColor) -> RichText {
+        var result = self
+        result.configuration.linkColor = .init(light: light.hex, dark: dark.hex)
         return result
     }
     #endif
