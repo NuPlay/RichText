@@ -33,7 +33,7 @@ public struct Configuration {
         lineHeight: CGFloat = 170,
         colorScheme: ColorScheme = .auto,
         imageRadius: CGFloat = 0,
-        linkOpenType: LinkOpenType = .SFSafariView(),
+        linkOpenType: LinkOpenType = .Safari,
         linkColor: ColorSet = .init(light: "007AFF", dark: "0A84FF", isImportant: true),
         isColorsImportant: ColorPreference = .onlyLinks,
         transition: Animation? = .none
