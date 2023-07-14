@@ -37,31 +37,45 @@ extension RichText {
         result.configuration.fontType = fontType
         return result
     }
-
+    
     #if canImport(UIKit)
+    @available(iOS 14.0, *)
+    public func foregroundColor(light: Color, dark: Color) -> RichText {
+        var result = self
+        result.configuration.fontColor = .init(light: UIColor(light), dark: UIColor(dark))
+        return result
+    }
+
     public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
-        result.configuration.fontColor = .init(light: light.hex, dark: dark.hex)
+        result.configuration.fontColor = .init(light: light, dark: dark)
         return result
     }
     #else
     public func foregroundColor(light: NSColor, dark: NSColor) -> RichText {
         var result = self
-        result.configuration.fontColor = .init(light: light.hex, dark: dark.hex)
+        result.configuration.fontColor = .init(light: light, dark: dark)
         return result
     }
     #endif
-
+    
     #if canImport(UIKit)
+    @available(iOS 14.0, *)
+    public func linkColor(light: Color, dark: Color) -> RichText {
+        var result = self
+        result.configuration.linkColor = .init(light: UIColor(light), dark: UIColor(dark))
+        return result
+    }
+    
     public func linkColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
-        result.configuration.linkColor = .init(light: light.hex, dark: dark.hex)
+        result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
     #else
     public func linkColor(light: NSColor, dark: NSColor) -> RichText {
         var result = self
-        result.configuration.linkColor = .init(light: light.hex, dark: dark.hex)
+        result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
     #endif
@@ -75,7 +89,7 @@ extension RichText {
     public func colorPreference(forceColor: ColorPreference) -> RichText {
         var result = self
         result.configuration.isColorsImportant = forceColor
-
+        
         switch forceColor {
         case .all:
             result.configuration.linkColor.isImportant = true
