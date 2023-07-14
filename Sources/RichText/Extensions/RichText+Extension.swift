@@ -41,28 +41,32 @@ extension RichText {
     @available(iOS 14.0, *)
     public func foregroundColor(light: Color, dark: Color) -> RichText {
         var result = self
-        result.configuration.fontColor = .init(light: UIColor(light), dark: UIColor(dark))
-        return result
-    }
-    
-    public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
-        var result = self
         result.configuration.fontColor = .init(light: light, dark: dark)
         return result
     }
-    
+
+    #if canImport(UIKit)
+        public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
+            var result = self
+            result.configuration.fontColor = .init(light: light, dark: dark)
+            return result
+        }
+    #endif
+
     @available(iOS 14.0, *)
     public func linkColor(light: Color, dark: Color) -> RichText {
-        var result = self
-        result.configuration.linkColor = .init(light: UIColor(light), dark: UIColor(dark))
-        return result
-    }
-    
-    public func linkColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
         result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
+
+    #if canImport(UIKit)
+        public func linkColor(light: UIColor, dark: UIColor) -> RichText {
+            var result = self
+            result.configuration.linkColor = .init(light: light, dark: dark)
+            return result
+        }
+    #endif
 
     public func linkOpenType(_ linkOpenType: LinkOpenType) -> RichText {
         var result = self
@@ -73,7 +77,7 @@ extension RichText {
     public func colorPreference(forceColor: ColorPreference) -> RichText {
         var result = self
         result.configuration.isColorsImportant = forceColor
-        
+
         switch forceColor {
         case .all:
             result.configuration.linkColor.isImportant = true
