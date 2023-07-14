@@ -8,7 +8,6 @@
 import SwiftUI
 import WebKit
 import SafariServices
-import MessageUI
 
 struct WebView {
     @Environment(\.multilineTextAlignment) var alignment
