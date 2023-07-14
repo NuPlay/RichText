@@ -12,7 +12,9 @@ public enum FontType {
     case system
     case monospaced
     case italic
+    #if canImport(UIKit)
     case custom(UIFont)
+    #endif
     case customName(String)
 
     @available(*, deprecated, renamed: "system")
@@ -21,12 +23,22 @@ public enum FontType {
     var name: String {
         switch self {
         case .monospaced:
+            #if canImport(UIKit)
             return UIFont.monospacedSystemFont(ofSize: 17, weight: .regular).fontName
+            #else
+            return NSFont.monospacedSystemFont(ofSize: 17, weight: .regular).fontName
+            #endif
         case .italic:
+            #if canImport(UIKit)
             return UIFont.italicSystemFont(ofSize: 17).fontName
-        case .custom(let font):
-            return font.fontName
-        case .customName(let name):
+            #else
+            return NSFont(descriptor: NSFont.systemFont(ofSize: 17).fontDescriptor.withSymbolicTraits(.italic), size: 17)?.fontName ?? ""
+            #endif
+        #if canImport(UIKit)
+            case let .custom(font):
+                return font.fontName
+        #endif
+        case let .customName(name):
             return name
         default:
             return "-apple-system"
@@ -35,7 +47,9 @@ public enum FontType {
 }
 
 public enum LinkOpenType {
+    #if canImport(UIKit)
     case SFSafariView(configuration: SFSafariViewController.Configuration = .init(), isReaderActivated: Bool? = nil, isAnimated: Bool = true)
+    #endif
     case Safari
     case none
 }
