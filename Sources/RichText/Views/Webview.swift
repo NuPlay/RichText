@@ -8,9 +8,8 @@
 import SwiftUI
 import WebKit
 import SafariServices
-import MessageUI
 
-struct WebView: UIViewRepresentable {
+struct WebView {
     @Environment(\.multilineTextAlignment) var alignment
     @Binding var dynamicHeight: CGFloat
 
@@ -23,7 +22,11 @@ struct WebView: UIViewRepresentable {
         self.html = html
         self.conf = configuration
     }
+}
 
+#if canImport(UIKit)
+import UIKit
+extension WebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let webview = WKWebView()
         
@@ -49,11 +52,44 @@ struct WebView: UIViewRepresentable {
             uiView.loadHTMLString(generateHTML(), baseURL: bundleURL)
         }
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 }
+#else
+import AppKit
+private class ScrollAdjustedWKWebView: WKWebView {
+    override public func scrollWheel(with event: NSEvent) {
+        nextResponder?.scrollWheel(with: event)
+    }
+}
+
+extension WebView: NSViewRepresentable {
+    func makeNSView(context: Context) -> WKWebView {
+        let webview = ScrollAdjustedWKWebView()
+        webview.navigationDelegate = context.coordinator
+        DispatchQueue.main.async {
+            let bundleURL = Bundle.main.bundleURL
+            webview.loadHTMLString(generateHTML(), baseURL: bundleURL)
+        }
+        webview.setValue(false, forKey: "drawsBackground")
+
+        return webview
+    }
+
+    func updateNSView(_ nsView: WKWebView, context _: Context) {
+        DispatchQueue.main.async {
+            let bundleURL = Bundle.main.bundleURL
+            nsView.loadHTMLString(generateHTML(), baseURL: bundleURL)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+}
+#endif
 
 extension WebView {
     class Coordinator: NSObject, WKNavigationDelegate {
@@ -91,26 +127,40 @@ extension WebView {
             
             switch url.scheme {
             case "mailto", "tel":
+                #if canImport(UIKit)
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                #else
+                NSWorkspace.shared.open(url)
+                #endif
             case "http", "https":
-                switch self.parent.conf.linkOpenType {
-                case .SFSafariView(let conf, let isReaderActivated, let isAnimated):
+                switch parent.conf.linkOpenType {
+                #if canImport(UIKit)
+                case let .SFSafariView(conf, isReaderActivated, isAnimated):
                     if let reader = isReaderActivated {
                         conf.entersReaderIfAvailable = reader
                     }
                     let root = UIApplication.shared.windows.first?.rootViewController
-                    root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
+                    root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil) #else
+                #endif
                 case .Safari:
+                    #if canImport(UIKit)
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    #else
+                    NSWorkspace.shared.open(url)
+                    #endif
                 case .none:
                     break
                 }
             default:
+                #if canImport(UIKit)
                 if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
+                #else
+                NSWorkspace.shared.open(url)
+                #endif
             }
-        
+
             decisionHandler(WKNavigationActionPolicy.cancel)
         }
     }

@@ -38,19 +38,28 @@ extension RichText {
         return result
     }
     
+    #if canImport(UIKit)
     @available(iOS 14.0, *)
     public func foregroundColor(light: Color, dark: Color) -> RichText {
         var result = self
         result.configuration.fontColor = .init(light: UIColor(light), dark: UIColor(dark))
         return result
     }
-    
+
     public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
         var result = self
         result.configuration.fontColor = .init(light: light, dark: dark)
         return result
     }
+    #else
+    public func foregroundColor(light: NSColor, dark: NSColor) -> RichText {
+        var result = self
+        result.configuration.fontColor = .init(light: light, dark: dark)
+        return result
+    }
+    #endif
     
+    #if canImport(UIKit)
     @available(iOS 14.0, *)
     public func linkColor(light: Color, dark: Color) -> RichText {
         var result = self
@@ -63,6 +72,13 @@ extension RichText {
         result.configuration.linkColor = .init(light: light, dark: dark)
         return result
     }
+    #else
+    public func linkColor(light: NSColor, dark: NSColor) -> RichText {
+        var result = self
+        result.configuration.linkColor = .init(light: light, dark: dark)
+        return result
+    }
+    #endif
 
     public func linkOpenType(_ linkOpenType: LinkOpenType) -> RichText {
         var result = self

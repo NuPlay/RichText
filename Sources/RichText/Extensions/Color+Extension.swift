@@ -1,10 +1,11 @@
 //
 //  Color+Extension.swift
-//  
+//
 //
 //  Created by Macbookator on 5.06.2022.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 extension UIColor {
@@ -16,10 +17,10 @@ extension UIColor {
 
         let multiplier = CGFloat(255.999999)
 
-        guard self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+        guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
             return nil
         }
-        
+
         if alpha == 1.0 {
             return String(
                 format: "%02lX%02lX%02lX",
@@ -38,3 +39,20 @@ extension UIColor {
         }
     }
 }
+#else
+import AppKit
+
+extension NSColor {
+    var hex: String? {
+        guard let components = cgColor.components, components.count >= 3 else {
+            return nil
+        }
+
+        let r = Float(components[0])
+        let g = Float(components[1])
+        let b = Float(components[2])
+
+        return String(format: "%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
+    }
+}
+#endif

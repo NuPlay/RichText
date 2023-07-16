@@ -17,13 +17,21 @@ public struct ColorSet {
         self.dark = dark
         self.isImportant = isImportant
     }
-    
+
+    #if canImport(UIKit)
     public init(light: UIColor, dark: UIColor, isImportant: Bool = false) {
-        self.light = light.hex ?? "000000"
-        self.dark = dark.hex ?? "F2F2F2"
-        self.isImportant = isImportant
+         self.light = light.hex ?? "000000"
+         self.dark = dark.hex ?? "F2F2F2"
+         self.isImportant = isImportant
     }
-    
+    #else
+    public init(light: NSColor, dark: NSColor, isImportant: Bool = false) {
+         self.light = light.hex ?? "000000"
+         self.dark = dark.hex ?? "F2F2F2"
+         self.isImportant = isImportant
+    }
+    #endif
+
     func value(_ isLight: Bool) -> String {
         "#\(isLight ? light : dark)\(isImportant ? " !important" : "")"
     }
