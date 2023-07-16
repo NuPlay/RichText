@@ -1,7 +1,4 @@
 # RichText
-![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
-
-
 <p align="center">
     <a href="https://swift.org/">
         <img src="https://img.shields.io/badge/Swift-5.1+-F05138?labelColor=303840" alt="Swift: 5.1+">
@@ -14,6 +11,7 @@
     </a>
 </p>
 
+![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
 
 | <img width="1440" alt="스크린샷 2021-08-28 오전 12 14 09" src="https://user-images.githubusercontent.com/73557895/131149958-bbc28435-02e2-4a02-8ad5-43627cd333e0.png"> 	| <img width="1440" alt="스크린샷 2021-08-28 오전 12 13 59" src="https://user-images.githubusercontent.com/73557895/131149926-211e2111-6d6e-4aac-94b8-44c7230b6244.png"> 	|
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------:	|:------------------------------------------------------------------------------------------------------------------------------:	|
@@ -227,6 +225,11 @@ struct RichText_Test_Previews: PreviewProvider {
  </div>
 </details>
 
+## If use for macOS
+<img width="1643" alt="macOS Guide" src="https://github.com/NuPlay/RichText/assets/73557895/f782525b-caf3-48b0-8b01-a6209995533d">
+- This library uses WebView to display HTML.
+
+- If it is not displayed normally, please allow "Outgoing Connections (Client)" permission.
 
 ### How To Use
 
