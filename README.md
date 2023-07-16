@@ -9,6 +9,9 @@
     <a href="https://www.apple.com/ios/">
         <img src="https://img.shields.io/badge/iOS-13.0+-007AFF?labelColor=303840" alt="iOS: 13.0+">
     </a>
+    <a href="https://www.apple.com/macos/">
+        <img src="https://img.shields.io/badge/macOS-10.15+-007AFF?labelColor=303840" alt="macOS-10.15+">
+    </a>
 </p>
 
 
