@@ -241,7 +241,7 @@ Modifier | Default
 `.colorScheme(_ colorScheme: ColorScheme)` | `.auto`
 `.fontType(_ fontType: FontType)` | `.system`
 `.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF", isImportant: true)`
-`.linkOpenType(_ linkOpenType: LinkOpenType)` | `.SFSafariView()`
+`.linkOpenType(_ linkOpenType: LinkOpenType)` | `.Safari`
 `.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
 `.colorPreference(forceColor: ColorPreference)` | `.onlyLinks`
 `.transition(_ transition: Animation?)` | `.none`
@@ -254,7 +254,7 @@ Modifier | Default
  - colorScheme(default: .auto) : light or dark mode (it changes text color)
  - fontType(default: .system): Font type in RichText view
  - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color or UIColor)
- - linkOpenType (default: .SFSafariView()) : When the user clicks the link contained in html, Way to Show Webview
+ - linkOpenType (default: .Safari) : When the user clicks the link contained in html, Way to Show Webview
  - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type) 
  - transition(default: .none) : Transition between PlaceHolder and Content
  - colorPreference(default: .onlyLinks) : css '!important', It ignores the color in variable 'html'
