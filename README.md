@@ -260,7 +260,7 @@ Modifier | Default
  - colorScheme(default: .auto) : light or dark mode (it changes text color)
  - fontType(default: .system): Font type in RichText view
  - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color or UIColor)
- - linkOpenType (default: .Safari) : When the user clicks the link contained in html, Way to Show Webview
+ - linkOpenType (default: .Safari) : When the user clicks the link contained in html, Way to take action
  - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type) 
  - transition(default: .none) : Transition between PlaceHolder and Content
  - colorPreference(default: .onlyLinks) : css '!important', It ignores the color in variable 'html'
