@@ -148,6 +148,8 @@ extension WebView {
                     #else
                     NSWorkspace.shared.open(url)
                     #endif
+                case let .custom(action):
+                    action(url)
                 case .none:
                     break
                 }

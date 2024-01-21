@@ -51,6 +51,7 @@ public enum LinkOpenType {
     case SFSafariView(configuration: SFSafariViewController.Configuration = .init(), isReaderActivated: Bool? = nil, isAnimated: Bool = true)
     #endif
     case Safari
+    case custom((URL) -> Void)
     case none
 }
 
