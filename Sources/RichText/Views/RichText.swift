@@ -21,14 +21,16 @@ public struct RichText: View {
     }
 
     public var body: some View {
-        ZStack(alignment: .top) {
-            WebView(dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
-                .frame(height: dynamicHeight)
+        GeometryReader{ proxy in
+            ZStack(alignment: .top) {
+                WebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
 
-            if self.dynamicHeight == 0 {
-                placeholder
+                if self.dynamicHeight == 0 {
+                    placeholder
+                }
             }
         }
+        .frame(height: dynamicHeight)
     }
 }
 

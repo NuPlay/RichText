@@ -15,12 +15,14 @@ struct WebView {
 
     let html: String
     let conf: Configuration
-
-    init(dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
+    let width: CGFloat
+    
+    init(width: CGFloat, dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
         self._dynamicHeight = dynamicHeight
-
+        
         self.html = html
         self.conf = configuration
+        self.width = width
     }
 }
 
@@ -48,6 +50,8 @@ extension WebView: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         DispatchQueue.main.async {
+            uiView.frame.size = .init(width: width, height: dynamicHeight)
+            
             let bundleURL = Bundle.main.bundleURL
             uiView.loadHTMLString(generateHTML(), baseURL: bundleURL)
         }
