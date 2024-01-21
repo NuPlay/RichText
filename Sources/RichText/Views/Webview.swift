@@ -121,7 +121,10 @@ extension WebView {
             }
             
             if url.scheme == nil {
-                guard let httpsURL = URL(string: "https://\(url.absoluteString)") else { return }
+                guard let httpsURL = URL(string: "https://\(url.absoluteString)") else {
+                    decisionHandler(WKNavigationActionPolicy.cancel)
+                    return
+                }
                 url = httpsURL
             }
             
