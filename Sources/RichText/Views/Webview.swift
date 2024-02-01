@@ -35,8 +35,7 @@ extension WebView: UIViewRepresentable {
         webview.scrollView.isScrollEnabled = false
         
         DispatchQueue.main.async {
-            let bundleURL = Bundle.main.bundleURL
-            webview.loadHTMLString(generateHTML(), baseURL: bundleURL)
+            webview.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
         }
         
         webview.isOpaque = false
@@ -48,8 +47,7 @@ extension WebView: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         DispatchQueue.main.async {
-            let bundleURL = Bundle.main.bundleURL
-            uiView.loadHTMLString(generateHTML(), baseURL: bundleURL)
+            uiView.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
         }
     }
 
@@ -70,8 +68,7 @@ extension WebView: NSViewRepresentable {
         let webview = ScrollAdjustedWKWebView()
         webview.navigationDelegate = context.coordinator
         DispatchQueue.main.async {
-            let bundleURL = Bundle.main.bundleURL
-            webview.loadHTMLString(generateHTML(), baseURL: bundleURL)
+            webview.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
         }
         webview.setValue(false, forKey: "drawsBackground")
 
@@ -80,8 +77,7 @@ extension WebView: NSViewRepresentable {
 
     func updateNSView(_ nsView: WKWebView, context _: Context) {
         DispatchQueue.main.async {
-            let bundleURL = Bundle.main.bundleURL
-            nsView.loadHTMLString(generateHTML(), baseURL: bundleURL)
+            nsView.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
         }
     }
 
