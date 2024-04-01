@@ -21,6 +21,7 @@ public struct Configuration {
     
     public var linkOpenType: LinkOpenType
     public var linkColor: ColorSet
+    public var baseURL: URL?
     
     public var isColorsImportant: ColorPreference
     
@@ -35,6 +36,7 @@ public struct Configuration {
         imageRadius: CGFloat = 0,
         linkOpenType: LinkOpenType = .Safari,
         linkColor: ColorSet = .init(light: "007AFF", dark: "0A84FF", isImportant: true),
+        baseURL: URL? = Bundle.main.bundleURL,
         isColorsImportant: ColorPreference = .onlyLinks,
         transition: Animation? = .none
     ) {
@@ -46,6 +48,7 @@ public struct Configuration {
         self.imageRadius = imageRadius
         self.linkOpenType = linkOpenType
         self.linkColor = linkColor
+        self.baseURL = baseURL
         self.isColorsImportant = isColorsImportant
         self.transition = transition
     }
