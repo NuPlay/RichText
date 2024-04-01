@@ -15,12 +15,14 @@ struct WebView {
 
     let html: String
     let conf: Configuration
-
-    init(dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
+    let width: CGFloat
+    
+    init(width: CGFloat, dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
         self._dynamicHeight = dynamicHeight
-
+        
         self.html = html
         self.conf = configuration
+        self.width = width
     }
 }
 
@@ -48,6 +50,7 @@ extension WebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: Context) {
         DispatchQueue.main.async {
             uiView.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
+            uiView.frame.size = .init(width: width, height: dynamicHeight)
         }
     }
 
@@ -116,52 +119,54 @@ extension WebView {
                 return
             }
             
-            if url.scheme == nil {
-                guard let httpsURL = URL(string: "https://\(url.absoluteString)") else {
-                    decisionHandler(WKNavigationActionPolicy.cancel)
-                    return
-                }
-                url = httpsURL
-            }
-            
-            switch url.scheme {
-            case "mailto", "tel":
-                #if canImport(UIKit)
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                #else
-                NSWorkspace.shared.open(url)
-                #endif
-            case "http", "https":
-                switch parent.conf.linkOpenType {
-                #if canImport(UIKit)
-                case let .SFSafariView(conf, isReaderActivated, isAnimated):
-                    if let reader = isReaderActivated {
-                        conf.entersReaderIfAvailable = reader
+            if case let .custom(action) = parent.conf.linkOpenType {
+                action(url)
+            } else {
+                if url.scheme == nil {
+                    guard let httpsURL = URL(string: "https://\(url.absoluteString)") else {
+                        decisionHandler(WKNavigationActionPolicy.cancel)
+                        return
                     }
-                    let root = UIApplication.shared.windows.first?.rootViewController
-                    root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil) #else
-                #endif
-                case .Safari:
+                    url = httpsURL
+                }
+                
+                switch url.scheme {
+                case "mailto", "tel":
                     #if canImport(UIKit)
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                     #else
                     NSWorkspace.shared.open(url)
                     #endif
-                case let .custom(action):
-                    action(url)
-                case .none:
-                    break
+                case "http", "https":
+                    switch parent.conf.linkOpenType {
+                        #if canImport(UIKit)
+                    case let .SFSafariView(conf, isReaderActivated, isAnimated):
+                        if let reader = isReaderActivated {
+                            conf.entersReaderIfAvailable = reader
+                        }
+                        let root = UIApplication.shared.windows.first?.rootViewController
+                        root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
+                        #endif
+                    case .Safari:
+                        #if canImport(UIKit)
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                        #else
+                        NSWorkspace.shared.open(url)
+                        #endif
+                    case .none, .custom:
+                        break
+                    }
+                default:
+                    #if canImport(UIKit)
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                    #else
+                    NSWorkspace.shared.open(url)
+                    #endif
                 }
-            default:
-                #if canImport(UIKit)
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-                #else
-                NSWorkspace.shared.open(url)
-                #endif
             }
-
+            
             decisionHandler(WKNavigationActionPolicy.cancel)
         }
     }
