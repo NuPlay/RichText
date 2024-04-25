@@ -85,7 +85,13 @@ extension RichText {
         result.configuration.linkOpenType = linkOpenType
         return result
     }
-    
+
+    public func baseURL(_ baseURL: URL) -> RichText {
+        var result = self
+        result.configuration.baseURL = baseURL
+        return result
+    }
+
     public func colorPreference(forceColor: ColorPreference) -> RichText {
         var result = self
         result.configuration.isColorsImportant = forceColor
