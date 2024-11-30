@@ -30,7 +30,9 @@ struct WebView {
 import UIKit
 extension WebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
-        let webview = WKWebView()
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController.add(context.coordinator, name: "notifyCompletion")
+        let webview = WKWebView(frame: .zero, configuration: configuration)
         
         webview.scrollView.bounces = false
         webview.navigationDelegate = context.coordinator
@@ -68,7 +70,9 @@ private class ScrollAdjustedWKWebView: WKWebView {
 
 extension WebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
-        let webview = ScrollAdjustedWKWebView()
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController.add(context.coordinator, name: "notifyCompletion")
+        let webview = ScrollAdjustedWKWebView(frame: .zero, configuration: configuration)
         webview.navigationDelegate = context.coordinator
         DispatchQueue.main.async {
             webview.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
@@ -91,27 +95,26 @@ extension WebView: NSViewRepresentable {
 #endif
 
 extension WebView {
-    class Coordinator: NSObject, WKNavigationDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         var parent: WebView
         
         init(_ parent: WebView) {
             self.parent = parent
         }
-        
-        public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            webView.evaluateJavaScript("document.getElementById(\"NuPlay_RichText\").offsetHeight", completionHandler: { (height, _) in
-                DispatchQueue.main.async {
-                    if let height = height as? CGFloat {
-                        withAnimation(self.parent.conf.transition) {
-                            self.parent.dynamicHeight = height
+                
+
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == "notifyCompletion" {
+                if let height = message.body as? NSNumber {
+                            let cgFloatHeight = CGFloat(height.doubleValue)
+                            DispatchQueue.main.async {
+                                withAnimation(self.parent.conf.transition) {
+                                    self.parent.dynamicHeight = cgFloatHeight
+                                }
+                            }
                         }
-                    } else {
-                        self.parent.dynamicHeight = 0
-                    }
-                }
-            })
+            }
         }
-        
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             guard navigationAction.navigationType == WKNavigationType.linkActivated,
                   var url = navigationAction.request.url else {
@@ -182,6 +185,21 @@ extension WebView {
             \(generateCSS())
             <div id="NuPlay_RichText">\(html)</div>
             </BODY>
+            <script>
+                function syncHeight() {
+                  window.webkit.messageHandlers.notifyCompletion.postMessage(
+                    document.getElementById('NuPlay_RichText').offsetHeight
+                  );
+                }
+                window.onload = function () {
+                  syncHeight();
+
+                  var imgs = document.getElementsByTagName('img');
+                  for (var i = 0; i < imgs.length; i++) {
+                    imgs[i].onload = syncHeight;
+                  }
+                };
+            </script>
             </HTML>
             """
     }
