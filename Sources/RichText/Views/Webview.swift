@@ -194,9 +194,29 @@ extension WebView {
                 window.onload = function () {
                   syncHeight();
 
+                  // 视频
+                  var videos = document.getElementsByTagName('video');
+                  for (var i = 0; i < videos.length; i++) {
+                    videos[i].onloadedmetadata = syncHeight;
+                  }
+                     
+                  //视频 点击事件
+                  for (var i = 0; i < videos.length; i++) {
+                    videos[i].onclick = function () {
+                      notifyIOS('video', this.currentSrc); // 发送视频 URL
+                    };
+                  }
+            
                   var imgs = document.getElementsByTagName('img');
                   for (var i = 0; i < imgs.length; i++) {
                     imgs[i].onload = syncHeight;
+                  }
+            
+                  // 图片点击事件
+                  for (var i = 0; i < imgs.length; i++) {
+                    imgs[i].onclick = function () {
+                      notifyIOS('img', this.src); // 发送图片 URL
+                    };
                   }
                 };
             </script>
