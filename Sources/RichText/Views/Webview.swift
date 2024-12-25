@@ -114,6 +114,18 @@ extension WebView {
                             }
                         }
             }
+            if message.name == "onMediaClick" {
+                print(message)
+                if let height = message.body as? NSNumber {
+                    let cgFloatHeight = CGFloat(height.doubleValue)
+                    DispatchQueue.main.async {
+                        withAnimation(self.parent.conf.transition) {
+                            self.parent.dynamicHeight = cgFloatHeight
+                        }
+                    }
+                }
+            }
+            
         }
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             guard navigationAction.navigationType == WKNavigationType.linkActivated,
@@ -191,31 +203,35 @@ extension WebView {
                     document.getElementById('NuPlay_RichText').offsetHeight
                   );
                 }
+            
+                function onMediaClick(type, url) {
+                  window.webkit.messageHandlers.mediaClick.postMessage({
+                    type: type,
+                    url: url 
+                  });
+                }
                 window.onload = function () {
                   syncHeight();
 
-                  // 视频
                   var videos = document.getElementsByTagName('video');
                   for (var i = 0; i < videos.length; i++) {
                     videos[i].onloadedmetadata = syncHeight;
                   }
                      
-                  //视频 点击事件
                   for (var i = 0; i < videos.length; i++) {
-                    videos[i].onclick = function () {
-                      notifyIOS('video', this.currentSrc); // 发送视频 URL
+                      videos[i].onclick = function () {
+                        onMediaClick('video', this.currentSrc);
                     };
                   }
             
                   var imgs = document.getElementsByTagName('img');
                   for (var i = 0; i < imgs.length; i++) {
-                    imgs[i].onload = syncHeight;
+                     imgs[i].onload = syncHeight;
                   }
             
-                  // 图片点击事件
                   for (var i = 0; i < imgs.length; i++) {
                     imgs[i].onclick = function () {
-                      notifyIOS('img', this.src); // 发送图片 URL
+                       onMediaClick('img', this.src);
                     };
                   }
                 };
