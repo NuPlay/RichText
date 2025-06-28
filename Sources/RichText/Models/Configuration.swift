@@ -57,7 +57,7 @@ public struct Configuration {
         self.transition = transition
         
         if supportsDynamicType {
-            self.customCSS += """
+            self.customCSS = self.customCSS + """
             html { font: -apple-system-body; }
 
             body { font: -apple-system-body; }
