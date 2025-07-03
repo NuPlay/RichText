@@ -72,7 +72,7 @@ import RichText
 struct RichText_Test: View {
     @State var  html = ""
     
-    let config: Configuration = Configuration(customCSS: String, fontType: FontType, fontColor: ColorSet, lineHeight: CGFloat, colorScheme: ColorScheme, imageRadius: CGFloat, linkOpenType: LinkOpenType, linkColor: ColorSet, isColorsImportant: ColorPreference)
+    let config: Configuration = Configuration(customCSS: String, supportsDynamicType: Bool ,fontType: FontType, fontColor: ColorSet, lineHeight: CGFloat, colorScheme: ColorScheme, imageRadius: CGFloat, linkOpenType: LinkOpenType, linkColor: ColorSet, isColorsImportant: ColorPreference)
     
     var body: some View {
        ScrollView{
