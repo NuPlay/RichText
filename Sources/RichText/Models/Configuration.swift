@@ -11,6 +11,8 @@ public struct Configuration {
     
     public var customCSS: String
     
+    public var supportsDynamicType: Bool
+    
     public var fontType: FontType
     public var fontColor: ColorSet
     public var lineHeight: CGFloat
@@ -29,6 +31,7 @@ public struct Configuration {
     
     public init(
         customCSS: String = "",
+        supportsDynamicType: Bool = false,
         fontType: FontType = .system,
         fontColor: ColorSet = .init(light: "000000", dark: "F2F2F2"),
         lineHeight: CGFloat = 170,
@@ -41,6 +44,7 @@ public struct Configuration {
         transition: Animation? = .none
     ) {
         self.customCSS = customCSS
+        self.supportsDynamicType = supportsDynamicType
         self.fontType = fontType
         self.fontColor = fontColor
         self.lineHeight = lineHeight
@@ -51,6 +55,27 @@ public struct Configuration {
         self.baseURL = baseURL
         self.isColorsImportant = isColorsImportant
         self.transition = transition
+        
+        if supportsDynamicType {
+            self.customCSS = self.customCSS + """
+            html { font: -apple-system-body; }
+
+            body { font: -apple-system-body; }
+
+            h1 { font: -apple-system-largeTitle; }
+            h2 { font: -apple-system-title1; }
+            h3 { font: -apple-system-title2; }
+            h4 { font: -apple-system-title3; }
+
+            h5 { font: -apple-system-headline; }
+            h6 { font: -apple-system-callout; }
+            
+            p.subheadline { font: -apple-system-subheadline; }
+            p.footnote    { font: -apple-system-footnote; }
+            p.caption1    { font: -apple-system-caption1; }
+            p.caption2    { font: -apple-system-caption2; }
+            """
+        }
     }
     
     func css(isLight: Bool, alignment: TextAlignment) -> String {
