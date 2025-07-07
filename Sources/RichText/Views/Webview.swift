@@ -1,5 +1,5 @@
 //
-//  WebView.swift
+//  RichTextWebView.swift
 //
 //
 //  Created by 이웅재(NuPlay) on 2021/07/26.
@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 import SafariServices
 
-struct WebView {
+struct RichTextWebView {
     @Environment(\.multilineTextAlignment) var alignment
     @Binding var dynamicHeight: CGFloat
 
@@ -28,7 +28,7 @@ struct WebView {
 
 #if canImport(UIKit)
 import UIKit
-extension WebView: UIViewRepresentable {
+extension RichTextWebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController.add(context.coordinator, name: "notifyCompletion")
@@ -94,11 +94,11 @@ extension WebView: NSViewRepresentable {
 }
 #endif
 
-extension WebView {
+extension RichTextWebView {
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-        var parent: WebView
+        var parent: RichTextWebView
         
-        init(_ parent: WebView) {
+        init(_ parent: RichTextWebView) {
             self.parent = parent
         }
                 
@@ -175,7 +175,7 @@ extension WebView {
     }
 }
 
-extension WebView {
+extension RichTextWebView {
     func generateHTML() -> String {
         return """
             <HTML>

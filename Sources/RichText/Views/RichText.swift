@@ -21,21 +21,25 @@ public struct RichText: View {
     }
 
     public var body: some View {
-        GeometryReader{ proxy in
-            ZStack(alignment: .top) {
-                WebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
-
-                if self.dynamicHeight == 0 {
-                    placeholder
+        if #available(iOS 26, macOS 26, watchOS 26, tvOS 26, visionOS 26, *) {
+            SwiftUIWebView(html: html, conf: configuration)
+        } else {
+            GeometryReader{ proxy in
+                ZStack(alignment: .top) {
+                    RichTextWebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
+                    
+                    if self.dynamicHeight == 0 {
+                        placeholder
+                    }
                 }
             }
+            .frame(height: dynamicHeight)
         }
-        .frame(height: dynamicHeight)
     }
 }
 
 struct RichText_Previews: PreviewProvider {
     static var previews: some View {
-        RichText(html: "")
+        RichText(html: "<h1>Hello World</h1>")
     }
 }
