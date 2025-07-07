@@ -16,12 +16,18 @@ struct SwiftUIWebView: View {
     @State var webPage: WebPage
     
     init(html: String, conf: Configuration) {
-        self.html = html
+        self.html = """
+            <head>
+              <meta name="viewport" content="width=device-width, initial‑scale=1.0, maximum‑scale=1.0, minimum‑scale=1.0, user‑scalable=no">
+            </head>
+            
+            \(html)
+            """
         self.conf = conf
         
         // load html into page
         self.webPage = WebPage()
-        self.webPage.load(html: html, baseURL: conf.baseURL!)
+        self.webPage.load(html: self.html, baseURL: conf.baseURL!)
     }
     
     var body: some View {
