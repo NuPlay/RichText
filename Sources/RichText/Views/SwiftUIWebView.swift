@@ -45,11 +45,11 @@ let testHTML = """
 @available(iOS 26, watchOS 26, visionOS 26, tvOS 26, macOS 26, *)
 struct SwiftUIWebView: View {
     let html: String
-    let conf: Configuration
+    let conf: SwiftUIConfiguration
     
     @State var webPage: WebPage
     
-    init(html: String, conf: Configuration) {
+    init(html: String, conf: SwiftUIConfiguration) {
         self.html = html
         self.conf = conf
         
@@ -104,7 +104,7 @@ struct SwiftUIWebView: View {
 #Preview {
     SwiftUIWebView(
         html: testHTML,
-        conf: Configuration(
+        conf: SwiftUIConfiguration(
             customCSS: "h1 {color: red;}",
             fontType: .serif
         )

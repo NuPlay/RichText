@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated, message: "Use SwiftUIRichText instead")
 public struct RichText: View {
     @State private var dynamicHeight: CGFloat = .zero
     
@@ -21,20 +22,16 @@ public struct RichText: View {
     }
 
     public var body: some View {
-        if #available(iOS 26, macOS 26, watchOS 26, tvOS 26, visionOS 26, *) {
-            SwiftUIWebView(html: html, conf: configuration)
-        } else {
-            GeometryReader{ proxy in
-                ZStack(alignment: .top) {
-                    RichTextWebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
-                    
-                    if self.dynamicHeight == 0 {
-                        placeholder
-                    }
+        GeometryReader{ proxy in
+            ZStack(alignment: .top) {
+                RichTextWebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
+                
+                if self.dynamicHeight == 0 {
+                    placeholder
                 }
             }
-            .frame(height: dynamicHeight)
         }
+        .frame(height: dynamicHeight)
     }
 }
 
