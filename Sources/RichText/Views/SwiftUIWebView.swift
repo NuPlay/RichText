@@ -48,6 +48,7 @@ struct SwiftUIWebView: View {
     let conf: SwiftUIConfiguration
     
     @State var webPage: WebPage
+    @State var dynamicHeight: CGFloat = .zero
     
     init(html: String, conf: SwiftUIConfiguration) {
         self.html = html
@@ -94,9 +95,34 @@ struct SwiftUIWebView: View {
             """
     }
     
+    private func getDynamicHeight() async -> CGFloat {
+        do {
+            let js = "return document.documentElement.scrollHeight;"
+            let javascriptResult = try await webPage.callJavaScript(js)
+            guard let height = javascriptResult as? CGFloat else {
+                print("Cannot convert to Int")
+                return .zero
+            }
+            return height
+        } catch {
+            print("Some error was thrown: \(error)")
+        }
+        return .zero
+    }
+    
     var body: some View {
-        WebView(webPage)
-            .padding()
+        ScrollView {
+            WebView(webPage)
+                .frame(height: dynamicHeight)
+                .padding()
+                .onChange(of: webPage.isLoading) { loading in
+                    Task {
+                        if !loading {
+                            dynamicHeight = await getDynamicHeight()
+                        }
+                    }
+                }
+        }
     }
 }
 
