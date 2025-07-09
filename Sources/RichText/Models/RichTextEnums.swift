@@ -12,6 +12,7 @@ public enum FontType {
     case system
     case monospaced
     case italic
+    case serif
     #if canImport(UIKit)
     case custom(UIFont)
     #endif

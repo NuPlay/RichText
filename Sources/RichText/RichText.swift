@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated, message: "Use SwiftUIRichText instead")
 public struct RichText: View {
     @State private var dynamicHeight: CGFloat = .zero
     
@@ -23,8 +24,8 @@ public struct RichText: View {
     public var body: some View {
         GeometryReader{ proxy in
             ZStack(alignment: .top) {
-                WebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
-
+                RichTextWebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
+                
                 if self.dynamicHeight == 0 {
                     placeholder
                 }
@@ -36,6 +37,6 @@ public struct RichText: View {
 
 struct RichText_Previews: PreviewProvider {
     static var previews: some View {
-        RichText(html: "")
+        RichText(html: "<h1>Hello World</h1>")
     }
 }
