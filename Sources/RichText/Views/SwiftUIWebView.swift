@@ -7,6 +7,7 @@
 
 import SwiftUI
 import WebKit
+import Playgrounds
 
 let testHTML = """
     <body>
@@ -56,7 +57,7 @@ struct SwiftUIWebView: View {
         
         // load html into page
         self.webPage = WebPage()
-        self.webPage.load(html: self.generateHTML(), baseURL: conf.baseURL!)
+        self.webPage.load(html: self.generateHTML(), baseURL: conf.baseURL)
     }
     
     private func generateHTML() -> String {
@@ -68,6 +69,9 @@ struct SwiftUIWebView: View {
                 \(self.generateCSS())
             </style>
             \(html)
+            <script>
+            \(conf.customJavaScript)
+            </script>
             """
     }
     
@@ -80,8 +84,6 @@ struct SwiftUIWebView: View {
             fontName = "ui-monospace"
         case .serif:
             fontName = "ui-serif"
-        case .customName:
-            fontName = self.conf.fontType.name
         default:
             fontName = ""
         }
