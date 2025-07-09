@@ -245,6 +245,7 @@ Modifier | Default
 `.customCSS(_ customCSS: String)` | `""`
 `.lineHeight(_ lineHeight: CGFloat)` | `170`
 `.colorScheme(_ colorScheme: ColorScheme)` | `.auto`
+`.forceColorSchemeBackground(_ forceColorSchemeBackground: Bool)` | `false`
 `.fontType(_ fontType: FontType)` | `.system`
 `.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF", isImportant: true)`
 `.linkOpenType(_ linkOpenType: LinkOpenType)` | `.Safari`
@@ -258,6 +259,7 @@ Modifier | Default
  - customCSS(default: ""): You can add CSS if you want
  - lineHeight (default: 170)  : Height of each line
  - colorScheme(default: .auto) : light or dark mode (it changes text color)
+ - forceColorSchemeBackground (default: false) : force `colorScheme` background color to override inline css to ensure complete light/dark mode
  - fontType(default: .system): Font type in RichText view
  - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color or UIColor)
  - linkOpenType (default: .Safari) : When the user clicks the link contained in html, Way to take action
