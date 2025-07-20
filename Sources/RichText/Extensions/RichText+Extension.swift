@@ -25,6 +25,12 @@ extension RichText {
         result.configuration.colorScheme = colorScheme
         return result
     }
+    
+    public func forceColorSchemeBackground(_ forceColorSchemeBackground: Bool) -> RichText {
+        var result = self
+        result.configuration.forceColorSchemeBackground = forceColorSchemeBackground
+        return result
+    }
 
     public func imageRadius(_ imageRadius: CGFloat) -> RichText {
         var result = self
