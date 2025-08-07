@@ -19,6 +19,7 @@ public struct Configuration {
     
     public var colorScheme: ColorScheme
     public var forceColorSchemeBackground: Bool
+    public var backgroundColor: String?
     
     public var imageRadius: CGFloat
     
@@ -30,6 +31,7 @@ public struct Configuration {
     
     public var transition: Animation?
     
+
     public init(
         customCSS: String = "",
         supportsDynamicType: Bool = false,
@@ -38,6 +40,7 @@ public struct Configuration {
         lineHeight: CGFloat = 170,
         colorScheme: ColorScheme = .auto,
         forceColorSchemeBackground: Bool = false,
+        backgroundColor: String? = nil,
         imageRadius: CGFloat = 0,
         linkOpenType: LinkOpenType = .Safari,
         linkColor: ColorSet = .init(light: "007AFF", dark: "0A84FF", isImportant: true),
@@ -52,6 +55,7 @@ public struct Configuration {
         self.lineHeight = lineHeight
         self.colorScheme = colorScheme
         self.forceColorSchemeBackground = forceColorSchemeBackground
+        self.backgroundColor = backgroundColor
         self.imageRadius = imageRadius
         self.linkOpenType = linkOpenType
         self.linkColor = linkColor
@@ -81,8 +85,29 @@ public struct Configuration {
         }
     }
     
+    public init(backgroundColor: String?) {
+        self.init(
+            customCSS: "",
+            supportsDynamicType: false,
+            fontType: .system,
+            fontColor: .init(light: "000000", dark: "F2F2F2"),
+            lineHeight: 170,
+            colorScheme: .auto,
+            forceColorSchemeBackground: false,
+            backgroundColor: backgroundColor,
+            imageRadius: 0,
+            linkOpenType: .Safari,
+            linkColor: .init(light: "007AFF", dark: "0A84FF", isImportant: true),
+            baseURL: Bundle.main.bundleURL,
+            isColorsImportant: .onlyLinks,
+            transition: .none
+        )
+    }
+    
     private func backgroundColor(_ isLight: Bool) -> String {
-        if isLight {
+        if let backgroundColor{
+            return backgroundColor
+        }else if isLight {
             return "white \(forceColorSchemeBackground ? "!important": "")"
         } else {
             return "black \(forceColorSchemeBackground ? "!important": "")"
@@ -99,3 +124,4 @@ public struct Configuration {
         """
     }
 }
+
