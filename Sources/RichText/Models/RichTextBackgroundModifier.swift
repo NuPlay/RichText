@@ -17,7 +17,7 @@ extension RichText {
     }
     
     /// Helper to convert Color to CSS string.
-    static func cssString(from color: Color) -> String {
+    private static func cssString(from color: Color) -> String {
         #if canImport(UIKit)
         if color == .clear { return "transparent" }
         let uiColor = UIColor(color)
