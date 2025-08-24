@@ -8,6 +8,10 @@
 import SwiftUI
 import WebKit
 import SafariServices
+import os.log
+
+/// Logger for WebView performance monitoring
+private let webViewLogger = Logger(subsystem: "com.nuplay.richtext", category: "WebView")
 
 struct WebView {
     @Environment(\.multilineTextAlignment) var alignment
@@ -16,6 +20,9 @@ struct WebView {
     let html: String
     let conf: Configuration
     let width: CGFloat
+    
+    /// Debounce timer for frame updates to improve performance
+    @State private var debounceTimer: Timer?
     
     init(width: CGFloat, dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
         self._dynamicHeight = dynamicHeight
@@ -31,28 +38,43 @@ import UIKit
 extension WebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        configuration.userContentController.add(context.coordinator, name: "notifyCompletion")
+        configuration.userContentController.add(
+            context.coordinator, 
+            name: RichTextConstants.heightNotificationHandler
+        )
+        configuration.userContentController.add(
+            context.coordinator,
+            name: RichTextConstants.mediaClickHandler
+        )
         let webview = WKWebView(frame: .zero, configuration: configuration)
         
+        // Configure scrolling behavior
         webview.scrollView.bounces = false
-        webview.navigationDelegate = context.coordinator
         webview.scrollView.isScrollEnabled = false
         
-        DispatchQueue.main.async {
-            webview.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
-        }
+        // Set delegates
+        webview.navigationDelegate = context.coordinator
         
+        // Configure appearance
         webview.isOpaque = false
         webview.backgroundColor = UIColor.clear
         webview.scrollView.backgroundColor = UIColor.clear
+        
+        // Load HTML content
+        loadHTML(in: webview)
         
         return webview
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        DispatchQueue.main.async {
-            uiView.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
-            uiView.frame.size = .init(width: width, height: dynamicHeight)
+        loadHTML(in: uiView)
+        
+        // Debounce frame updates for better performance
+        debounceTimer?.invalidate()
+        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: false) { _ in // ~60fps
+            Task { @MainActor in
+                uiView.frame.size = .init(width: self.width, height: self.dynamicHeight)
+            }
         }
     }
 
@@ -71,21 +93,30 @@ private class ScrollAdjustedWKWebView: WKWebView {
 extension WebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        configuration.userContentController.add(context.coordinator, name: "notifyCompletion")
+        configuration.userContentController.add(
+            context.coordinator, 
+            name: RichTextConstants.heightNotificationHandler
+        )
+        configuration.userContentController.add(
+            context.coordinator,
+            name: RichTextConstants.mediaClickHandler
+        )
         let webview = ScrollAdjustedWKWebView(frame: .zero, configuration: configuration)
+        
+        // Set delegate
         webview.navigationDelegate = context.coordinator
-        DispatchQueue.main.async {
-            webview.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
-        }
+        
+        // Configure appearance
         webview.setValue(false, forKey: "drawsBackground")
+        
+        // Load HTML content
+        loadHTML(in: webview)
 
         return webview
     }
 
     func updateNSView(_ nsView: WKWebView, context _: Context) {
-        DispatchQueue.main.async {
-            nsView.loadHTMLString(generateHTML(), baseURL: conf.baseURL)
-        }
+        loadHTML(in: nsView)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -101,18 +132,78 @@ extension WebView {
         init(_ parent: WebView) {
             self.parent = parent
         }
+        
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            handleNavigationError(error)
+        }
+        
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            handleNavigationError(error)
+        }
+        
+        private func handleNavigationError(_ error: Error) {
+            webViewLogger.error("Navigation error: \(error.localizedDescription)")
+            Task { @MainActor in
+                self.parent.conf.errorHandler?(.htmlLoadingFailed("\(error.localizedDescription): \(self.parent.html.prefix(100))"))
+            }
+        }
                 
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            if message.name == "notifyCompletion" {
-                if let height = message.body as? NSNumber {
-                            let cgFloatHeight = CGFloat(height.doubleValue)
-                            DispatchQueue.main.async {
-                                withAnimation(self.parent.conf.transition) {
-                                    self.parent.dynamicHeight = cgFloatHeight
-                                }
-                            }
-                        }
+            Task { @MainActor in
+                await handleScriptMessage(message)
+            }
+        }
+        
+        @MainActor
+        private func handleScriptMessage(_ message: WKScriptMessage) async {
+            switch message.name {
+            case RichTextConstants.heightNotificationHandler:
+                await handleHeightUpdate(message.body)
+                
+            case RichTextConstants.mediaClickHandler:
+                await handleMediaClick(message.body)
+                
+            default:
+                webViewLogger.warning("Unknown script message: \(message.name)")
+            }
+        }
+        
+        @MainActor
+        private func handleHeightUpdate(_ body: Any) async {
+            guard let height = body as? NSNumber else {
+                webViewLogger.error("Invalid height value received")
+                return
+            }
+            
+            let cgFloatHeight = CGFloat(height.doubleValue)
+            
+            // Only update if height actually changed to avoid unnecessary animations
+            guard cgFloatHeight != self.parent.dynamicHeight else { return }
+            
+            withAnimation(self.parent.conf.transition) {
+                self.parent.dynamicHeight = cgFloatHeight
+            }
+            
+            webViewLogger.debug("Height updated to: \(cgFloatHeight)")
+        }
+        
+        @MainActor
+        private func handleMediaClick(_ body: Any) async {
+            guard let messageBody = body as? [String: Any],
+                  let type = messageBody["type"] as? String,
+                  let src = messageBody["src"] as? String else {
+                self.parent.conf.errorHandler?(.mediaHandlingFailed("Invalid media message"))
+                return
+            }
+            
+            switch type {
+            case "image":
+                self.parent.conf.mediaClickHandler?(.image(src: src))
+            case "video":
+                self.parent.conf.mediaClickHandler?(.video(src: src))
+            default:
+                self.parent.conf.errorHandler?(.mediaHandlingFailed("Unknown media type: \(type)"))
             }
         }
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -134,13 +225,13 @@ extension WebView {
                 }
                 
                 switch url.scheme {
-                case "mailto", "tel":
+                case RichTextConstants.mailtoScheme, RichTextConstants.telScheme:
                     #if canImport(UIKit)
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                     #else
                     NSWorkspace.shared.open(url)
                     #endif
-                case "http", "https":
+                case RichTextConstants.httpScheme, RichTextConstants.httpsScheme:
                     switch parent.conf.linkOpenType {
                         #if canImport(UIKit)
                     case let .SFSafariView(conf, isReaderActivated, isAnimated):
@@ -176,77 +267,56 @@ extension WebView {
 }
 
 extension WebView {
-    func generateHTML() -> String {
-        return """
-            <HTML>
-            <head>
-                <meta name='viewport' content='width=device-width, shrink-to-fit=YES, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
-            </head>
-            \(generateCSS())
-            <div id="NuPlay_RichText">\(html)</div>
-            </BODY>
-            <script>
-                function syncHeight() {
-                  window.webkit.messageHandlers.notifyCompletion.postMessage(
-                    document.getElementById('NuPlay_RichText').offsetHeight
-                  );
-                }
-                window.onload = function () {
-                  syncHeight();
-
-                  var imgs = document.getElementsByTagName('img');
-                  for (var i = 0; i < imgs.length; i++) {
-                    imgs[i].onload = syncHeight;
-                  }
-                };
-            </script>
-            </HTML>
-            """
+    /// Loads HTML content into the WebView safely on main thread
+    /// - Parameter webView: The WKWebView instance to load content into
+    private func loadHTML(in webView: WKWebView) {
+        Task { @MainActor in
+            let htmlString = generateHTML()
+            
+            webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
+            
+            webView.loadHTMLString(htmlString, baseURL: conf.baseURL)
+        }
     }
     
+    /// Generates the complete HTML string for the WebView
+    /// - Returns: Complete HTML document string
+    func generateHTML() -> String {
+        return String(
+            format: RichTextConstants.htmlTemplate,
+            generateCSS(),
+            RichTextConstants.richTextContainerID,
+            html,
+            RichTextConstants.heightNotificationHandler,
+            RichTextConstants.richTextContainerID,
+            RichTextConstants.mediaClickHandler,
+            RichTextConstants.mediaClickHandler
+        )
+    }
+    
+    /// Generates CSS styles based on color scheme configuration
+    /// - Returns: CSS string wrapped in style tags
     func generateCSS() -> String {
         switch conf.colorScheme {
         case .light:
-            return """
-            <style type='text/css'>
-                \(conf.css(isLight: true, alignment: alignment))
-                \(conf.customCSS)
-                body {
-                    margin: 0;
-                    padding: 0;
-                }
-            </style>
-            <BODY>
-            """
+            return String(
+                format: RichTextConstants.cssTemplate,
+                conf.css(isLight: true, alignment: alignment),
+                conf.customCSS
+            )
         case .dark:
-            return """
-            <style type='text/css'>
-                \(conf.css(isLight: false, alignment: alignment))
-                \(conf.customCSS)
-                body {
-                    margin: 0;
-                    padding: 0;
-                }
-            </style>
-            <BODY>
-            """
+            return String(
+                format: RichTextConstants.cssTemplate,
+                conf.css(isLight: false, alignment: alignment),
+                conf.customCSS
+            )
         case .auto:
-            return """
-            <style type='text/css'>
-            @media (prefers-color-scheme: light) {
-                \(conf.css(isLight: true, alignment: alignment))
-            }
-            @media (prefers-color-scheme: dark) {
-                \(conf.css(isLight: false, alignment: alignment))
-            }
-            \(conf.customCSS)
-            body {
-                margin: 0;
-                padding: 0;
-            }
-            </style>
-            <BODY>
-            """
+            return String(
+                format: RichTextConstants.mediaCSSTemplate,
+                conf.css(isLight: true, alignment: alignment),
+                conf.css(isLight: false, alignment: alignment),
+                conf.customCSS
+            )
         }
     }
 }

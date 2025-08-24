@@ -7,30 +7,76 @@
 
 import SwiftUI
 
+/// A SwiftUI view that renders HTML content with customizable styling and behavior.
+/// 
+/// RichText provides a powerful way to display HTML content within SwiftUI applications,
+/// offering extensive customization options for styling, theming, and interaction handling.
+///
+/// ## Example Usage
+/// ```swift
+/// RichText(html: "<h1>Hello World</h1><p>This is a paragraph.</p>")
+///     .colorScheme(.auto)
+///     .fontType(.system)
+///     .lineHeight(150)
+///     .imageRadius(8)
+///     .linkColor(light: .blue, dark: .cyan)
+///     .placeholder {
+///         ProgressView("Loading...")
+///     }
+/// ```
+///
+/// ## Key Features
+/// - Cross-platform support (iOS 13.0+, macOS 10.15+)
+/// - Automatic height adjustment based on content
+/// - Customizable color schemes (light, dark, auto)
+/// - Support for custom fonts and CSS
+/// - Configurable link handling
+/// - Dynamic Type support
+/// - Placeholder view support during loading
+/// - Image styling with border radius
+/// - Comprehensive theming options
 public struct RichText: View {
     @State private var dynamicHeight: CGFloat = .zero
     
+    /// The HTML content to be rendered
     let html: String
+    
+    /// Configuration object containing all styling and behavior options
     var configuration: Configuration
+    
+    /// Optional placeholder view displayed while content is loading
     var placeholder: AnyView?
     
+    /// Initializes a RichText view with HTML content and optional configuration
+    /// - Parameters:
+    ///   - html: The HTML string to render
+    ///   - configuration: Configuration object with styling options (defaults to basic configuration)
+    ///   - placeholder: Optional view to show while content is loading
     public init(html: String, configuration: Configuration = .init(), placeholder: AnyView? = nil) {
         self.html = html
         self.configuration = configuration
         self.placeholder = placeholder
     }
 
+    /// The view body that renders the HTML content
     public var body: some View {
-        GeometryReader{ proxy in
+        GeometryReader { proxy in
             ZStack(alignment: .top) {
-                WebView(width: proxy.size.width, dynamicHeight: $dynamicHeight, html: html, configuration: configuration)
+                // Main WebView that renders the HTML content
+                WebView(
+                    width: proxy.size.width, 
+                    dynamicHeight: $dynamicHeight, 
+                    html: html, 
+                    configuration: configuration
+                )
 
+                // Show placeholder while content is loading (height is 0)
                 if self.dynamicHeight == 0 {
                     placeholder
                 }
             }
         }
-        .frame(height: dynamicHeight)
+        .frame(height: dynamicHeight) // Dynamic height based on content
     }
 }
 

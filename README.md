@@ -1,275 +1,947 @@
 # RichText
+
 <p align="center">
     <a href="https://swift.org/">
-        <img src="https://img.shields.io/badge/Swift-5.1+-F05138?labelColor=303840" alt="Swift: 5.1+">
+        <img src="https://img.shields.io/badge/Swift-6.0+-F05138?labelColor=303840" alt="Swift: 6.0+">
     </a>
     <a href="https://www.apple.com/ios/">
-        <img src="https://img.shields.io/badge/iOS-13.0+-007AFF?labelColor=303840" alt="iOS: 13.0+">
+        <img src="https://img.shields.io/badge/iOS-15.0+-007AFF?labelColor=303840" alt="iOS: 15.0+">
     </a>
     <a href="https://www.apple.com/macos/">
-        <img src="https://img.shields.io/badge/macOS-10.15+-007AFF?labelColor=303840" alt="macOS-10.15+">
+        <img src="https://img.shields.io/badge/macOS-12.0+-007AFF?labelColor=303840" alt="macOS-12.0+">
+    </a>
+    <a href="https://developer.apple.com/xcode/">
+        <img src="https://img.shields.io/badge/Xcode-16+-blue?labelColor=303840" alt="Xcode: 16+">
+    </a>
+    <a href="https://github.com/NuPlay/RichText/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/NuPlay/RichText" alt="License">
+    </a>
+    <a href="https://github.com/NuPlay/RichText/releases">
+        <img src="https://img.shields.io/github/v/release/NuPlay/RichText" alt="Release">
     </a>
 </p>
 
+A modern, powerful, and type-safe SwiftUI component for rendering HTML content with extensive styling options, async/await support, media interaction, and comprehensive error handling. Built with Swift 6 and optimized for iOS 15.0+ and macOS 12.0+.
+
 ![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
 
-| <img width="1440" alt="스크린샷 2021-08-28 오전 12 14 09" src="https://user-images.githubusercontent.com/73557895/131149958-bbc28435-02e2-4a02-8ad5-43627cd333e0.png"> 	| <img width="1440" alt="스크린샷 2021-08-28 오전 12 13 59" src="https://user-images.githubusercontent.com/73557895/131149926-211e2111-6d6e-4aac-94b8-44c7230b6244.png"> 	|
+| <img width="1440" alt="Light Mode Screenshot" src="https://user-images.githubusercontent.com/73557895/131149958-bbc28435-02e2-4a02-8ad5-43627cd333e0.png"> 	| <img width="1440" alt="Dark Mode Screenshot" src="https://user-images.githubusercontent.com/73557895/131149926-211e2111-6d6e-4aac-94b8-44c7230b6244.png"> 	|
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------:	|:------------------------------------------------------------------------------------------------------------------------------:	|
-| LightMode                                                                                                                                                                 	| DarkMode                                                                                                                        	|                   
+| Light Mode                                                                                                                                                                 	| Dark Mode                                                                                                                        	|
 
-## Code
+---
+
+## Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [📦 Installation](#-installation)
+- [📚 Complete API Reference](#-complete-api-reference)
+- [🆕 What's New in v3.0.0](#-whats-new-in-v300)
+- [🔧 Advanced Usage](#-advanced-usage)
+- [💡 Examples](#-examples)
+- [🐛 Troubleshooting](#-troubleshooting)
+- [📖 Migration Guide](#-migration-guide)
+- [🤝 Contributing](#-contributing)
+
+---
+
+## ✨ Features
+
+### 🚀 **v3.0.0 - Modern Architecture**
+- ⚡ **Async/Await Support**: Modern Swift concurrency for better performance
+- 🛡️ **Type Safety**: Comprehensive Swift type safety with robust error handling
+- 🧪 **Swift Testing**: Modern testing framework with extensive test coverage
+- 🔧 **Backward Compatible**: 100% compatibility with v2.x while providing modern APIs
+
+### 📱 **Platform Support** 
+- 📱 **Cross-platform**: iOS 15.0+ and macOS 12.0+ with Swift 6.0+
+- 🎨 **Theme Support**: Automatic light/dark mode with custom color schemes
+- 🔤 **Typography**: System fonts, custom fonts, monospace, italic, and Dynamic Type support
+
+### 🎛️ **Rich Features**
+- 🖼️ **Interactive Media**: Click events for images/videos with custom handling
+- 🔗 **Smart Link Management**: Safari, SFSafariView, and custom link handlers
+- 🎨 **Advanced Styling**: Type-safe background colors, CSS customization
+- 📐 **Responsive Layout**: Dynamic height calculation with smooth transitions
+- 🔄 **Loading States**: Configurable placeholders with animation support
+- 🌐 **HTML5 Complete**: Full support for modern semantic elements
+- 🚨 **Error Handling**: Comprehensive error types with custom callbacks
+
+---
+
+## 🚀 Quick Start
+
+### Basic Usage
+
+The simplest way to get started with RichText:
+
 ```swift
 import SwiftUI
 import RichText
 
-struct RichText_Test: View {
-    @State var  html = ""
+struct ContentView: View {
+    let htmlContent = """
+        <h1>Welcome to RichText</h1>
+        <p>A powerful HTML renderer for SwiftUI.</p>
+    """
     
     var body: some View {
-       ScrollView{
-            RichText(html: html)
-                .lineHeight(170)
-                .colorScheme(.auto)
-                .imageRadius(12)
-                .fontType(.system)
-                .foregroundColor(light: Color.primary, dark: Color.primary)
-                .linkColor(light: Color.blue, dark: Color.blue)
-                .colorPreference(forceColor: .onlyLinks)
-                .linkOpenType(.SFSafariView())
-                .customCSS("")
-                .placeholder {
-                    Text("loading")
-                }
-                .transition(.easeOut)
+        ScrollView {
+            RichText(html: htmlContent)
         }
     }
 }
+```
 
-struct RichText_Test_Previews: PreviewProvider {
-    static var previews: some View {
-        RichText_Test()
+### Enhanced Example
+
+Add styling, media handling, and error handling:
+
+```swift
+struct ContentView: View {
+    let htmlContent = """
+        <h1>Welcome to RichText</h1>
+        <p>A powerful HTML renderer with <strong>extensive customization</strong>.</p>
+        <img src="https://via.placeholder.com/300x200" alt="Sample Image">
+        <p><a href="https://github.com/NuPlay/RichText">Visit our GitHub</a></p>
+    """
+    
+    var body: some View {
+        ScrollView {
+            RichText(html: htmlContent)
+                .colorScheme(.auto)                    // Auto light/dark mode
+                .lineHeight(170)                       // Line height percentage
+                .imageRadius(12)                       // Rounded image corners
+                .transparentBackground()               // Transparent background
+                .placeholder {                         // Loading Placeholder
+                    Text("Loading email...")
+                }
+                .onMediaClick { media in               // Handle media clicks
+                    switch media {
+                    case .image(let src):
+                        print("Image clicked: \(src)")
+                    case .video(let src):
+                        print("Video clicked: \(src)")
+                    }
+                }
+                .onError { error in                    // Handle errors
+                    print("RichText error: \(error)")
+                }
+        }
     }
 }
-
 ```
-### Swift Package Manager
 
-The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler. 
+---
 
-Once you have your Swift package set up, adding RichText as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift`.
+## 📦 Installation
+
+### Swift Package Manager (Recommended)
+
+1. In Xcode, select **File → Add Package Dependencies...**
+2. Enter the repository URL:
+   ```
+   https://github.com/NuPlay/RichText.git
+   ```
+3. Select version rule: **"Up to Next Major Version"** from **"3.0.0"**
+4. Click **Add Package**
+
+### Manual Package.swift
+
+Add RichText to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "2.0.0"))
+    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "3.0.0"))
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["RichText"]
+    )
 ]
 ```
 
-## More
-```swift
-import SwiftUI
-import RichText
+---
 
-struct RichText_Test: View {
-    @State var  html = ""
-    
-    let config: Configuration = Configuration(customCSS: String, supportsDynamicType: Bool ,fontType: FontType, fontColor: ColorSet, lineHeight: CGFloat, colorScheme: ColorScheme, imageRadius: CGFloat, linkOpenType: LinkOpenType, linkColor: ColorSet, isColorsImportant: ColorPreference)
-    
-    var body: some View {
-       ScrollView{
-        RichText(html: text, configuration: config, placeholder: AnyView?)
-                .lineHeight(170)
-                .colorScheme(.auto)
-                .imageRadius(12)
-                .fontType(.system)
-                .foregroundColor(light: Color.primary, dark: Color.primary)
-                .linkColor(light: Color.blue, dark: Color.blue)
-                .colorPreference(forceColor: .onlyLinks)
-                .linkOpenType(.SFSafariView())
-                .customCSS("")
-                .placeholder {
-                    Text("loading")
-                }
-                .transition(.easeOut)
-        }
+## 📚 Complete API Reference
+
+### Core Components
+
+#### RichText Initializers
+
+```swift
+// Basic initializer
+RichText(html: String)
+
+// With configuration
+RichText(html: String, configuration: Configuration)
+
+// With placeholder
+RichText(html: String, placeholder: AnyView?)
+
+// Full initializer
+RichText(html: String, configuration: Configuration, placeholder: AnyView?)
+```
+
+### Styling Modifiers
+
+#### Background Colors
+
+```swift
+// Recommended approaches (v3.0.0+)
+.transparentBackground()                    // Transparent (default, easiest)
+.backgroundColor(.system)                   // System default (white/black)
+.backgroundColorHex("FF0000")              // Hex color
+.backgroundColorSwiftUI(.blue)             // SwiftUI Color
+.backgroundColor(.color(.green))           // Using BackgroundColor enum
+
+// Legacy approach (still works, but deprecated)
+.backgroundColor("transparent")             // Deprecated but backward compatible
+```
+
+#### Typography & Colors
+
+```swift
+// Font configuration
+.fontType(.system)                         // System font (default)
+.fontType(.monospaced)                     // Monospaced font
+.fontType(.italic)                         // Italic font
+.fontType(.customName("Helvetica"))        // Custom font by name
+.fontType(.custom(UIFont.systemFont(ofSize: 16))) // Custom UIFont (iOS only)
+
+// Text colors - Modern API (v3.0.0+)
+.textColor(light: .primary, dark: .primary)         // Modern semantic naming
+
+// Legacy text colors (deprecated but supported)
+.foregroundColor(light: .primary, dark: .primary)   // SwiftUI Colors (deprecated)
+.foregroundColor(light: UIColor.black, dark: UIColor.white) // UIColors (deprecated)
+.foregroundColor(light: NSColor.black, dark: NSColor.white) // NSColors (deprecated)
+
+// Link colors
+.linkColor(light: .blue, dark: .cyan)      // SwiftUI Colors
+.linkColor(light: UIColor.blue, dark: UIColor.cyan) // UIColors
+
+// Color enforcement
+.colorPreference(forceColor: .onlyLinks)   // Force only link colors (default)
+.colorPreference(forceColor: .all)         // Force all colors
+.colorPreference(forceColor: .none)        // Don't force any colors
+```
+
+#### Layout & Spacing
+
+```swift
+.lineHeight(170)                           // Line height percentage (default: 170)
+.imageRadius(12)                           // Image border radius in points
+.colorScheme(.auto)                        // .auto, .light, .dark
+.forceColorSchemeBackground(true)          // Force background color override
+```
+
+#### Link Behavior
+
+```swift
+.linkOpenType(.Safari)                     // Open in Safari (default)
+.linkOpenType(.SFSafariView())            // Open in SFSafariViewController (iOS)
+.linkOpenType(.SFSafariView(               // Advanced SFSafariView config
+    configuration: config,
+    isReaderActivated: true,
+    isAnimated: true
+))
+.linkOpenType(.custom { url in             // Custom link handler
+    // Handle URL yourself
+})
+.linkOpenType(.none)                       // Don't handle link taps
+```
+
+### Advanced Features
+
+#### Loading States
+
+```swift
+// Loading placeholders (Modern approach - recommended)
+.placeholder {                             // Custom placeholder view
+    HStack(spacing: 8) {
+        ProgressView()
+            .scaleEffect(0.8)
+        Text("Loading content...")
+            .foregroundColor(.secondary)
+    }
+    .frame(minHeight: 60)
+}
+
+// Deprecated methods (still supported for backward compatibility)
+.loadingPlaceholder("Loading...")          // Deprecated - use placeholder {}
+.loadingText("Please wait...")             // Deprecated - use placeholder {}
+
+// Loading transitions
+.loadingTransition(.fade)                  // Fade transition
+.loadingTransition(.slide)                 // Slide transition
+.loadingTransition(.scale)                 // Scale transition
+.loadingTransition(.custom(.easeInOut))    // Custom animation
+.transition(.easeOut)                      // Legacy transition method
+```
+
+#### Event Handling
+
+```swift
+// Media click events (v3.0.0+)
+.onMediaClick { media in
+    switch media {
+    case .image(let src):
+        // Handle image clicks
+        presentImageViewer(src)
+    case .video(let src):
+        // Handle video clicks
+        presentVideoPlayer(src)
     }
 }
 
-struct RichText_Test_Previews: PreviewProvider {
-    static var previews: some View {
-        RichText_Test()
+// Error handling (v3.0.0+)
+.onError { error in
+    switch error {
+    case .htmlLoadingFailed(let html):
+        print("Failed to load HTML: \(html)")
+    case .webViewConfigurationFailed:
+        print("WebView configuration failed")
+    case .cssGenerationFailed:
+        print("CSS generation failed")
+    case .mediaHandlingFailed(let media):
+        print("Media handling failed: \(media)")
     }
 }
 ```
 
-## Custom Font
-```swift
-import SwiftUI
-import RichText
+#### Custom Styling
 
-struct RichText_Test: View {
-    @State private var  html = ""
+```swift
+// Custom CSS
+.customCSS("""
+    p { margin: 10px 0; }
+    h1 { color: #ff6b6b; }
+    img { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+""")
+
+// Base URL for relative resources
+.baseURL(Bundle.main.bundleURL)
+```
+
+### Configuration-Based Initialization
+
+For complex configurations, create a `Configuration` object:
+
+```swift
+let config = Configuration(
+    customCSS: "body { padding: 20px; }",
+    supportsDynamicType: true,              // Enable Dynamic Type
+    fontType: .system,
+    fontColor: ColorSet(light: "333333", dark: "CCCCCC"),
+    lineHeight: 180,
+    colorScheme: .auto,
+    forceColorSchemeBackground: false,
+    backgroundColor: .transparent,
+    imageRadius: 8,
+    linkOpenType: .Safari,
+    linkColor: ColorSet(light: "007AFF", dark: "0A84FF", isImportant: true),
+    baseURL: Bundle.main.bundleURL,
+    mediaClickHandler: { media in /* handle clicks */ },
+    errorHandler: { error in /* handle errors */ },
+    isColorsImportant: .onlyLinks,
+    transition: .easeInOut(duration: 0.3)
+)
+
+RichText(html: htmlContent, configuration: config)
+```
+
+### Utility Methods
+
+```swift
+// Generate CSS programmatically (v3.0.0+)
+let richText = RichText(html: html)
+let css = richText.generateCSS(colorScheme: .light, alignment: .center)
+
+// Generate CSS from configuration
+let config = Configuration(lineHeight: 150)
+let css = config.generateCompleteCSS(colorScheme: .dark)
+```
+
+---
+
+## 🆕 What's New in v3.0.0
+
+### 🚀 **Core Modernization**
+
+- **⚡ Async/Await Architecture**: Complete rewrite using modern Swift concurrency for better performance and reliability
+- **🛡️ Enhanced Type Safety**: Robust ColorSet equality comparison and validation with RGBA-based color handling
+- **⚙️ Performance Optimizations**: Frame update debouncing, improved WebView management, and reduced main thread blocking
+- **📊 Comprehensive Logging**: Built-in performance monitoring with os.log integration
+
+### 🎨 **Enhanced User Experience**
+
+- **🎨 Type-Safe Background Colors**: Complete background color system with `.transparent`, `.system`, `.hex()`, and `.color()` support
+- **📱 Interactive Media Handling**: Full media click event system for images and videos with custom action support
+- **🔧 Improved Font System**: Better monospace and italic rendering with enhanced CSS generation
+- **🔄 Modern Loading States**: Type-safe loading transitions with `.fade`, `.scale`, `.slide`, and custom animations
+
+### 🛠️ **Developer Experience**
+
+- **🧪 Swift Testing Migration**: Complete migration from XCTest to modern Swift Testing framework
+- **📖 Semantic API Naming**: Modern APIs like `.textColor()` replacing `.foregroundColor()` for better clarity
+- **🚨 Comprehensive Error Handling**: Detailed error types with custom callbacks and debugging support
+- **🛠️ Public CSS Access**: Programmatic CSS generation and access for advanced customization scenarios
+- **🌐 Enhanced HTML5 Support**: Complete support for `<figure>`, `<details>`, `<summary>`, `<figcaption>`, and semantic elements
+
+### 🔄 **Migration & Compatibility**
+
+- **✅ 100% Backward Compatible**: All v2.x code works without changes
+- **⚠️ Thoughtful Deprecations**: Deprecated methods include clear migration guidance
+- **📚 Migration Tooling**: Built-in TestApp with Modern API demo and migration examples
+
+### 🔄 **Backward Compatibility Promise**
+
+Version 3.0.0 maintains **100% backward compatibility** for v2.x users while providing a clear path to modern APIs:
+
+- ✅ **Zero Breaking Changes**: All existing v2.x code works unchanged
+- ✅ **Automatic Performance**: Better async/await performance and font rendering without code changes  
+- ✅ **Guided Migration**: Helpful deprecation warnings with clear modern API alternatives
+- ✅ **Additive Enhancement**: New features are optional and don't affect existing functionality
+- ✅ **Future-Proof**: Modern architecture ready for Swift 6+ and future iOS/macOS versions
+
+### 🎯 **Recommended Migration Path**
+
+1. **Update to v3.0.0**: Immediate performance and reliability improvements
+2. **Add Error Handling**: Use `.onError()` for better debugging and user experience
+3. **Modernize APIs**: Replace deprecated methods with type-safe alternatives
+4. **Enhance Interactivity**: Add `.onMediaClick()` for rich media experiences
+5. **Improve Loading UX**: Implement `.loadingPlaceholder()` and modern transitions
+
+---
+
+## 🔧 Advanced Usage
+
+### Custom Fonts
+
+#### Using System-Installed Fonts
+
+```swift
+RichText(html: html)
+    .fontType(.customName("SF Mono"))      // System monospace font
+    .fontType(.customName("Helvetica"))    // System Helvetica
+```
+
+#### Using Bundled Fonts
+
+```swift
+RichText(html: html)
+    .fontType(.customName("CustomFont-Regular"))
+    .customCSS("""
+        @font-face {
+            font-family: 'CustomFont-Regular';
+            src: url("CustomFont-Regular.ttf") format('truetype');
+        }
+    """)
+```
+
+#### Dynamic Type Support
+
+```swift
+let config = Configuration(
+    supportsDynamicType: true               // Automatically use iOS Dynamic Type
+)
+
+RichText(html: html, configuration: config)
+```
+
+### Complex Color Schemes
+
+#### Gradient Backgrounds
+
+```swift
+RichText(html: html)
+    .backgroundColor(.transparent)
+    .customCSS("""
+        body {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            padding: 20px;
+            border-radius: 12px;
+        }
+    """)
+```
+
+#### Theme-Aware Colors
+
+```swift
+RichText(html: html)
+    .foregroundColor(light: .primary, dark: .primary)
+    .linkColor(light: .blue, dark: .cyan)
+    .backgroundColor(.system)
+    .colorPreference(forceColor: .all)      // Override HTML colors
+```
+
+### Interactive Media Handling
+
+```swift
+struct ContentView: View {
+    @State private var selectedImage: String?
     
     var body: some View {
-       ScrollView{
-        RichText(html: html)
-        .fontType(.customName("Noto Sans"))
-        .customCSS("""
-                 @font-face {
-                        font-family: 'Noto Sans';
-                        src: url("NotoSans-Regular.ttf") format('truetype');
-                            }
+        RichText(html: htmlWithImages)
+            .onMediaClick { media in
+                switch media {
+                case .image(let src):
+                    selectedImage = src
+                case .video(let src):
+                    openVideoPlayer(url: src)
+                }
+            }
+            .fullScreenCover(item: Binding<String?>(
+                get: { selectedImage },
+                set: { selectedImage = $0 }
+            )) { imageURL in
+                ImageViewer(url: imageURL)
+            }
+    }
+}
+```
+
+### Error Handling and Debugging
+
+```swift
+struct ContentView: View {
+    @State private var lastError: RichTextError?
+    
+    var body: some View {
+        VStack {
+            if let error = lastError {
+                ErrorBanner(error: error)
+            }
+            
+            RichText(html: html)
+                .onError { error in
+                    lastError = error
+                    // Log to analytics
+                    Analytics.log("RichText Error", parameters: [
+                        "error_type": String(describing: error),
+                        "html_length": html.count
+                    ])
+                }
+        }
+    }
+}
+```
+
+### Performance Optimization
+
+#### For Large Content
+
+```swift
+RichText(html: largeHtmlContent)
+    .imageRadius(0)                         // Disable image styling for performance
+    .customCSS("""
+        img {
+            max-width: 100%;
+            height: auto;
+            loading: lazy;                  /* Native lazy loading */
+        }
+    """)
+    .loadingTransition(.none)              // Disable transitions for faster rendering
+```
+
+#### Memory Management
+
+```swift
+struct ContentView: View {
+    @StateObject private var htmlManager = HTMLContentManager()
+    
+    var body: some View {
+        RichText(html: htmlManager.currentHTML)
+            .onError { error in
+                htmlManager.handleError(error)
+            }
+            .onDisappear {
+                htmlManager.cleanup()       // Custom cleanup logic
+            }
+    }
+}
+```
+
+---
+
+## 💡 Examples
+
+### Blog Post Renderer
+
+```swift
+struct BlogPostView: View {
+    let post: BlogPost
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(post.title)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                
+                RichText(html: post.content)
+                    .lineHeight(175)
+                    .imageRadius(8)
+                    .backgroundColor(.system)
+                    .linkOpenType(.SFSafariView())
+                    .onMediaClick { media in
+                        handleMediaClick(media)
+                    }
+                    .customCSS("""
+                        blockquote {
+                            border-left: 4px solid #007AFF;
+                            padding-left: 16px;
+                            margin: 16px 0;
+                            font-style: italic;
+                        }
+                        code {
+                            background-color: #f5f5f5;
+                            padding: 2px 4px;
+                            border-radius: 3px;
+                        }
+                    """)
+            }
+            .padding()
+        }
+    }
+    
+    private func handleMediaClick(_ media: MediaClickType) {
+        // Custom media handling
+    }
+}
+```
+
+### Email Content Viewer
+
+```swift
+struct EmailView: View {
+    let emailHTML: String
+    @State private var isLoading = true
+    
+    var body: some View {
+        RichText(html: emailHTML)
+            .backgroundColor(.system)
+            .lineHeight(160)
+            .fontType(.system)
+            .linkOpenType(.custom { url in
+                // Custom link handling for email safety
+                if url.host?.contains("trusted-domain.com") == true {
+                    UIApplication.shared.open(url)
+                } else {
+                    showLinkConfirmation(url)
+                }
+            })
+            .placeholder {
+                Text("Loading email...")
+            }
+            .loadingTransition(.fade)
+            .onError { error in
+                print("Email loading error: \(error)")
+            }
+    }
+    
+    private func showLinkConfirmation(_ url: URL) {
+        // Show confirmation dialog
+    }
+}
+```
+
+### Documentation Viewer
+
+```swift
+struct DocumentationView: View {
+    let markdownHTML: String
+    
+    var body: some View {
+        NavigationView {
+            RichText(html: markdownHTML)
+                .fontType(.system)
+                .lineHeight(170)
+                .backgroundColor(.transparent)
+                .customCSS("""
+                    h1, h2, h3 { 
+                        color: #1d4ed8; 
+                        margin-top: 24px;
+                        margin-bottom: 12px;
+                    }
+                    pre {
+                        background-color: #f8f9fa;
+                        padding: 12px;
+                        border-radius: 6px;
+                        overflow-x: auto;
+                    }
+                    code {
+                        font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+                    }
                 """)
+                .navigationTitle("Documentation")
+                .navigationBarTitleDisplayMode(.large)
         }
-    }
-}
-
-struct RichText_Test_Previews: PreviewProvider {
-    static var previews: some View {
-        RichText_Test()
     }
 }
 ```
 
-## Sample Text
-<details>
-<summary>Click</summary>
-<div markdown="1">
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### Content Not Displaying
+
+**Problem**: RichText shows blank or doesn't render content
+
+**Solutions**:
+- Ensure HTML is valid and well-formed
+- Check that images have proper URLs
+- Verify network permissions for external resources
+- Add error handling to debug loading issues
 
 ```swift
-import SwiftUI
-import RichText
+RichText(html: html)
+    .onError { error in
+        print("Debug error: \(error)")
+    }
+```
 
-struct RichText_Test: View {
-    @State var  html = """
-        <h1>Non quam nostram quidem, inquit Pomponius iocans;</h1>
-        
-        <img src = "https://user-images.githubusercontent.com/73557895/126889699-a735f993-2d95-4897-ae40-bcb932dc23cd.png">
-        
+#### Images Not Loading
 
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis istum dolorem timet? Sit sane ista voluptas. Quis est tam dissimile homini. Duo Reges: constructio interrete. <i>Quam illa ardentis amores excitaret sui! Cur tandem?</i> </p>
+**Problem**: Images don't appear in the rendered content
 
-        <dl>
-            <dt><dfn>Avaritiamne minuis?</dfn></dt>
-            <dd>Placet igitur tibi, Cato, cum res sumpseris non concessas, ex illis efficere, quod velis?</dd>
-            <dt><dfn>Immo videri fortasse.</dfn></dt>
-            <dd>Quae qui non vident, nihil umquam magnum ac cognitione dignum amaverunt.</dd>
-            <dt><dfn>Si longus, levis.</dfn></dt>
-            <dd>Ita ne hoc quidem modo paria peccata sunt.</dd>
-        </dl>
+**Solutions**:
+- Verify image URLs are accessible
+- For macOS: Enable "Outgoing Connections (Client)" in App Sandbox
+- Use base URL for relative image paths
 
+```swift
+RichText(html: html)
+    .baseURL(Bundle.main.bundleURL)  // For bundled resources
+```
 
-        <ol>
-            <li>Possumusne ergo in vita summum bonum dicere, cum id ne in cena quidem posse videamur?</li>
-            <li>Placet igitur tibi, Cato, cum res sumpseris non concessas, ex illis efficere, quod velis?</li>
-            <li>Unum nescio, quo modo possit, si luxuriosus sit, finitas cupiditates habere.</li>
-        </ol>
+#### Performance Issues
 
+**Problem**: Slow rendering with large HTML content
 
-        <blockquote cite="http://loripsum.net">
-            Aristoteles, Xenocrates, tota illa familia non dabit, quippe qui valitudinem, vires, divitias, gloriam, multa alia bona esse dicant, laudabilia non dicant.
-        </blockquote>
+**Solutions**:
+- Simplify CSS and reduce inline styles
+- Use image compression for better loading
+- Consider pagination for very large content
+- Disable animations for better performance
 
+```swift
+RichText(html: largeContent)
+    .loadingTransition(.none)
+    .imageRadius(0)
+```
 
-        <p>Scrupulum, inquam, abeunti; Conferam tecum, quam cuique verso rem subicias; Audeo dicere, inquit. Maximus dolor, inquit, brevis est. Nos commodius agimus. </p>
+#### Dark Mode Issues
 
-        <ul>
-            <li>Cur igitur, inquam, res tam dissimiles eodem nomine appellas?</li>
-            <li>Omnia peccata paria dicitis.</li>
-        </ul>
+**Problem**: Colors don't adapt properly to dark mode
 
+**Solutions**:
+- Use `.colorScheme(.auto)` for automatic adaptation
+- Set proper light/dark colors for text and links
+- Force color scheme background if needed
 
-        <h2>Laboro autem non sine causa;</h2>
+```swift
+RichText(html: html)
+    .colorScheme(.auto)
+    .forceColorSchemeBackground(true)
+    .foregroundColor(light: .black, dark: .white)
+```
 
-        <p>Itaque contra est, ac dicitis; <code>Illa argumenta propria videamus, cur omnia sint paria peccata.</code> </p>
+### Platform-Specific Issues
 
-        <pre>Nunc dicam de voluptate, nihil scilicet novi, ea tamen, quae
-        te ipsum probaturum esse confidam.
+#### macOS Specific
 
-        Sin est etiam corpus, ista explanatio naturae nempe hoc
-        effecerit, ut ea, quae ante explanationem tenebamus,
-        relinquamus.
-        </pre>
+**Issue**: External resources don't load
+- **Solution**: Enable "Outgoing Connections (Client)" in App Sandbox settings
+- **Alternative**: Use bundled resources or file URLs
 
+**Issue**: Scrolling behavior differs from iOS
+- **Solution**: This is expected due to platform differences
+- **Workaround**: Embed in a ScrollView for consistent behavior
 
+#### iOS Specific
 
-        """
+**Issue**: SFSafariViewController not presenting
+- **Solution**: Ensure you have a presented view controller
+- **Alternative**: Use `.linkOpenType(.Safari)` as fallback
+
+### Memory Management
+
+If you experience memory issues with large content:
+
+```swift
+// Implement proper cleanup
+struct ContentView: View {
+    @State private var html = ""
     
     var body: some View {
-        ScrollView{
-           RichText(html: html)
-                .lineHeight(170)
-                .colorScheme(.auto)
-                .imageRadius(12)
-                .fontType(.system)
-                .foregroundColor(light: Color.primary, dark: Color.primary)
-                .linkColor(light: Color.blue, dark: Color.blue)
-                .colorPreference(forceColor: .onlyLinks)
-                .customCSS("")
-                .linkOpenType(.SFSafariView())
-                .placeholder {
-                    Text("loading")
-                }
-                .transition(.easeOut)
+        RichText(html: html)
+            .onDisappear {
+                html = ""  // Clear content when not visible
+            }
+    }
+}
+```
+
+### Getting Help
+
+1. **Check the Issues**: Search [GitHub Issues](https://github.com/NuPlay/RichText/issues) for similar problems
+2. **Provide Details**: When reporting issues, include:
+   - iOS/macOS version
+   - RichText version
+   - Sample HTML content
+   - Error messages or console output
+3. **Create Minimal Example**: Provide a minimal reproducible example
+
+---
+
+## 📖 Migration Guide
+
+### From v2.x to v3.0.0
+
+#### Background Colors
+
+```swift
+// ✅ v2.7.0 - Still works, but deprecated
+RichText(html: html)
+    .backgroundColor("transparent")     // Deprecated but functional
+
+// 🚀 v3.0.0 - Recommended approaches
+RichText(html: html)
+    .transparentBackground()           // Easiest for transparent
+    .backgroundColorHex("#FF0000")     // For hex colors  
+    .backgroundColorSwiftUI(.blue)     // For SwiftUI colors
+    .backgroundColor(.system)          // For system colors
+```
+
+#### Enhanced Features (Optional Upgrades)
+
+```swift
+// 🚀 Add error handling
+RichText(html: html)
+    .onError { error in
+        print("Error: \(error)")
+    }
+
+// 🚀 Add interactive media handling
+RichText(html: html)
+    .onMediaClick { media in
+        switch media {
+        case .image(let src):
+            presentImageViewer(src)
+        case .video(let src):
+            presentVideoPlayer(src)
         }
     }
-}
 
-struct RichText_Test_Previews: PreviewProvider {
-    static var previews: some View {
-        RichText_Test()
+// 🚀 Better loading experience with custom view
+RichText(html: html)
+    .placeholder {
+        HStack(spacing: 8) {
+            ProgressView()
+                .scaleEffect(0.8)
+            Text("Loading...")
+                .foregroundColor(.secondary)
+        }
+        .frame(minHeight: 60)
     }
-}
-    
+    .loadingTransition(.fade)
 ```
-  
- </div>
-</details>
 
-## If use for macOS
-<img width="1643" alt="macOS Guide" src="https://github.com/NuPlay/RichText/assets/73557895/f782525b-caf3-48b0-8b01-a6209995533d">
-- This library uses WebView to display HTML.
+#### Font & Color API Modernization
 
-- If it is not displayed normally, please allow "Outgoing Connections (Client)" permission.
+```swift
+// ✅ v2.x - Still works, but deprecated
+RichText(html: html)
+    .foregroundColor(light: .black, dark: .white)  // Deprecated
 
-### How To Use
+// 🚀 v3.0.0 - Modern semantic naming
+RichText(html: html)
+    .textColor(light: .black, dark: .white)        // Modern & clear
+```
 
-Variable explanation
+#### Enhanced Font Rendering
 
- - html : which you want to show (String type)   
+No changes needed - font rendering is automatically improved:
 
-### Modifier
-Modifier | Default
---- | ---
-`.foregroundColor(light: Color, dark: Color)` | `(light: "000000", dark: "F2F2F2")`
-`.imageRadius(_ imageRadius: CGFloat)` | `0`
-`.customCSS(_ customCSS: String)` | `""`
-`.lineHeight(_ lineHeight: CGFloat)` | `170`
-`.colorScheme(_ colorScheme: ColorScheme)` | `.auto`
-`.forceColorSchemeBackground(_ forceColorSchemeBackground: Bool)` | `false`
-`.fontType(_ fontType: FontType)` | `.system`
-`.linkColor(_ linkColor: ColorSet)` | `ColorSet(light: "#007AFF", dark: "#0A84FF", isImportant: true)`
-`.linkOpenType(_ linkOpenType: LinkOpenType)` | `.Safari`
-`.placeholder<T>(@ViewBuilder content: () -> T)` | `nil`
-`.colorPreference(forceColor: ColorPreference)` | `.onlyLinks`
-`.transition(_ transition: Animation?)` | `.none`
+```swift
+// ✅ Automatically better in v3.0.0 with async/await
+RichText(html: html)
+    .fontType(.monospaced)    // Enhanced rendering
+    .fontType(.italic)        // Improved CSS generation
+```
 
+### Recommended Migration Steps
 
- - foregroundColor (default: (light: "000000", dark: "F2F2F2")) : Color of Text
- - imageRadius (default: 0)  : Radius of image corner
- - customCSS(default: ""): You can add CSS if you want
- - lineHeight (default: 170)  : Height of each line
- - colorScheme(default: .auto) : light or dark mode (it changes text color)
- - forceColorSchemeBackground (default: false) : force `colorScheme` background color to override inline css to ensure complete light/dark mode
- - fontType(default: .system): Font type in RichText view
- - linkColor (default: ColorSet(light: "#007AFF", dark: "#0A84FF")) : linkColor (Color or UIColor)
- - linkOpenType (default: .Safari) : When the user clicks the link contained in html, Way to take action
- - placeholder (default: nil) : What to display until Richtext views are completely drawn (View type) 
- - transition(default: .none) : Transition between PlaceHolder and Content
- - colorPreference(default: .onlyLinks) : css '!important', It ignores the color in variable 'html'
+1. **Update to v3.0.0**: Your existing code continues to work
+2. **Add Error Handling**: Use `.onError()` for better debugging
+3. **Update Background Colors**: Replace string-based with type-safe methods
+4. **Add Media Handling**: Use `.onMediaClick()` for interactive content
+5. **Improve Loading UX**: Add `.loadingPlaceholder()` and transitions
 
-### Known Issues
-If you are trying to display very large content, it may not be displayed.
+---
 
-### Planned (Future work): 
-A variety of options. 
-If you need any options, leave them in the issues or discussion.
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Reporting Issues
+
+- Use [GitHub Issues](https://github.com/NuPlay/RichText/issues) for bug reports
+- Include reproduction steps and sample code
+- Specify iOS/macOS version and RichText version
+
+### Suggesting Features
+
+- Create a [Discussion](https://github.com/NuPlay/RichText/discussions) for feature requests
+- Explain the use case and expected behavior
+- Consider backward compatibility implications
+
+### Code Contributions
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Write** tests for your changes
+4. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+5. **Push** to the branch (`git push origin feature/amazing-feature`)
+6. **Open** a Pull Request
+
+### Development Guidelines
+
+- Follow Swift 6 naming conventions and modern async/await patterns
+- Add comprehensive documentation for public APIs with usage examples
+- Ensure backward compatibility and provide clear migration paths
+- Use Swift Testing for all new test coverage
+- Update README.md and TestApp for new features
+- Consider performance implications and use os.log for debugging
+
+---
+
+## 📄 License
+
+RichText is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [WebKit](https://webkit.org/) for reliable HTML rendering
+- Inspired by the SwiftUI community's need for rich text solutions
+- Thanks to all [contributors](https://github.com/NuPlay/RichText/contributors) and users
+
+---
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/NuPlay/RichText/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/NuPlay/RichText/discussions)
+
+---
+
+*Made with ❤️ for the SwiftUI community*
