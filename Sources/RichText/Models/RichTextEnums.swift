@@ -33,7 +33,7 @@ public enum FontType {
         case .monospaced:
             return "ui-monospace, 'SF Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace"
         case .italic:
-            return "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+            return RichTextConstants.systemFontName
         #if canImport(UIKit)
         case let .custom(font):
             return "'\(font.fontName)'"
