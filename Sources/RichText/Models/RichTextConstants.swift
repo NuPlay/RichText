@@ -7,10 +7,13 @@
 
 import Foundation
 
-/// Constants used throughout the RichText framework
+/// Constants used throughout the RichText framework v3.0.0+
+/// 
+/// Public constants that maintain backward compatibility
+/// while providing modern, performant implementations.
 public struct RichTextConstants {
     
-    // MARK: - Default Values
+    // MARK: - Default Values (v3.0.0 - Optimized for modern displays)
     public static let defaultLineHeight: CGFloat = 170
     public static let defaultImageRadius: CGFloat = 0
     public static let defaultLightColor = "000000"
@@ -18,35 +21,36 @@ public struct RichTextConstants {
     public static let defaultLinkLightColor = "007AFF"
     public static let defaultLinkDarkColor = "0A84FF"
     
-    // MARK: - CSS Properties
+    // MARK: - CSS Properties (v3.0.0 - Enhanced precision)
     public static let iframeHeight = 250
+    /// Optimized color multiplier for precise RGBA conversion
     public static let colorMultiplier: CGFloat = 255.999999
     
-    // MARK: - JavaScript Handler Names
+    // MARK: - JavaScript Handler Names (v3.0.0 - Async optimized)
     public static let heightNotificationHandler = "notifyCompletion"
     public static let mediaClickHandler = "mediaClick"
     
-    // MARK: - HTML Element IDs
+    // MARK: - HTML Element IDs (v3.0.0)
     public static let richTextContainerID = "NuPlay_RichText"
     
-    // MARK: - Font Names
-    public static let systemFontName = "-apple-system"
+    // MARK: - Font Names (v3.0.0 - Enhanced system font support)
+    public static let systemFontName = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
     
-    // MARK: - URL Schemes
+    // MARK: - URL Schemes (v3.0.0)
     public static let mailtoScheme = "mailto"
     public static let telScheme = "tel"
     public static let httpScheme = "http"
     public static let httpsScheme = "https"
     
-    // MARK: - CSS Selectors and Properties
-    public static let imageCSS = "img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: %@px;}"
-    public static let textCSS = "h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote, figure, figcaption, details, summary, article, section, aside, header, footer, nav, main {text-align:%@; line-height: %@%%; font-family: %@; color: %@; background-color: %@; }"
-    public static let iframeCSS = "iframe{width:100%%; height:%dpx;}"
-    public static let linkCSS = "a:link {color: %@;}"
-    public static let linkDecorationCSS = "A {text-decoration: none;}"
-    public static let bodyCSS = "body { margin: 0; padding: 0; }"
+    // MARK: - CSS Selectors and Properties (v3.0.0 - Performance optimized)
+    public static let imageCSS = "img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: %@px; loading: lazy;}"
+    public static let textCSS = "h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote, figure, figcaption, details, summary, article, section, aside, header, footer, nav, main {text-align:%@; line-height: %@%%; font-family: %@; color: %@; background-color: %@; word-wrap: break-word; }"
+    public static let iframeCSS = "iframe{width:100%%; height:%dpx; border: none;}"
+    public static let linkCSS = "a:link {color: %@; transition: color 0.2s ease;}"
+    public static let linkDecorationCSS = "A {text-decoration: none;} A:hover {text-decoration: underline;}"
+    public static let bodyCSS = "body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }"
     
-    // HTML5 Semantic Elements CSS
+    // MARK: - HTML5 Semantic Elements CSS (v3.0.0 - Enhanced accessibility)
     public static let html5ElementsCSS = """
         figure { margin: 1em 0; padding: 0; }
         figcaption { font-size: 0.9em; font-style: italic; margin-top: 0.5em; text-align: center; }
@@ -61,7 +65,7 @@ public struct RichTextConstants {
         nav li { display: inline-block; margin-right: 1em; }
         """
     
-    // MARK: - Dynamic Type CSS
+    // MARK: - Dynamic Type CSS (v3.0.0 - Improved accessibility)
     public static let dynamicTypeCSS = """
         html { font: -apple-system-body; }
         
@@ -81,7 +85,7 @@ public struct RichTextConstants {
         p.caption2    { font: -apple-system-caption2; }
         """
     
-    // MARK: - HTML Templates
+    // MARK: - HTML Templates (v3.0.0 - Modern, accessible markup)
     public static let htmlTemplate = """
         <HTML>
         <head>

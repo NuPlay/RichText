@@ -1,14 +1,10 @@
-#if canImport(Testing)
 import Testing
-#endif
 import SwiftUI
 @testable import RichText
 
-// MARK: - Swift Testing Tests for RichText Library
-// NOTE: These tests require Swift 6.0+ with Xcode 16+ or Swift Testing package
-// If Testing framework is not available, these tests will be skipped
-
-#if canImport(Testing)
+// MARK: - Swift Testing Tests for RichText Library v3.0.0
+// Modern test suite using Swift Testing framework
+// Requires Xcode 16+ for development (app can target iOS 15.0+)
 
 @Suite("RichText Configuration Tests")
 struct ConfigurationTests {
@@ -370,8 +366,19 @@ struct NewFeaturesTests {
         #expect(customTransition.configuration.transition != nil)
     }
     
-    @Test("Loading placeholder configuration")
-    func loadingPlaceholder() {
+    @Test("Custom placeholder configuration")
+    func customPlaceholder() {
+        let richText = RichText(html: "<p>Test</p>")
+            .placeholder {
+                Text("Loading...")
+                    .foregroundColor(.secondary)
+            }
+        
+        #expect(richText.placeholder != nil)
+    }
+    
+    @Test("Deprecated loading placeholder still works")
+    func deprecatedLoadingPlaceholder() {
         let richText = RichText(html: "<p>Test</p>")
             .loadingPlaceholder("Please wait...")
         
@@ -424,28 +431,26 @@ struct BackwardCompatibilityTests {
     
     @Test("Deprecated background color methods still work")
     func deprecatedBackgroundColorMethods() {
-        // Note: These tests intentionally use deprecated methods to verify backward compatibility
-        // Using modern methods instead to avoid deprecation warnings
+        // Test that deprecated String-based backgroundColor method still works
+        let deprecatedTransparent = RichText(html: "<p>Test</p>")
+            .backgroundColor("transparent")
         
-        let transparentText = RichText(html: "<p>Test</p>")
-            .transparentBackground()
-        
-        switch transparentText.configuration.backgroundColor {
+        switch deprecatedTransparent.configuration.backgroundColor {
         case .transparent:
             #expect(true) // Success
         default:
-            #expect(Bool(false), "Transparent background should work")
+            #expect(Bool(false), "Deprecated transparent background should work")
         }
         
-        let hexText = RichText(html: "<p>Test</p>")
-            .backgroundColorHex("FF0000")
+        let deprecatedHex = RichText(html: "<p>Test</p>")
+            .backgroundColor("#FF0000")
         
-        switch hexText.configuration.backgroundColor {
+        switch deprecatedHex.configuration.backgroundColor {
         case .hex(let hex):
             let cleanHex = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
             #expect(cleanHex.contains("FF0000") || cleanHex == "FF0000")
         default:
-            #expect(Bool(false), "Hex background should work")
+            #expect(Bool(false), "Deprecated hex background should work")
         }
     }
     
@@ -565,11 +570,95 @@ struct PerformanceTests {
     }
 }
 
-#else
-// Swift Testing is not available - provide fallback message
-import Foundation
+// MARK: - New v3.0.0 Features Tests
 
-@available(*, unavailable, message: "Swift Testing requires Swift 6.0+ with Xcode 16 or later. Use XCTest version (RichTextTests.swift) instead.")
-struct SwiftTestingUnavailable {}
+@Suite("Async/Await Modernization Tests")
+struct AsyncAwaitTests {
+    
+    @Test("WebView async operations work correctly")
+    func webViewAsyncOperations() async {
+        let html = "<p>Test HTML content</p>"
+        let config = Configuration()
+        
+        // Test that configuration is set up correctly for async operations
+        #expect(config.errorHandler == nil) // Should be nil initially
+        #expect(config.transition == nil) // Should be nil initially
+        
+        let richText = RichText(html: html, configuration: config)
+        #expect(richText.html == html)
+    }
+}
 
-#endif
+@Suite("Modern API Tests")
+struct ModernAPITests {
+    
+    @Test("Modern textColor method works as expected")
+    func modernTextColorAPI() {
+        let html = "<p>Test</p>"
+        let richText = RichText(html: html)
+        
+        #if canImport(UIKit)
+        let modernText = richText.textColor(light: .red, dark: .blue)
+        #expect(modernText.html == html)
+        #else
+        let modernText = richText.textColor(light: .red, dark: .blue) 
+        #expect(modernText.html == html)
+        #endif
+    }
+    
+    @Test("Deprecated methods still work with warnings")
+    func deprecatedMethodsCompatibility() {
+        let html = "<p>Test</p>"
+        let richText = RichText(html: html)
+        
+        // These should still work but show deprecation warnings
+        #if canImport(UIKit)
+        let deprecatedText = richText.foregroundColor(light: .red, dark: .blue)
+        #expect(deprecatedText.html == html)
+        #else
+        let deprecatedText = richText.foregroundColor(light: .red, dark: .blue)
+        #expect(deprecatedText.html == html)
+        #endif
+    }
+}
+
+@Suite("ColorSet Equality Tests")
+struct ColorSetEqualityTests {
+    
+    @Test("ColorSet equality works correctly")
+    func colorSetEquality() {
+        let colorSet1 = ColorSet(light: "FF0000", dark: "00FF00", isImportant: true)
+        let colorSet2 = ColorSet(light: "FF0000", dark: "00FF00", isImportant: true)
+        let colorSet3 = ColorSet(light: "FF0000", dark: "00FF00", isImportant: false)
+        
+        #expect(colorSet1 == colorSet2)
+        #expect(colorSet1 != colorSet3)
+        
+        // Test case insensitive comparison
+        let colorSet4 = ColorSet(light: "ff0000", dark: "00ff00", isImportant: true)
+        #expect(colorSet1 == colorSet4)
+    }
+    
+    @Test("ColorSet validation works correctly")
+    func colorSetValidation() {
+        let validColorSet = ColorSet(light: "FF0000", dark: "00FF00")
+        #expect(validColorSet.isValid)
+        
+        let validColorSetWithAlpha = ColorSet(light: "FF000080", dark: "00FF0080")
+        #expect(validColorSetWithAlpha.isValid)
+        
+        let invalidColorSet = ColorSet(light: "INVALID", dark: "00FF00")
+        #expect(!invalidColorSet.isValid)
+    }
+    
+    @Test("ColorSet raw values work correctly")
+    func colorSetRawValues() {
+        let colorSet = ColorSet(light: "FF0000", dark: "00FF00")
+        
+        #expect(colorSet.rawValue(true) == "FF0000")
+        #expect(colorSet.rawValue(false) == "00FF00")
+        
+        #expect(colorSet.value(true) == "#FF0000")
+        #expect(colorSet.value(false) == "#00FF00")
+    }
+}

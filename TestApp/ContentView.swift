@@ -5,19 +5,31 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink("Basic Usage", destination: BasicUsageView())
-                NavigationLink("Background Colors", destination: BackgroundColorView())
-                NavigationLink("Font Types", destination: FontTypesView())
-                NavigationLink("Color Schemes", destination: ColorSchemesView())
-                NavigationLink("Media Handling", destination: MediaHandlingView())
-                NavigationLink("Error Handling", destination: ErrorHandlingView())
-                NavigationLink("Loading States", destination: LoadingStatesView())
-                NavigationLink("Custom CSS", destination: CustomCSSView())
-                NavigationLink("Link Handling", destination: LinkHandlingView())
-                NavigationLink("Performance Test", destination: PerformanceTestView())
-                NavigationLink("Backward Compatibility", destination: BackwardCompatibilityView())
+                Section("📚 Basic Features") {
+                    NavigationLink("Basic Usage", destination: BasicUsageView())
+                    NavigationLink("Font Types", destination: FontTypesView())
+                    NavigationLink("Background Colors", destination: BackgroundColorView())
+                    NavigationLink("Color Schemes", destination: ColorSchemesView())
+                }
+                
+                Section("🎨 Styling & Customization") {
+                    NavigationLink("Custom CSS", destination: CustomCSSView())
+                    NavigationLink("Loading States", destination: LoadingStatesView())
+                }
+                
+                Section("⚡ Interactive Features") {
+                    NavigationLink("Media Handling", destination: MediaHandlingView())
+                    NavigationLink("Link Handling", destination: LinkHandlingView())
+                    NavigationLink("Error Handling", destination: ErrorHandlingView())
+                }
+                
+                Section("🔧 Advanced & Testing") {
+                    NavigationLink("Performance Test", destination: PerformanceTestView())
+                    NavigationLink("Modern API Demo", destination: ModernAPIView())
+                    NavigationLink("Backward Compatibility", destination: BackwardCompatibilityView())
+                }
             }
-            .navigationTitle("RichText Tests")
+            .navigationTitle("RichText v3.0.0")
         }
     }
 }
@@ -673,6 +685,167 @@ struct BackwardCompatibilityView: View {
             .padding()
         }
         .navigationTitle("Backward Compatibility")
+    }
+}
+
+// MARK: - Modern API Demo
+struct ModernAPIView: View {
+    let testHTML = """
+        <h2>Modern API Showcase</h2>
+        <p>This demonstrates the new v3.0.0 modern APIs.</p>
+        <p>These methods provide better <strong>semantic clarity</strong> and <em>type safety</em>.</p>
+        <a href="https://example.com">Test link with modern styling</a>
+        <img src="https://via.placeholder.com/200x150/4A90E2/FFFFFF?text=Modern+API" alt="Modern API test" />
+    """
+    
+    @State private var currentAPI = 0
+    let apiTypes = ["Modern API", "Deprecated API"]
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 25) {
+                Picker("API Type", selection: $currentAPI) {
+                    ForEach(0..<apiTypes.count, id: \.self) { index in
+                        Text(apiTypes[index]).tag(index)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
+                
+                Group {
+                    if currentAPI == 0 {
+                        modernAPISection
+                    } else {
+                        deprecatedAPISection
+                    }
+                }
+                
+                apiComparisonSection
+            }
+            .padding()
+        }
+        .navigationTitle("Modern API")
+    }
+    
+    private var modernAPISection: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("✨ Modern v3.0.0 APIs")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.green)
+            
+            Text("Type-safe, semantic methods with better error handling")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            RichText(html: testHTML)
+                .textColor(light: .primary, dark: .primary)
+                .backgroundColorSwiftUI(.blue.opacity(0.05))
+                .placeholder {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                        Text("Loading modern content...")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 60)
+                }
+                .loadingTransition(.fade)
+                .imageRadius(12)
+                .onError { error in
+                    print("Modern error handling: \(error)")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    
+    private var deprecatedAPISection: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("⚠️ Deprecated APIs (Still Working)")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.orange)
+            
+            Text("Legacy methods maintained for backward compatibility")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            RichText(html: testHTML)
+                .foregroundColor(light: .primary, dark: .primary)
+                .backgroundColor("rgba(0, 123, 255, 0.05)")
+                .loadingText("Loading...")
+                .transition(.easeInOut)
+                .imageRadius(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    
+    private var apiComparisonSection: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("🔄 API Migration Guide")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                migrationRow(
+                    old: ".foregroundColor(light:dark:)",
+                    new: ".textColor(light:dark:)",
+                    reason: "Better semantic clarity"
+                )
+                
+                migrationRow(
+                    old: ".backgroundColor(String)",
+                    new: ".backgroundColorSwiftUI(Color)",
+                    reason: "Type safety & SwiftUI integration"
+                )
+                
+                migrationRow(
+                    old: ".loadingText(String)",
+                    new: ".placeholder { Text(\"Loading...\") }",
+                    reason: "Better consistency and flexibility"
+                )
+                
+                migrationRow(
+                    old: ".loadingPlaceholder(String)",
+                    new: ".placeholder { /* custom view */ }",
+                    reason: "Full view customization support"
+                )
+                
+                migrationRow(
+                    old: ".transition(Animation?)",
+                    new: ".loadingTransition(LoadingTransition)",
+                    reason: "Type-safe enum-based transitions"
+                )
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+        }
+    }
+    
+    private func migrationRow(old: String, new: String, reason: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("❌")
+                Text(old)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.red)
+            }
+            
+            HStack {
+                Text("✅")
+                Text(new)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.green)
+            }
+            
+            Text(reason)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .italic()
+        }
+        .padding(.vertical, 2)
     }
 }
 

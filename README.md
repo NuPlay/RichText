@@ -2,13 +2,16 @@
 
 <p align="center">
     <a href="https://swift.org/">
-        <img src="https://img.shields.io/badge/Swift-5.3+-F05138?labelColor=303840" alt="Swift: 5.3+">
+        <img src="https://img.shields.io/badge/Swift-6.0+-F05138?labelColor=303840" alt="Swift: 6.0+">
     </a>
     <a href="https://www.apple.com/ios/">
-        <img src="https://img.shields.io/badge/iOS-13.0+-007AFF?labelColor=303840" alt="iOS: 13.0+">
+        <img src="https://img.shields.io/badge/iOS-15.0+-007AFF?labelColor=303840" alt="iOS: 15.0+">
     </a>
     <a href="https://www.apple.com/macos/">
-        <img src="https://img.shields.io/badge/macOS-10.15+-007AFF?labelColor=303840" alt="macOS-10.15+">
+        <img src="https://img.shields.io/badge/macOS-12.0+-007AFF?labelColor=303840" alt="macOS-12.0+">
+    </a>
+    <a href="https://developer.apple.com/xcode/">
+        <img src="https://img.shields.io/badge/Xcode-16+-blue?labelColor=303840" alt="Xcode: 16+">
     </a>
     <a href="https://github.com/NuPlay/RichText/blob/main/LICENSE">
         <img src="https://img.shields.io/github/license/NuPlay/RichText" alt="License">
@@ -18,7 +21,7 @@
     </a>
 </p>
 
-A powerful and customizable SwiftUI component for rendering HTML content with extensive styling options, media interaction, and cross-platform support.
+A modern, powerful, and type-safe SwiftUI component for rendering HTML content with extensive styling options, async/await support, media interaction, and comprehensive error handling. Built with Swift 6 and optimized for iOS 15.0+ and macOS 12.0+.
 
 ![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
 
@@ -45,16 +48,25 @@ A powerful and customizable SwiftUI component for rendering HTML content with ex
 
 ## ✨ Features
 
-- 📱 **Cross-platform**: Full support for iOS 13.0+ and macOS 10.15+
+### 🚀 **v3.0.0 - Modern Architecture**
+- ⚡ **Async/Await Support**: Modern Swift concurrency for better performance
+- 🛡️ **Type Safety**: Comprehensive Swift type safety with robust error handling
+- 🧪 **Swift Testing**: Modern testing framework with extensive test coverage
+- 🔧 **Backward Compatible**: 100% compatibility with v2.x while providing modern APIs
+
+### 📱 **Platform Support** 
+- 📱 **Cross-platform**: iOS 15.0+ and macOS 12.0+ with Swift 6.0+
 - 🎨 **Theme Support**: Automatic light/dark mode with custom color schemes
 - 🔤 **Typography**: System fonts, custom fonts, monospace, italic, and Dynamic Type support
-- 🖼️ **Media Handling**: Interactive media with click events, configurable image styling
-- 🔗 **Link Management**: Flexible link opening (Safari, SFSafariView, custom handlers)
-- 🎛️ **Customization**: Extensive CSS customization and configuration options
-- 📐 **Layout**: Responsive design with dynamic height calculation
-- 🔄 **Loading States**: Configurable placeholder views with smooth transitions
-- 🛡️ **Type Safety**: Full Swift type safety with comprehensive error handling
-- 🌐 **HTML5**: Complete support for modern HTML5 semantic elements
+
+### 🎛️ **Rich Features**
+- 🖼️ **Interactive Media**: Click events for images/videos with custom handling
+- 🔗 **Smart Link Management**: Safari, SFSafariView, and custom link handlers
+- 🎨 **Advanced Styling**: Type-safe background colors, CSS customization
+- 📐 **Responsive Layout**: Dynamic height calculation with smooth transitions
+- 🔄 **Loading States**: Configurable placeholders with animation support
+- 🌐 **HTML5 Complete**: Full support for modern semantic elements
+- 🚨 **Error Handling**: Comprehensive error types with custom callbacks
 
 ---
 
@@ -199,10 +211,13 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
 .fontType(.customName("Helvetica"))        // Custom font by name
 .fontType(.custom(UIFont.systemFont(ofSize: 16))) // Custom UIFont (iOS only)
 
-// Text colors
-.foregroundColor(light: .primary, dark: .primary)   // SwiftUI Colors
-.foregroundColor(light: UIColor.black, dark: UIColor.white) // UIColors
-.foregroundColor(light: NSColor.black, dark: NSColor.white) // NSColors (macOS)
+// Text colors - Modern API (v3.0.0+)
+.textColor(light: .primary, dark: .primary)         // Modern semantic naming
+
+// Legacy text colors (deprecated but supported)
+.foregroundColor(light: .primary, dark: .primary)   // SwiftUI Colors (deprecated)
+.foregroundColor(light: UIColor.black, dark: UIColor.white) // UIColors (deprecated)
+.foregroundColor(light: NSColor.black, dark: NSColor.white) // NSColors (deprecated)
 
 // Link colors
 .linkColor(light: .blue, dark: .cyan)      // SwiftUI Colors
@@ -244,15 +259,20 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
 #### Loading States
 
 ```swift
-// Loading placeholders
-.loadingPlaceholder("Loading...")          // Simple text placeholder
-.loadingText("Please wait...")             // Alternative text placeholder
+// Loading placeholders (Modern approach - recommended)
 .placeholder {                             // Custom placeholder view
-    VStack {
+    HStack(spacing: 8) {
         ProgressView()
+            .scaleEffect(0.8)
         Text("Loading content...")
+            .foregroundColor(.secondary)
     }
+    .frame(minHeight: 60)
 }
+
+// Deprecated methods (still supported for backward compatibility)
+.loadingPlaceholder("Loading...")          // Deprecated - use placeholder {}
+.loadingText("Please wait...")             // Deprecated - use placeholder {}
 
 // Loading transitions
 .loadingTransition(.fade)                  // Fade transition
@@ -349,27 +369,51 @@ let css = config.generateCompleteCSS(colorScheme: .dark)
 
 ## 🆕 What's New in v3.0.0
 
-### New Features
+### 🚀 **Core Modernization**
 
-- **🎨 Enhanced Background Colors**: Type-safe background color system with transparent, system, hex, and SwiftUI color support
-- **🔧 Improved Font Rendering**: Better monospaced and italic font support with proper CSS generation
-- **📱 Media Click Events**: Interactive media handling with custom click actions for images and videos
-- **🌐 Enhanced HTML5 Support**: Complete support for `<figure>`, `<details>`, `<summary>`, `<figcaption>`, and other semantic elements
-- **⚡ Performance Improvements**: Optimized loading, better placeholder handling, and smooth transitions
-- **🛠 Public CSS Access**: Generate and access CSS programmatically for advanced customization
-- **🚨 Comprehensive Error Handling**: Built-in error handling with detailed error types and custom callbacks
-- **📖 Complete Documentation**: Comprehensive API documentation with examples and migration guides
+- **⚡ Async/Await Architecture**: Complete rewrite using modern Swift concurrency for better performance and reliability
+- **🛡️ Enhanced Type Safety**: Robust ColorSet equality comparison and validation with RGBA-based color handling
+- **⚙️ Performance Optimizations**: Frame update debouncing, improved WebView management, and reduced main thread blocking
+- **📊 Comprehensive Logging**: Built-in performance monitoring with os.log integration
 
-### Backward Compatibility
+### 🎨 **Enhanced User Experience**
 
-Version 3.0.0 maintains **100% backward compatibility** for v2.7.0 users. All existing code continues to work without changes, with helpful deprecation warnings to guide you to improved APIs.
+- **🎨 Type-Safe Background Colors**: Complete background color system with `.transparent`, `.system`, `.hex()`, and `.color()` support
+- **📱 Interactive Media Handling**: Full media click event system for images and videos with custom action support
+- **🔧 Improved Font System**: Better monospace and italic rendering with enhanced CSS generation
+- **🔄 Modern Loading States**: Type-safe loading transitions with `.fade`, `.scale`, `.slide`, and custom animations
 
-### Migration Benefits
+### 🛠️ **Developer Experience**
+
+- **🧪 Swift Testing Migration**: Complete migration from XCTest to modern Swift Testing framework
+- **📖 Semantic API Naming**: Modern APIs like `.textColor()` replacing `.foregroundColor()` for better clarity
+- **🚨 Comprehensive Error Handling**: Detailed error types with custom callbacks and debugging support
+- **🛠️ Public CSS Access**: Programmatic CSS generation and access for advanced customization scenarios
+- **🌐 Enhanced HTML5 Support**: Complete support for `<figure>`, `<details>`, `<summary>`, `<figcaption>`, and semantic elements
+
+### 🔄 **Migration & Compatibility**
+
+- **✅ 100% Backward Compatible**: All v2.x code works without changes
+- **⚠️ Thoughtful Deprecations**: Deprecated methods include clear migration guidance
+- **📚 Migration Tooling**: Built-in TestApp with Modern API demo and migration examples
+
+### 🔄 **Backward Compatibility Promise**
+
+Version 3.0.0 maintains **100% backward compatibility** for v2.x users while providing a clear path to modern APIs:
 
 - ✅ **Zero Breaking Changes**: All existing v2.x code works unchanged
-- ✅ **Automatic Improvements**: Better font rendering and performance without code changes  
-- ✅ **Deprecation Guidance**: Clear migration path with helpful compiler warnings
-- ✅ **Additive Features**: New features are optional and don't affect existing functionality
+- ✅ **Automatic Performance**: Better async/await performance and font rendering without code changes  
+- ✅ **Guided Migration**: Helpful deprecation warnings with clear modern API alternatives
+- ✅ **Additive Enhancement**: New features are optional and don't affect existing functionality
+- ✅ **Future-Proof**: Modern architecture ready for Swift 6+ and future iOS/macOS versions
+
+### 🎯 **Recommended Migration Path**
+
+1. **Update to v3.0.0**: Immediate performance and reliability improvements
+2. **Add Error Handling**: Use `.onError()` for better debugging and user experience
+3. **Modernize APIs**: Replace deprecated methods with type-safe alternatives
+4. **Enhance Interactivity**: Add `.onMediaClick()` for rich media experiences
+5. **Improve Loading UX**: Implement `.loadingPlaceholder()` and modern transitions
 
 ---
 
@@ -785,34 +829,53 @@ RichText(html: html)
         print("Error: \(error)")
     }
 
-// 🚀 Add media interaction
+// 🚀 Add interactive media handling
 RichText(html: html)
     .onMediaClick { media in
-        handleMedia(media)
+        switch media {
+        case .image(let src):
+            presentImageViewer(src)
+        case .video(let src):
+            presentVideoPlayer(src)
+        }
     }
 
-// 🚀 Better loading experience
+// 🚀 Better loading experience with custom view
 RichText(html: html)
-    .loadingPlaceholder("Loading...")
+    .placeholder {
+        HStack(spacing: 8) {
+            ProgressView()
+                .scaleEffect(0.8)
+            Text("Loading...")
+                .foregroundColor(.secondary)
+        }
+        .frame(minHeight: 60)
+    }
     .loadingTransition(.fade)
 ```
 
-#### Font Improvements
+#### Font & Color API Modernization
+
+```swift
+// ✅ v2.x - Still works, but deprecated
+RichText(html: html)
+    .foregroundColor(light: .black, dark: .white)  // Deprecated
+
+// 🚀 v3.0.0 - Modern semantic naming
+RichText(html: html)
+    .textColor(light: .black, dark: .white)        // Modern & clear
+```
+
+#### Enhanced Font Rendering
 
 No changes needed - font rendering is automatically improved:
 
 ```swift
-// ✅ Automatically better in v3.0.0
+// ✅ Automatically better in v3.0.0 with async/await
 RichText(html: html)
-    .fontType(.monospaced)    // Now renders correctly
-    .fontType(.italic)        // Now renders correctly
+    .fontType(.monospaced)    // Enhanced rendering
+    .fontType(.italic)        // Improved CSS generation
 ```
-
-### Compatibility Timeline
-
-- **v3.0.0**: Full backward compatibility with v2.7.0, new features added
-- **v2.7.0**: Previous stable version
-- **Future**: Deprecated methods will be removed in v4.0.0 (with advance notice)
 
 ### Recommended Migration Steps
 
@@ -851,10 +914,12 @@ We welcome contributions! Here's how you can help:
 
 ### Development Guidelines
 
-- Follow Swift naming conventions
-- Add comprehensive documentation for public APIs
-- Ensure backward compatibility when possible
-- Update README.md for new features
+- Follow Swift 6 naming conventions and modern async/await patterns
+- Add comprehensive documentation for public APIs with usage examples
+- Ensure backward compatibility and provide clear migration paths
+- Use Swift Testing for all new test coverage
+- Update README.md and TestApp for new features
+- Consider performance implications and use os.log for debugging
 
 ---
 

@@ -92,14 +92,17 @@ extension RichText {
     
     #if canImport(UIKit)
     @available(iOS 14.0, *)
+    @available(*, deprecated, message: "Use textColor(light:dark:) for better semantic clarity")
     public func foregroundColor(light: Color, dark: Color) -> RichText {
         return setColors(light: UIColor(light), dark: UIColor(dark), isLink: false)
     }
 
+    @available(*, deprecated, message: "Use textColor(light:dark:) for better semantic clarity")
     public func foregroundColor(light: UIColor, dark: UIColor) -> RichText {
         return setColors(light: light, dark: dark, isLink: false)
     }
     #else
+    @available(*, deprecated, message: "Use textColor(light:dark:) for better semantic clarity")
     public func foregroundColor(light: NSColor, dark: NSColor) -> RichText {
         return setColors(light: light, dark: dark, isLink: false)
     }
@@ -163,16 +166,39 @@ extension RichText {
         return result
     }
     
+    // MARK: - Modern Replacement Methods
+    
+    #if canImport(UIKit)
+    /// Modern replacement for foregroundColor methods with better semantic clarity
+    /// - Parameters:
+    ///   - light: Text color for light mode
+    ///   - dark: Text color for dark mode
+    /// - Returns: RichText with updated text colors
+    @available(iOS 14.0, *)
+    public func textColor(light: Color, dark: Color) -> RichText {
+        return setColors(light: UIColor(light), dark: UIColor(dark), isLink: false)
+    }
+    
+    public func textColor(light: UIColor, dark: UIColor) -> RichText {
+        return setColors(light: light, dark: dark, isLink: false)
+    }
+    #else
+    public func textColor(light: NSColor, dark: NSColor) -> RichText {
+        return setColors(light: light, dark: dark, isLink: false)
+    }
+    #endif
+    
     public func placeholder<T>(@ViewBuilder content: () -> T) -> RichText where T: View {
         var result = self
         result.placeholder = AnyView(content())
         return result
     }
     
-    /// Sets a default loading placeholder with optional text
-    /// - Parameter text: Optional loading text (default: "Loading...")
-    /// - Returns: RichText with loading placeholder
+    /// Convenience method for default loading placeholder with custom text  
+    /// - Parameter text: Loading text to display (default: "Loading...")
+    /// - Returns: RichText with default loading placeholder
     @available(iOS 14.0, macOS 11.0, *)
+    @available(*, deprecated, message: "Use placeholder { } with custom view for better flexibility and consistency")
     public func loadingPlaceholder(_ text: String = "Loading...") -> RichText {
         var result = self
         result.placeholder = AnyView(
@@ -188,9 +214,10 @@ extension RichText {
         return result
     }
     
-    /// Sets a simple loading placeholder for older iOS versions
+    /// Sets a simple text loading placeholder
     /// - Parameter text: Loading text (default: "Loading...")
     /// - Returns: RichText with simple text placeholder
+    @available(*, deprecated, message: "Use placeholder { Text(\"Loading...\") } for better consistency")
     public func loadingText(_ text: String = "Loading...") -> RichText {
         var result = self
         result.placeholder = AnyView(
@@ -202,6 +229,7 @@ extension RichText {
         return result
     }
     
+    @available(*, deprecated, message: "Use loadingTransition(_:) for type-safe animation configuration")
     public func transition(_ transition: Animation?) -> RichText {
         var result = self
         result.configuration.transition = transition

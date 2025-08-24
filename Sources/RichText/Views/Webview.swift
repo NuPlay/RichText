@@ -8,6 +8,10 @@
 import SwiftUI
 import WebKit
 import SafariServices
+import os.log
+
+/// Logger for WebView performance monitoring
+private let webViewLogger = Logger(subsystem: "com.nuplay.richtext", category: "WebView")
 
 struct WebView {
     @Environment(\.multilineTextAlignment) var alignment
@@ -16,6 +20,9 @@ struct WebView {
     let html: String
     let conf: Configuration
     let width: CGFloat
+    
+    /// Debounce timer for frame updates to improve performance
+    @State private var debounceTimer: Timer?
     
     init(width: CGFloat, dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
         self._dynamicHeight = dynamicHeight
@@ -61,9 +68,13 @@ extension WebView: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         loadHTML(in: uiView)
-        DispatchQueue.main.async { [weak uiView] in
-            guard let webview = uiView else { return }
-            webview.frame.size = .init(width: self.width, height: self.dynamicHeight)
+        
+        // Debounce frame updates for better performance
+        debounceTimer?.invalidate()
+        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: false) { _ in // ~60fps
+            Task { @MainActor in
+                uiView.frame.size = .init(width: self.width, height: self.dynamicHeight)
+            }
         }
     }
 
@@ -131,42 +142,68 @@ extension WebView {
         }
         
         private func handleNavigationError(_ error: Error) {
-            DispatchQueue.main.async {
+            webViewLogger.error("Navigation error: \(error.localizedDescription)")
+            Task { @MainActor in
                 self.parent.conf.errorHandler?(.htmlLoadingFailed("\(error.localizedDescription): \(self.parent.html.prefix(100))"))
             }
         }
                 
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            if message.name == RichTextConstants.heightNotificationHandler {
-                if let height = message.body as? NSNumber {
-                    let cgFloatHeight = CGFloat(height.doubleValue)
-                    DispatchQueue.main.async {
-                        withAnimation(self.parent.conf.transition) {
-                            self.parent.dynamicHeight = cgFloatHeight
-                        }
-                    }
-                }
-            } else if message.name == RichTextConstants.mediaClickHandler {
-                if let messageBody = message.body as? [String: Any],
-                   let type = messageBody["type"] as? String,
-                   let src = messageBody["src"] as? String {
-                    
-                    DispatchQueue.main.async {
-                        switch type {
-                        case "image":
-                            self.parent.conf.mediaClickHandler?(.image(src: src))
-                        case "video":
-                            self.parent.conf.mediaClickHandler?(.video(src: src))
-                        default:
-                            self.parent.conf.errorHandler?(.mediaHandlingFailed("Unknown media type: \(type)"))
-                        }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.parent.conf.errorHandler?(.mediaHandlingFailed("Invalid media message"))
-                    }
-                }
+            Task { @MainActor in
+                await handleScriptMessage(message)
+            }
+        }
+        
+        @MainActor
+        private func handleScriptMessage(_ message: WKScriptMessage) async {
+            switch message.name {
+            case RichTextConstants.heightNotificationHandler:
+                await handleHeightUpdate(message.body)
+                
+            case RichTextConstants.mediaClickHandler:
+                await handleMediaClick(message.body)
+                
+            default:
+                webViewLogger.warning("Unknown script message: \(message.name)")
+            }
+        }
+        
+        @MainActor
+        private func handleHeightUpdate(_ body: Any) async {
+            guard let height = body as? NSNumber else {
+                webViewLogger.error("Invalid height value received")
+                return
+            }
+            
+            let cgFloatHeight = CGFloat(height.doubleValue)
+            
+            // Only update if height actually changed to avoid unnecessary animations
+            guard cgFloatHeight != self.parent.dynamicHeight else { return }
+            
+            withAnimation(self.parent.conf.transition) {
+                self.parent.dynamicHeight = cgFloatHeight
+            }
+            
+            webViewLogger.debug("Height updated to: \(cgFloatHeight)")
+        }
+        
+        @MainActor
+        private func handleMediaClick(_ body: Any) async {
+            guard let messageBody = body as? [String: Any],
+                  let type = messageBody["type"] as? String,
+                  let src = messageBody["src"] as? String else {
+                self.parent.conf.errorHandler?(.mediaHandlingFailed("Invalid media message"))
+                return
+            }
+            
+            switch type {
+            case "image":
+                self.parent.conf.mediaClickHandler?(.image(src: src))
+            case "video":
+                self.parent.conf.mediaClickHandler?(.video(src: src))
+            default:
+                self.parent.conf.errorHandler?(.mediaHandlingFailed("Unknown media type: \(type)"))
             }
         }
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -233,9 +270,12 @@ extension WebView {
     /// Loads HTML content into the WebView safely on main thread
     /// - Parameter webView: The WKWebView instance to load content into
     private func loadHTML(in webView: WKWebView) {
-        DispatchQueue.main.async { [weak webView] in
-            guard let webView = webView else { return }
-            webView.loadHTMLString(self.generateHTML(), baseURL: self.conf.baseURL)
+        Task { @MainActor in
+            let htmlString = generateHTML()
+            
+            webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
+            
+            webView.loadHTMLString(htmlString, baseURL: conf.baseURL)
         }
     }
     

@@ -150,10 +150,37 @@ public enum BackgroundColor: Equatable {
         case (.hex(let lhsHex), .hex(let rhsHex)):
             return lhsHex == rhsHex
         case (.color(let lhsColor), .color(let rhsColor)):
-            return lhsColor.description == rhsColor.description
+            return compareColors(lhsColor, rhsColor)
         default:
             return false
         }
+    }
+    
+    /// Compares two SwiftUI Colors using their RGBA values
+    /// - Parameters:
+    ///   - lhs: First color to compare
+    ///   - rhs: Second color to compare
+    /// - Returns: True if colors have the same RGBA values
+    private static func compareColors(_ lhs: Color, _ rhs: Color) -> Bool {
+        #if canImport(UIKit)
+        guard let lhsUIColor = UIColor(lhs).rgba,
+              let rhsUIColor = UIColor(rhs).rgba else {
+            return false
+        }
+        return abs(lhsUIColor.red - rhsUIColor.red) < 0.001 &&
+               abs(lhsUIColor.green - rhsUIColor.green) < 0.001 &&
+               abs(lhsUIColor.blue - rhsUIColor.blue) < 0.001 &&
+               abs(lhsUIColor.alpha - rhsUIColor.alpha) < 0.001
+        #else
+        guard let lhsNSColor = NSColor(lhs).rgba,
+              let rhsNSColor = NSColor(rhs).rgba else {
+            return false
+        }
+        return abs(lhsNSColor.red - rhsNSColor.red) < 0.001 &&
+               abs(lhsNSColor.green - rhsNSColor.green) < 0.001 &&
+               abs(lhsNSColor.blue - rhsNSColor.blue) < 0.001 &&
+               abs(lhsNSColor.alpha - rhsNSColor.alpha) < 0.001
+        #endif
     }
     
     /// Returns the CSS value for the background color
