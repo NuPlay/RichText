@@ -102,7 +102,9 @@ struct ContentView: View {
                 .lineHeight(170)                       // Line height percentage
                 .imageRadius(12)                       // Rounded image corners
                 .transparentBackground()               // Transparent background
-                .loadingPlaceholder("Loading...")      // Loading indicator
+                .placeholder {                         // Loading Placeholder
+                    Text("Loading email...")
+                }
                 .onMediaClick { media in               // Handle media clicks
                     switch media {
                     case .image(let src):
@@ -588,7 +590,9 @@ struct EmailView: View {
                     showLinkConfirmation(url)
                 }
             })
-            .loadingPlaceholder("Loading email...")
+            .placeholder {
+                Text("Loading email...")
+            }
             .loadingTransition(.fade)
             .onError { error in
                 print("Email loading error: \(error)")
