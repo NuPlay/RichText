@@ -1,16 +1,10 @@
 # RichText Testing Guide
 
-This directory contains comprehensive tests for the RichText library using both traditional XCTest and modern Swift Testing frameworks.
+This directory contains comprehensive tests for the RichText library using the modern Swift Testing framework.
 
 ## Test Files Overview
 
-### 1. `RichTextTests.swift` (XCTest)
-- **Framework**: XCTest (traditional testing framework)
-- **Compatibility**: Works with all Swift versions and Xcode versions
-- **Platform Support**: iOS 13.0+, macOS 10.15+
-- **Features**: Complete test coverage with XCTest assertions
-
-### 2. `RichTextSwiftTestingTests.swift` (Swift Testing)
+### `RichTextSwiftTestingTests.swift` (Swift Testing)
 - **Framework**: Swift Testing (modern testing framework introduced in 2024)
 - **Compatibility**: Requires Swift 6.0+ with Xcode 16 or later
 - **Platform Support**: iOS 16.0+, macOS 13.0+
@@ -20,25 +14,22 @@ This directory contains comprehensive tests for the RichText library using both 
 
 ### Using Swift Package Manager
 ```bash
-# Run all tests (XCTest only if Swift Testing not available)
+# Run all tests (requires Swift 6.0+)
 swift test
 
-# Run specific test class (XCTest)
-swift test --filter RichTextTests
-
-# Run Swift Testing tests (requires Swift 6.0+)
+# Run Swift Testing tests specifically
 swift test --filter RichTextSwiftTestingTests
 ```
 
 ### Using Xcode
-1. Open the RichText package in Xcode
+1. Open the RichText package in Xcode (requires Xcode 16+)
 2. Use ⌘+U to run all tests
-3. Both XCTest and Swift Testing tests will appear in the Test Navigator
-4. Swift Testing tests will be grouped by `@Suite` names
+3. Swift Testing tests will appear in the Test Navigator
+4. Tests will be grouped by `@Suite` names
 
 ## Test Coverage
 
-Both test files provide comprehensive coverage of:
+The test file provides comprehensive coverage of:
 
 ### Core Functionality
 - ✅ Configuration initialization and customization
@@ -117,15 +108,15 @@ func performanceTest() {
 - **Conditional Compilation**: Uses `#if canImport(Testing)` for graceful degradation
 
 ### Platform Requirements
-- **XCTest**: Works with iOS 13.0+, macOS 10.15+
-- **Swift Testing**: Requires iOS 16.0+, macOS 13.0+ for full compatibility
+- **Swift Testing**: Requires iOS 16.0+, macOS 13.0+, Swift 6.0+, Xcode 16+
+- **Library itself**: Works with iOS 15.0+, macOS 12.0+, Swift 5.9+
 
-## Migration from XCTest to Swift Testing
+## Swift Testing Syntax Reference
 
-Key differences when migrating:
+Key syntax differences from XCTest:
 
-| XCTest | Swift Testing |
-|--------|---------------|
+| XCTest (Not used in this project) | Swift Testing (Used here) |
+|-----------------------------------|---------------------------|
 | `XCTAssertEqual(a, b)` | `#expect(a == b)` |
 | `XCTAssertTrue(condition)` | `#expect(condition)` |
 | `XCTAssertNotNil(value)` | `#expect(value != nil)` |
@@ -135,19 +126,19 @@ Key differences when migrating:
 
 ## Best Practices
 
-1. **Run Both Test Suites**: During development, run both XCTest and Swift Testing to ensure comprehensive coverage
-2. **Platform Targeting**: Use XCTest for broader compatibility, Swift Testing for modern features
-3. **Performance Testing**: Swift Testing provides better performance insights with modern tooling
-4. **Error Messages**: Swift Testing provides more detailed failure messages with captured values
-5. **Parameterized Testing**: Use Swift Testing's native parameterization for testing multiple scenarios
+1. **Swift 6.0+ Required**: Ensure you have Swift 6.0+ and Xcode 16+ to run tests
+2. **Performance Testing**: Swift Testing provides better performance insights with modern tooling
+3. **Error Messages**: Swift Testing provides more detailed failure messages with captured values
+4. **Parameterized Testing**: Use Swift Testing's native parameterization for testing multiple scenarios
+5. **Test Coverage**: The single test file ensures comprehensive coverage with modern syntax
 
 ## Contributing
 
 When adding new tests:
-1. Add corresponding tests to both files when possible
-2. Use Swift Testing's modern syntax for new features
-3. Maintain backward compatibility tests in XCTest version
-4. Ensure test coverage for all new functionality
-5. Include performance and edge case testing
+1. Use Swift Testing's modern syntax with `@Test` and `@Suite`
+2. Add parameterized tests for multiple scenarios
+3. Ensure test coverage for all new functionality
+4. Include performance and edge case testing
+5. Use descriptive test names and suite organization
 
-Both testing approaches ensure the RichText library maintains high quality and reliability across all supported platforms and Swift versions.
+The Swift Testing framework ensures the RichText library maintains high quality and reliability across all supported platforms.

@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://swift.org/">
-        <img src="https://img.shields.io/badge/Swift-6.0+-F05138?labelColor=303840" alt="Swift: 6.0+">
+        <img src="https://img.shields.io/badge/Swift-5.9+-F05138?labelColor=303840" alt="Swift: 5.9+">
     </a>
     <a href="https://www.apple.com/ios/">
         <img src="https://img.shields.io/badge/iOS-15.0+-007AFF?labelColor=303840" alt="iOS: 15.0+">
@@ -21,7 +21,7 @@
     </a>
 </p>
 
-A modern, powerful, and type-safe SwiftUI component for rendering HTML content with extensive styling options, async/await support, media interaction, and comprehensive error handling. Built with Swift 6 and optimized for iOS 15.0+ and macOS 12.0+.
+A modern, powerful, and type-safe SwiftUI component for rendering HTML content with extensive styling options, async/await support, media interaction, and comprehensive error handling. Built for Swift 5.9+ and optimized for iOS 15.0+ and macOS 12.0+.
 
 ![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
 
@@ -55,7 +55,7 @@ A modern, powerful, and type-safe SwiftUI component for rendering HTML content w
 - 🔧 **Backward Compatible**: 100% compatibility with v2.x while providing modern APIs
 
 ### 📱 **Platform Support** 
-- 📱 **Cross-platform**: iOS 15.0+ and macOS 12.0+ with Swift 6.0+
+- 📱 **Cross-platform**: iOS 15.0+ and macOS 12.0+ with Swift 5.9+
 - 🎨 **Theme Support**: Automatic light/dark mode with custom color schemes
 - 🔤 **Typography**: System fonts, custom fonts, monospace, italic, and Dynamic Type support
 
@@ -191,7 +191,7 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
 
 ```swift
 // Recommended approaches (v3.0.0+)
-.transparentBackground()                    // Transparent (default, easiest)
+.transparentBackground()                    // Transparent (default)
 .backgroundColor(.system)                   // System default (white/black)
 .backgroundColorHex("FF0000")              // Hex color
 .backgroundColorSwiftUI(.blue)             // SwiftUI Color
@@ -233,8 +233,8 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
 
 ```swift
 .lineHeight(170)                           // Line height percentage (default: 170)
-.imageRadius(12)                           // Image border radius in points
-.colorScheme(.auto)                        // .auto, .light, .dark
+.imageRadius(12)                           // Image border radius in points (default: 0)
+.colorScheme(.auto)                        // .auto (default), .light, .dark
 .forceColorSchemeBackground(true)          // Force background color override
 ```
 
@@ -413,7 +413,7 @@ Version 3.0.0 maintains **100% backward compatibility** for v2.x users while pro
 2. **Add Error Handling**: Use `.onError()` for better debugging and user experience
 3. **Modernize APIs**: Replace deprecated methods with type-safe alternatives
 4. **Enhance Interactivity**: Add `.onMediaClick()` for rich media experiences
-5. **Improve Loading UX**: Implement `.loadingPlaceholder()` and modern transitions
+5. **Improve Loading UX**: Implement `.placeholder {}` and modern transitions
 
 ---
 
@@ -883,7 +883,7 @@ RichText(html: html)
 2. **Add Error Handling**: Use `.onError()` for better debugging
 3. **Update Background Colors**: Replace string-based with type-safe methods
 4. **Add Media Handling**: Use `.onMediaClick()` for interactive content
-5. **Improve Loading UX**: Add `.loadingPlaceholder()` and transitions
+5. **Improve Loading UX**: Add `.placeholder {}` with custom views and transitions
 
 ---
 
@@ -914,7 +914,7 @@ We welcome contributions! Here's how you can help:
 
 ### Development Guidelines
 
-- Follow Swift 6 naming conventions and modern async/await patterns
+- Follow Swift naming conventions and modern async/await patterns
 - Add comprehensive documentation for public APIs with usage examples
 - Ensure backward compatibility and provide clear migration paths
 - Use Swift Testing for all new test coverage
