@@ -21,9 +21,6 @@ struct WebView {
     let conf: Configuration
     let width: CGFloat
     
-    /// Debounce timer for frame updates to improve performance
-    @State private var debounceTimer: Timer?
-    
     init(width: CGFloat, dynamicHeight: Binding<CGFloat>, html: String, configuration: Configuration) {
         self._dynamicHeight = dynamicHeight
         
@@ -69,13 +66,8 @@ extension WebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: Context) {
         loadHTML(in: uiView)
         
-        // Debounce frame updates for better performance
-        debounceTimer?.invalidate()
-        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: false) { _ in // ~60fps
-            Task { @MainActor in
-                uiView.frame.size = .init(width: self.width, height: self.dynamicHeight)
-            }
-        }
+        // Update frame directly without timer to avoid state modification during view update
+        uiView.frame.size = .init(width: self.width, height: self.dynamicHeight)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -181,8 +173,11 @@ extension WebView {
             // Only update if height actually changed to avoid unnecessary animations
             guard cgFloatHeight != self.parent.dynamicHeight else { return }
             
-            withAnimation(self.parent.conf.transition) {
-                self.parent.dynamicHeight = cgFloatHeight
+            // Defer the state update to avoid modifying state during view update
+            DispatchQueue.main.async {
+                withAnimation(self.parent.conf.transition) {
+                    self.parent.dynamicHeight = cgFloatHeight
+                }
             }
             
             webViewLogger.debug("Height updated to: \(cgFloatHeight)")
