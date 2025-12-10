@@ -43,7 +43,7 @@ public struct RichTextConstants {
     public static let httpsScheme = "https"
     
     // MARK: - CSS Selectors and Properties (v3.0.0 - Performance optimized)
-    public static let imageCSS = "img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: %@px; loading: lazy;}"
+    public static let imageCSS = "img{max-height: 100%%; min-height: 100%%; height:auto; max-width: 100%%; width:auto;margin-bottom:5px; border-radius: %@px; loading: lazy;}"
     public static let textCSS = "h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote, figure, figcaption, details, summary, article, section, aside, header, footer, nav, main {text-align:%@; line-height: %@%%; font-family: %@; color: %@; background-color: %@; word-wrap: break-word; }"
     public static let iframeCSS = "iframe{width:100%%; height:%dpx; border: none;}"
     public static let linkCSS = "a:link {color: %@; transition: color 0.2s ease;}"
