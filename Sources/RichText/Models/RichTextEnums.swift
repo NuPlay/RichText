@@ -26,7 +26,7 @@ public enum FontType {
 
     @available(*, deprecated, renamed: "system")
     case `default`
-    
+
     /// Returns the font name string for CSS usage
     var name: String {
         switch self {
@@ -44,7 +44,7 @@ public enum FontType {
             return RichTextConstants.systemFontName
         }
     }
-    
+
     /// Returns additional CSS properties for the font type
     var additionalCSSProperties: String {
         switch self {
@@ -87,7 +87,7 @@ public enum RichTextError: LocalizedError {
     case webViewConfigurationFailed
     case cssGenerationFailed
     case mediaHandlingFailed(String)
-    
+
     public var errorDescription: String? {
         switch self {
         case .htmlLoadingFailed(let html):
@@ -142,7 +142,7 @@ public enum BackgroundColor: Equatable {
     case hex(String)
     /// SwiftUI Color
     case color(Color)
-    
+
     public static func == (lhs: BackgroundColor, rhs: BackgroundColor) -> Bool {
         switch (lhs, rhs) {
         case (.transparent, .transparent), (.system, .system):
@@ -155,7 +155,7 @@ public enum BackgroundColor: Equatable {
             return false
         }
     }
-    
+
     /// Compares two SwiftUI Colors using their RGBA values
     /// - Parameters:
     ///   - lhs: First color to compare
@@ -182,7 +182,7 @@ public enum BackgroundColor: Equatable {
                abs(lhsNSColor.alpha - rhsNSColor.alpha) < 0.001
         #endif
     }
-    
+
     /// Returns the CSS value for the background color
     var cssValue: String {
         switch self {
@@ -191,8 +191,7 @@ public enum BackgroundColor: Equatable {
         case .system:
             return "inherit"
         case .hex(let hexValue):
-            let cleanHex = hexValue.hasPrefix("#") ? String(hexValue.dropFirst()) : hexValue
-            return "#\(cleanHex)"
+            return Self.cssColorString(from: hexValue)
         case .color(let color):
             #if canImport(UIKit)
             if #available(iOS 14.0, *), let hex = UIColor(color).hex {
@@ -204,6 +203,42 @@ public enum BackgroundColor: Equatable {
             }
             #endif
             return "transparent"
+        }
+    }
+
+    /// Normalizes legacy and modern CSS color strings without breaking the old `.hex` storage case.
+    ///
+    /// Historically `BackgroundColor.hex` has also been used by the deprecated
+    /// `backgroundColor(_:)` API, whose documentation accepts general CSS colors such as
+    /// `rgba(...)`. Prefix only actual hex literals with `#` and pass CSS color functions or
+    /// keywords through as-is.
+    private static func cssColorString(from value: String) -> String {
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedValue.isEmpty else {
+            return "transparent"
+        }
+
+        if trimmedValue.hasPrefix("#") {
+            return trimmedValue
+        }
+
+        if isHexColorLiteral(trimmedValue) {
+            return "#\(trimmedValue)"
+        }
+
+        return trimmedValue
+    }
+
+    private static func isHexColorLiteral(_ value: String) -> Bool {
+        let validLengths = [3, 4, 6, 8]
+
+        guard validLengths.contains(value.count) else {
+            return false
+        }
+
+        return value.allSatisfy { character in
+            character.isHexDigit
         }
     }
 }
@@ -220,7 +255,7 @@ public enum LoadingTransition {
     case scale
     /// Custom animation
     case custom(Animation)
-    
+
     var animation: Animation? {
         switch self {
         case .none:
@@ -236,5 +271,4 @@ public enum LoadingTransition {
         }
     }
 }
-
 

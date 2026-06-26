@@ -64,6 +64,7 @@ extension WebView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
+        context.coordinator.parent = self
         loadHTML(in: uiView)
         
         // Update frame directly without timer to avoid state modification during view update
@@ -107,7 +108,8 @@ extension WebView: NSViewRepresentable {
         return webview
     }
 
-    func updateNSView(_ nsView: WKWebView, context _: Context) {
+    func updateNSView(_ nsView: WKWebView, context: Context) {
+        context.coordinator.parent = self
         loadHTML(in: nsView)
     }
 

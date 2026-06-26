@@ -76,30 +76,41 @@ struct RGBAComponents {
 extension NSColor {
     /// Converts NSColor to hex string for CSS usage
     var hex: String? {
-        guard let components = cgColor.components, components.count >= 3 else {
+        guard let color = usingColorSpace(.sRGB) else {
             return nil
         }
 
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
+        let multiplier = RichTextConstants.colorMultiplier
 
-        return String(format: "%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
+        if color.alphaComponent == 1.0 {
+            return String(
+                format: "%02lX%02lX%02lX",
+                Int(color.redComponent * multiplier),
+                Int(color.greenComponent * multiplier),
+                Int(color.blueComponent * multiplier)
+            )
+        } else {
+            return String(
+                format: "%02lX%02lX%02lX%02lX",
+                Int(color.redComponent * multiplier),
+                Int(color.greenComponent * multiplier),
+                Int(color.blueComponent * multiplier),
+                Int(color.alphaComponent * multiplier)
+            )
+        }
     }
     
     /// Returns RGBA components for robust color comparison
     var rgba: RGBAComponents? {
-        guard let components = cgColor.components, components.count >= 3 else {
+        guard let color = usingColorSpace(.sRGB) else {
             return nil
         }
         
-        let alpha = components.count >= 4 ? CGFloat(components[3]) : 1.0
-        
         return RGBAComponents(
-            red: CGFloat(components[0]),
-            green: CGFloat(components[1]),
-            blue: CGFloat(components[2]),
-            alpha: alpha
+            red: color.redComponent,
+            green: color.greenComponent,
+            blue: color.blueComponent,
+            alpha: color.alphaComponent
         )
     }
 }
