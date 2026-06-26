@@ -13,6 +13,9 @@
     <a href="https://developer.apple.com/xcode/">
         <img src="https://img.shields.io/badge/Xcode-16+-blue?labelColor=303840" alt="Xcode: 16+">
     </a>
+    <a href="https://github.com/NuPlay/RichText/actions/workflows/ci.yml">
+        <img src="https://github.com/NuPlay/RichText/actions/workflows/ci.yml/badge.svg" alt="CI">
+    </a>
     <a href="https://github.com/NuPlay/RichText/blob/main/LICENSE">
         <img src="https://img.shields.io/github/license/NuPlay/RichText" alt="License">
     </a>

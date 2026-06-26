@@ -103,6 +103,11 @@ extension RichText {
     }
     #else
     @available(*, deprecated, message: "Use textColor(light:dark:) for better semantic clarity")
+    public func foregroundColor(light: Color, dark: Color) -> RichText {
+        return setColors(light: NSColor(light), dark: NSColor(dark), isLink: false)
+    }
+
+    @available(*, deprecated, message: "Use textColor(light:dark:) for better semantic clarity")
     public func foregroundColor(light: NSColor, dark: NSColor) -> RichText {
         return setColors(light: light, dark: dark, isLink: false)
     }
@@ -118,6 +123,10 @@ extension RichText {
         return setColors(light: light, dark: dark, isLink: true)
     }
     #else
+    public func linkColor(light: Color, dark: Color) -> RichText {
+        return setColors(light: NSColor(light), dark: NSColor(dark), isLink: true)
+    }
+
     public func linkColor(light: NSColor, dark: NSColor) -> RichText {
         return setColors(light: light, dark: dark, isLink: true)
     }
@@ -183,6 +192,10 @@ extension RichText {
         return setColors(light: light, dark: dark, isLink: false)
     }
     #else
+    public func textColor(light: Color, dark: Color) -> RichText {
+        return setColors(light: NSColor(light), dark: NSColor(dark), isLink: false)
+    }
+
     public func textColor(light: NSColor, dark: NSColor) -> RichText {
         return setColors(light: light, dark: dark, isLink: false)
     }
@@ -277,4 +290,3 @@ extension RichText {
     }
     #endif
 }
-

@@ -578,6 +578,7 @@ struct RichTextAllTests {
     struct AsyncAwaitTests {
         
         @Test("WebView async operations work correctly")
+        @MainActor
         func webViewAsyncOperations() async {
             let html = "<p>Test HTML content</p>"
             let config = Configuration()
@@ -600,10 +601,10 @@ struct RichTextAllTests {
             let richText = RichText(html: html)
             
 #if canImport(UIKit)
-            let modernText = richText.textColor(light: .red, dark: .blue)
+            let modernText = richText.textColor(light: Color.red, dark: Color.blue)
             #expect(modernText.html == html)
 #else
-            let modernText = richText.textColor(light: .red, dark: .blue)
+            let modernText = richText.textColor(light: Color.red, dark: Color.blue)
             #expect(modernText.html == html)
 #endif
         }
@@ -615,10 +616,10 @@ struct RichTextAllTests {
             
             // These should still work but show deprecation warnings
 #if canImport(UIKit)
-            let deprecatedText = richText.foregroundColor(light: .red, dark: .blue)
+            let deprecatedText = richText.foregroundColor(light: Color.red, dark: Color.blue)
             #expect(deprecatedText.html == html)
 #else
-            let deprecatedText = richText.foregroundColor(light: .red, dark: .blue)
+            let deprecatedText = richText.foregroundColor(light: Color.red, dark: Color.blue)
             #expect(deprecatedText.html == html)
 #endif
         }

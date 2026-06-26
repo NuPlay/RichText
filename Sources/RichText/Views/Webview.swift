@@ -201,7 +201,8 @@ extension WebView {
                 self.parent.conf.errorHandler?(.mediaHandlingFailed("Unknown media type: \(type)"))
             }
         }
-        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        @MainActor
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping @MainActor @Sendable (WKNavigationActionPolicy) -> Void) {
             guard navigationAction.navigationType == WKNavigationType.linkActivated,
                   var url = navigationAction.request.url else {
                 decisionHandler(WKNavigationActionPolicy.allow)
@@ -233,7 +234,11 @@ extension WebView {
                         if let reader = isReaderActivated {
                             conf.entersReaderIfAvailable = reader
                         }
-                        let root = UIApplication.shared.windows.first?.rootViewController
+                        let root = UIApplication.shared.connectedScenes
+                            .compactMap { $0 as? UIWindowScene }
+                            .flatMap(\.windows)
+                            .first { $0.isKeyWindow }?
+                            .rootViewController
                         root?.present(SFSafariViewController(url: url, configuration: conf), animated: isAnimated, completion: nil)
                         #endif
                     case .Safari:
@@ -264,14 +269,13 @@ extension WebView {
 extension WebView {
     /// Loads HTML content into the WebView safely on main thread
     /// - Parameter webView: The WKWebView instance to load content into
+    @MainActor
     private func loadHTML(in webView: WKWebView) {
-        Task { @MainActor in
-            let htmlString = generateHTML()
-            
-            webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
-            
-            webView.loadHTMLString(htmlString, baseURL: conf.baseURL)
-        }
+        let htmlString = generateHTML()
+        
+        webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
+        
+        webView.loadHTMLString(htmlString, baseURL: conf.baseURL)
     }
     
     /// Generates the complete HTML string for the WebView

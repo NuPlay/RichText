@@ -24,7 +24,8 @@ let package = Package(
             ]),
         .testTarget(
             name: "RichTextTests",
-            dependencies: ["RichText"]
+            dependencies: ["RichText"],
+            exclude: ["README.md"]
         ),
     ]
 )

@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test and compile (Xcode 26)
+    runs-on: macos-26
+    env:
+      TOOLCHAINS: com.apple.dt.toolchain.XcodeDefault
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Select Xcode 26
+        run: |
+          set -euo pipefail
+          XCODE_APP=""
+
+          for candidate in \
+            /Applications/Xcode_26.5.app \
+            /Applications/Xcode_26.4.1.app \
+            /Applications/Xcode_26.4.app \
+            /Applications/Xcode_26.3.app \
+            /Applications/Xcode_26.2.app \
+            /Applications/Xcode_26.1.1.app \
+            /Applications/Xcode_26.0.1.app \
+            /Applications/Xcode.app
+          do
+            if [ -d "${candidate}" ] && DEVELOPER_DIR="${candidate}/Contents/Developer" xcodebuild -version | grep -q '^Xcode 26'; then
+              XCODE_APP="${candidate}"
+              break
+            fi
+          done
+
+          if [ -z "${XCODE_APP}" ]; then
+            echo "Xcode 26 is required for this CI job." >&2
+            exit 1
+          fi
+
+          echo "DEVELOPER_DIR=${XCODE_APP}/Contents/Developer" >> "${GITHUB_ENV}"
+          sudo xcode-select -s "${XCODE_APP}/Contents/Developer"
+          sw_vers
+          uname -a
+          xcodebuild -version
+          xcrun swift --version
+          echo "TOOLCHAINS=${TOOLCHAINS}"
+
+      - name: Run macOS package tests
+        run: |
+          set -euo pipefail
+          SWIFTPM_BASE="${RUNNER_TEMP}/richtext-swiftpm"
+          mkdir -p \
+            "${SWIFTPM_BASE}/build" \
+            "${SWIFTPM_BASE}/cache" \
+            "${SWIFTPM_BASE}/config" \
+            "${SWIFTPM_BASE}/security" \
+            "${SWIFTPM_BASE}/clang-module-cache"
+
+          export CLANG_MODULE_CACHE_PATH="${SWIFTPM_BASE}/clang-module-cache"
+          bash .github/scripts/run-ci-command.sh "swift test" \
+            xcrun swift test \
+              --cache-path "${SWIFTPM_BASE}/cache" \
+              --config-path "${SWIFTPM_BASE}/config" \
+              --security-path "${SWIFTPM_BASE}/security" \
+              --scratch-path "${SWIFTPM_BASE}/build" \
+              --manifest-cache local \
+              --disable-dependency-cache
+
+      - name: Build sample package
+        run: |
+          set -euo pipefail
+          SWIFTPM_BASE="${RUNNER_TEMP}/richtext-testapp-swiftpm"
+          mkdir -p \
+            "${SWIFTPM_BASE}/build" \
+            "${SWIFTPM_BASE}/cache" \
+            "${SWIFTPM_BASE}/config" \
+            "${SWIFTPM_BASE}/security" \
+            "${SWIFTPM_BASE}/clang-module-cache"
+
+          export CLANG_MODULE_CACHE_PATH="${SWIFTPM_BASE}/clang-module-cache"
+          bash .github/scripts/run-ci-command.sh "sample package build" \
+            xcrun swift build \
+              --package-path TestApp \
+              --cache-path "${SWIFTPM_BASE}/cache" \
+              --config-path "${SWIFTPM_BASE}/config" \
+              --security-path "${SWIFTPM_BASE}/security" \
+              --scratch-path "${SWIFTPM_BASE}/build" \
+              --manifest-cache local \
+              --disable-dependency-cache
+
+      - name: Compile iOS test bundle
+        run: |
+          set -euo pipefail
+          bash .github/scripts/run-ci-command.sh "iOS build-for-testing" \
+            xcodebuild build-for-testing \
+              -scheme RichText \
+              -destination 'generic/platform=iOS Simulator' \
+              -toolchain com.apple.dt.toolchain.XcodeDefault \
+              -derivedDataPath "${RUNNER_TEMP}/richtext-xcode-derived-data" \
+              CODE_SIGNING_ALLOWED=NO
+
+      - name: Build with strict concurrency
+        run: |
+          set -euo pipefail
+          bash .github/scripts/run-ci-command.sh "strict concurrency build" \
+            xcodebuild build \
+              -scheme RichText \
+              -destination 'generic/platform=iOS Simulator' \
+              -toolchain com.apple.dt.toolchain.XcodeDefault \
+              -derivedDataPath "${RUNNER_TEMP}/richtext-xcode-derived-data" \
+              OTHER_SWIFT_FLAGS='-strict-concurrency=complete' \
+              CODE_SIGNING_ALLOWED=NO
