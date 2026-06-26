@@ -34,6 +34,7 @@ A modern, powerful, and type-safe SwiftUI component for rendering HTML content w
 ## Table of Contents
 
 - [✨ Features](#-features)
+- [🌟 Used By](#-used-by)
 - [🚀 Quick Start](#-quick-start)
 - [📦 Installation](#-installation)
 - [📚 Complete API Reference](#-complete-api-reference)
@@ -67,6 +68,17 @@ A modern, powerful, and type-safe SwiftUI component for rendering HTML content w
 - 🔄 **Loading States**: Configurable placeholders with animation support
 - 🌐 **HTML5 Complete**: Full support for modern semantic elements
 - 🚨 **Error Handling**: Comprehensive error types with custom callbacks
+
+---
+
+## 🌟 Used By
+
+RichText is used in public Swift projects such as:
+
+- [IBM/mac-ibm-notifications](https://github.com/IBM/mac-ibm-notifications) - macOS notification and alert agent
+- [AudioBooth/AudioBooth](https://github.com/AudioBooth/AudioBooth) - iOS companion app for Audiobookshelf
+
+No affiliation or endorsement implied. Using RichText in your project? Feel free to open a PR to add it here.
 
 ---
 
