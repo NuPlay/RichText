@@ -76,6 +76,70 @@ struct RichTextAllTests {
             #expect(css.contains("line-height: 150.0%"))
             #expect(css.contains(expectedAlignment))
         }
+
+        @Test("Percent signs survive String(format:) based CSS generation")
+        func percentSignsSurviveFormatting() {
+            let css = Configuration(lineHeight: 150, imageRadius: 5).css(isLight: true, alignment: .leading)
+
+            // The CSS constants that carry substitutions are rendered with `String(format:)`,
+            // which consumes a bare `%`. A literal percent sign therefore has to be written as
+            // `%%` in those constants. Missing one is silent: `max-width: 100%` becomes
+            // `max-width: 100`, an invalid length that WebKit drops, and images then overflow
+            // the web view instead of being constrained to its width.
+            #expect(css.contains("max-width: 100%"))
+            #expect(css.contains("max-height: 100%"))
+            #expect(css.contains("width:100%;"))
+            #expect(css.contains("line-height: 150.0%"))
+
+            #expect(!css.contains("max-width: 100;"))
+            #expect(!css.contains("max-height: 100;"))
+            #expect(!css.contains("width:100;"))
+        }
+
+        @Test("Percent based CSS constants are escaped for String(format:)", arguments: [
+            ("imageCSS", RichTextConstants.imageCSS),
+            ("textCSS", RichTextConstants.textCSS),
+            ("iframeCSS", RichTextConstants.iframeCSS),
+            ("linkCSS", RichTextConstants.linkCSS),
+            ("cssTemplate", RichTextConstants.cssTemplate),
+            ("mediaCSSTemplate", RichTextConstants.mediaCSSTemplate),
+            ("htmlTemplate", RichTextConstants.htmlTemplate)
+        ])
+        func percentBasedConstantsAreEscaped(name: String, constant: String) {
+            // Covers every constant that `Configuration.css(isLight:alignment:)`,
+            // `WebView.generateCSS()` and `WebView.generateHTML()` pass to `String(format:)`.
+            //
+            // Look for the shape the bug actually takes rather than whitelisting conversion
+            // characters. A literal percent sign in CSS is always followed by a delimiter -
+            // `100%;`, `100% }`, `100%,` - while a conversion is followed by a specifier or a
+            // length modifier. Checking the delimiters catches a missing `%%` without pinning
+            // down which conversions the constants are allowed to use, so `%d` can still be
+            // widened to `%ld` later without this test standing in the way.
+            let cssDelimiters: Set<Character> = [";", "}", ",", ")", " ", "\n", "\t"]
+            let characters = Array(constant)
+            var index = 0
+
+            while index < characters.count {
+                guard characters[index] == "%" else {
+                    index += 1
+                    continue
+                }
+
+                let next = index + 1 < characters.count ? characters[index + 1] : nil
+
+                // `%%` is an escaped literal percent, which is exactly what we want to see.
+                if next == "%" {
+                    index += 2
+                    continue
+                }
+
+                #expect(
+                    next != nil && !cssDelimiters.contains(next!),
+                    "Unescaped percent sign in \(name): a literal % must be written as %%"
+                )
+                index += 1
+            }
+        }
     }
 
     @Suite("ColorSet Tests")
