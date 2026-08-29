@@ -93,7 +93,7 @@ public enum RichTextError: LocalizedError {
     /// The web view could not be configured as requested, so it will not look or behave as
     /// the configuration asked for.
     case webViewConfigurationFailed
-    /// The generated CSS will not be applied as intended, for example because a colour was
+    /// The generated CSS will not be applied as intended, for example because a color was
     /// given as an invalid hex value and the browser will drop the declaration.
     case cssGenerationFailed
     /// A media click message from the page could not be handled.

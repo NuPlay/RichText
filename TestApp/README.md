@@ -63,7 +63,7 @@ The test app covers all major features:
 - **Height Tracks the Content**: Opening a `<details>`, late-loading images and web fonts all resize the view instead of being clipped
 - **No Redundant Reloads**: The document is reloaded only when the HTML or base URL changes, so in-page state survives a SwiftUI update
 - **Dynamic Type Keeps `fontType`**: `supportsDynamicType` no longer discards `.monospaced`, `.italic` or `.customName`
-- **More Errors Reported**: Invalid hex colours raise `.cssGenerationFailed`; macOS transparency failures raise `.webViewConfigurationFailed`
+- **More Errors Reported**: Invalid hex colors raise `.cssGenerationFailed`; macOS transparency failures raise `.webViewConfigurationFailed`
 
 ### New in v3.0.0
 - **Better Font Rendering**: Monospaced and italic fonts should display correctly

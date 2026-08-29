@@ -53,7 +53,7 @@ struct RichTextAllTests {
             #expect(config.storedColorPreference == .all)
         }
 
-        @Test("Color preference is only applied through the colour sets")
+        @Test("Color preference is only applied through the color sets")
         func colorPreferenceOnlyAppliesThroughColorSets() {
             // `isColorsImportant` is recorded but never read during CSS generation, which is
             // why it is deprecated. `!important` comes from the ColorSets alone.

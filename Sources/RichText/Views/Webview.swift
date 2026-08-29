@@ -104,7 +104,7 @@ extension WebView: NSViewRepresentable {
         // Set delegate
         webview.navigationDelegate = context.coordinator
         
-        // `underPageBackgroundColor` is the public WebKit API for the colour behind a page.
+        // `underPageBackgroundColor` is the public WebKit API for the color behind a page.
         // It is available from macOS 12, which is this package's minimum deployment target.
         webview.underPageBackgroundColor = .clear
         
@@ -327,10 +327,10 @@ extension WebView {
 
         // A malformed hex value is not rejected anywhere: it reaches the stylesheet as
         // `color: #whatever`, and the browser drops that declaration along with the rest of
-        // the rule. The text or link colour then silently falls back to the default, which is
+        // the rule. The text or link color then silently falls back to the default, which is
         // very hard to trace from the outside, so surface it.
         if !conf.fontColor.isValid || !conf.linkColor.isValid {
-            webViewLogger.error("Invalid hex colour in fontColor or linkColor; the declaration will be dropped by the browser")
+            webViewLogger.error("Invalid hex color in fontColor or linkColor; the declaration will be dropped by the browser")
             reportError(.cssGenerationFailed)
         }
 

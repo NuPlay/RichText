@@ -38,12 +38,12 @@ public struct Configuration {
     /// deprecation warning.
     var storedColorPreference: ColorPreference
 
-    /// The requested colour enforcement preference.
+    /// The requested color enforcement preference.
     ///
     /// - Warning: Assigning this does not change the generated CSS. `!important` is driven
     ///   entirely by ``ColorSet/isImportant`` on ``fontColor`` and ``linkColor``, and this
     ///   property has never been read during CSS generation. Use
-    ///   ``RichText/colorPreference(forceColor:)``, which sets both colour sets, or pass
+    ///   ``RichText/colorPreference(forceColor:)``, which sets both color sets, or pass
     ///   `ColorSet(light:dark:isImportant:)` directly.
     @available(*, deprecated, message: "Has no effect on the generated CSS. Use .colorPreference(forceColor:) on the view, or pass ColorSet(light:dark:isImportant:) for fontColor/linkColor.")
     public var isColorsImportant: ColorPreference {

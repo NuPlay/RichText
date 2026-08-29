@@ -140,7 +140,7 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
         // The web view could not be configured as requested (macOS transparency)
         print("WebView configuration failed")
     case .cssGenerationFailed:
-        // A colour was given as an invalid hex value, so the browser drops the declaration
+        // A color was given as an invalid hex value, so the browser drops the declaration
         print("CSS generation failed")
     case .mediaHandlingFailed(let media):
         print("Media handling failed: \(media)")

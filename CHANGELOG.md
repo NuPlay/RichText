@@ -31,7 +31,7 @@ string comparison, which is why 3.1.0 shipped without catching it.
 
 **Docs.**
 
-Fixed examples that did not compile: ambiguous `.blue` and `.cyan` colour
+Fixed examples that did not compile: ambiguous `.blue` and `.cyan` color
 literals, a redeclared `let css`, and `fullScreenCover(item:)` bound to a
 non-`Identifiable` `String`.
 
@@ -65,7 +65,7 @@ RichText(html: html)
         switch error {
         case .cssGenerationFailed:
             // fontColor or linkColor holds an invalid hex value, so the browser
-            // is dropping the declaration and the colour falls back to default
+            // is dropping the declaration and the color falls back to default
             break
         case .webViewConfigurationFailed:
             // macOS: the web view background could not be made transparent
@@ -110,7 +110,7 @@ Nothing is removed; all of these still compile and behave as before.
 | `RichTextConstants.bodyCSS` | nothing - it was never applied |
 | `Configuration.isColorsImportant` | `.colorPreference(forceColor:)`, or `ColorSet(light:dark:isImportant:)` |
 
-`Configuration.isColorsImportant` deserves a note: it was recorded but never read during CSS generation, so `Configuration(isColorsImportant: .all)` silently did nothing. `!important` comes from the colour sets alone.
+`Configuration.isColorsImportant` deserves a note: it was recorded but never read during CSS generation, so `Configuration(isColorsImportant: .all)` silently did nothing. `!important` comes from the color sets alone.
 
 ```swift
 // ❌ had no effect

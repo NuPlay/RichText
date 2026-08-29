@@ -42,7 +42,7 @@ Styling, light and dark theming, custom fonts, media callbacks and typed errors 
 
 - **Cross-platform** — iOS 15.0+ and macOS 12.0+, Swift 5.9+
 - **Automatic sizing** — the view resizes itself as the content lays out, including late images, web fonts and `<details>` toggles
-- **Theming** — automatic light/dark mode, custom colour sets, transparent or custom backgrounds
+- **Theming** — automatic light/dark mode, custom color sets, transparent or custom backgrounds
 - **Typography** — system, monospaced, italic, custom and bundled fonts, with Dynamic Type support
 - **Interactive media** — click callbacks for images and videos
 - **Link handling** — Safari, `SFSafariViewController`, or your own handler

@@ -48,7 +48,7 @@ public struct RichTextConstants {
     //
     // The percentage `min-height`/`max-height` that used to sit here resolved against a
     // containing block of `auto` height, so both were no-ops and neither did anything for
-    // the responsive behaviour. `min-height: 100%` in particular would have stretched every
+    // the responsive behavior. `min-height: 100%` in particular would have stretched every
     // image to the full container height the moment a definite height appeared.
     //
     // `loading: lazy` was also dropped: `loading` is an HTML attribute, not a CSS property,
@@ -268,12 +268,12 @@ extension RichTextConstants {
         "iframe{width:100%; height:\(height)px; border: none;}"
     }
 
-    /// Link colouring.
+    /// Link coloring.
     public static func linkCSS(color: String) -> String {
         "a:link {color: \(color); transition: color 0.2s ease;}"
     }
 
-    /// A `<style>` block for a single colour scheme, followed by the opening `<BODY>` tag.
+    /// A `<style>` block for a single color scheme, followed by the opening `<BODY>` tag.
     public static func styleDocument(css: String, customCSS: String) -> String {
         """
         <style type='text/css'>
