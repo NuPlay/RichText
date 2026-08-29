@@ -130,6 +130,13 @@ extension WebView {
         /// threw away all in-page state (open `<details>`, playing media, scroll position) and
         /// re-paid the full parse and layout cost, so the content could never settle.
         var loadedHTML: String?
+
+        /// The base URL the current document was loaded with.
+        ///
+        /// Tracked alongside the HTML because `loadHTMLString(_:baseURL:)` resolves relative
+        /// resources against it. Changing `baseURL` while leaving the HTML untouched has to
+        /// force a reload, otherwise relative URLs would keep resolving against the old base.
+        var loadedBaseURL: URL?
         
         init(_ parent: WebView) {
             self.parent = parent
@@ -284,17 +291,19 @@ extension WebView {
     @MainActor
     private func loadHTMLIfNeeded(in webView: WKWebView, coordinator: Coordinator) {
         let htmlString = generateHTML()
+        let baseURL = conf.baseURL
         
-        guard coordinator.loadedHTML != htmlString else {
-            webViewLogger.debug("Skipping reload, generated HTML is unchanged")
+        guard coordinator.loadedHTML != htmlString || coordinator.loadedBaseURL != baseURL else {
+            webViewLogger.debug("Skipping reload, generated HTML and base URL are unchanged")
             return
         }
         
         coordinator.loadedHTML = htmlString
+        coordinator.loadedBaseURL = baseURL
         
         webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
         
-        webView.loadHTMLString(htmlString, baseURL: conf.baseURL)
+        webView.loadHTMLString(htmlString, baseURL: baseURL)
     }
     
     /// Generates the complete HTML string for the WebView
