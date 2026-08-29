@@ -26,7 +26,9 @@ struct RichTextAllTests {
             #expect(config.lineHeight == RichTextConstants.defaultLineHeight)
             #expect(config.imageRadius == RichTextConstants.defaultImageRadius)
             #expect(config.forceColorSchemeBackground == false)
-            #expect(config.isColorsImportant == .onlyLinks)
+            // Read through the backing storage: the public property is deprecated because it
+            // never reaches the generated CSS.
+            #expect(config.storedColorPreference == .onlyLinks)
         }
 
         @Test("Configuration with custom values")
@@ -47,7 +49,48 @@ struct RichTextAllTests {
             #expect(config.lineHeight == customLineHeight)
             #expect(config.imageRadius == customImageRadius)
             #expect(config.forceColorSchemeBackground == true)
-            #expect(config.isColorsImportant == .all)
+            #expect(config.storedColorPreference == .all)
+        }
+
+        @Test("Color preference is only applied through the colour sets")
+        func colorPreferenceOnlyAppliesThroughColorSets() {
+            // `isColorsImportant` is recorded but never read during CSS generation, which is
+            // why it is deprecated. `!important` comes from the ColorSets alone.
+            let viaParameter = Configuration(
+                fontColor: ColorSet(light: "000000", dark: "FFFFFF"),
+                isColorsImportant: .all
+            )
+            #expect(!viaParameter.css(isLight: true, alignment: .leading).contains("#000000 !important"))
+
+            let viaColorSet = Configuration(
+                fontColor: ColorSet(light: "000000", dark: "FFFFFF", isImportant: true)
+            )
+            #expect(viaColorSet.css(isLight: true, alignment: .leading).contains("#000000 !important"))
+        }
+
+        @Test("Generated CSS carries no dead declarations")
+        func generatedCSSHasNoDeadDeclarations() {
+            let css = Configuration().css(isLight: true, alignment: .leading)
+
+            // `loading` is an HTML attribute, not a CSS property. `loading: lazy` in a
+            // stylesheet is dropped by every browser, so it only ever looked like lazy
+            // loading was enabled.
+            #expect(!css.contains("loading:"))
+
+            // Percentage `min-height`/`max-height` on `img` resolved against a containing
+            // block of `auto` height, so both were no-ops. `min-height: 100%` would have
+            // stretched every image to the container height as soon as one appeared.
+            #expect(!css.contains("min-height"))
+            #expect(!css.contains("max-height"))
+
+            // What actually makes images responsive.
+            #expect(css.contains("max-width: 100%"))
+            #expect(css.contains("height:auto"))
+
+            // `iframeHeight` is a Swift `Int`, so the format string has to use `%ld`.
+            // With `%d` only the low 32 bits are read, which happens to work for small
+            // values and silently would not for large ones.
+            #expect(css.contains("height:\(RichTextConstants.iframeHeight)px"))
         }
 
         @Test("Configuration with dynamic type support")
@@ -87,12 +130,10 @@ struct RichTextAllTests {
             // `max-width: 100`, an invalid length that WebKit drops, and images then overflow
             // the web view instead of being constrained to its width.
             #expect(css.contains("max-width: 100%"))
-            #expect(css.contains("max-height: 100%"))
             #expect(css.contains("width:100%;"))
             #expect(css.contains("line-height: 150.0%"))
 
             #expect(!css.contains("max-width: 100;"))
-            #expect(!css.contains("max-height: 100;"))
             #expect(!css.contains("width:100;"))
         }
 
@@ -679,8 +720,7 @@ struct RichTextAllTests {
                 colorScheme: .auto,
                 forceColorSchemeBackground: true,
                 imageRadius: 8,
-                linkColor: ColorSet(light: "0066CC", dark: "3399FF", isImportant: true),
-                isColorsImportant: .all
+                linkColor: ColorSet(light: "0066CC", dark: "3399FF", isImportant: true)
             )
 
             let richText = RichText(html: html, configuration: config)
