@@ -176,17 +176,51 @@ struct RichTextAllTests {
             let config = Configuration(supportsDynamicType: true, fontType: fontType)
             let css = config.generateCompleteCSS(colorScheme: .light, alignment: .leading)
 
-            let shorthandRange = css.range(of: "font: -apple-system-body")
+            // Compare against the *last* Dynamic Type shorthand, not the first: every one of
+            // them resets `font-family`, so the override only works if it follows all of them.
+            let lastShorthandRange = css.range(of: "font: -apple-system-", options: .backwards)
             let familyRange = css.range(of: "font-family: \(fontType.name)", options: .backwards)
 
-            #expect(shorthandRange != nil)
+            #expect(lastShorthandRange != nil)
             #expect(familyRange != nil)
 
-            // The `font` shorthand resets `font-family`, so the family has to be re-applied
-            // after the Dynamic Type rules to survive the cascade.
-            if let shorthandRange, let familyRange {
-                #expect(familyRange.lowerBound > shorthandRange.lowerBound)
+            if let lastShorthandRange, let familyRange {
+                #expect(familyRange.lowerBound > lastShorthandRange.lowerBound)
             }
+        }
+
+        @Test("Font override matches the specificity of the Dynamic Type paragraph classes")
+        func dynamicTypeOverrideCoversParagraphClasses() {
+            let config = Configuration(supportsDynamicType: true, fontType: .monospaced)
+            let css = config.generateCompleteCSS(colorScheme: .light, alignment: .leading)
+
+            let overrideLine = css
+                .split(separator: "\n")
+                .last { $0.contains("font-family: \(FontType.monospaced.name)") }
+
+            #expect(overrideLine != nil)
+
+            // A bare `p` selector is specificity (0,0,1) and loses to the Dynamic Type
+            // `p.subheadline { font: ... }` rule at (0,1,1) regardless of source order, so
+            // those classes have to be named explicitly in the override.
+            if let overrideLine {
+                for selector in ["p.subheadline", "p.footnote", "p.caption1", "p.caption2"] {
+                    #expect(overrideLine.contains(selector), "override must also match \(selector)")
+                }
+            }
+        }
+
+        @Test("No font override is emitted for the default system font")
+        func noFontOverrideForSystemFont() {
+            // `.system` is exactly what the Dynamic Type shorthands already produce, so an
+            // override would buy nothing and would clobber the caller's own font-family rule.
+            let config = Configuration(
+                customCSS: "body { font-family: Georgia; }",
+                supportsDynamicType: true
+            )
+
+            #expect(config.fontType.name == RichTextConstants.systemFontName)
+            #expect(config.resolvedCustomCSS == config.customCSS)
         }
 
         @Test("Custom CSS is untouched when Dynamic Type is off")

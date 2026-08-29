@@ -111,15 +111,30 @@ public struct Configuration {
     /// the default family. Re-assert the configured font after the Dynamic Type rules so the two
     /// options can be used together.
     public var resolvedCustomCSS: String {
-        guard supportsDynamicType else {
+        guard supportsDynamicType, requiresFontOverride else {
             return customCSS
         }
 
+        // `p.subheadline` and friends have to be named explicitly. A bare `p` selector has
+        // specificity (0,0,1) and would lose to the Dynamic Type `p.subheadline { font: ... }`
+        // rule at (0,1,1) no matter how late it appears, so those paragraphs would keep
+        // resetting `font-family`. Matching the specificity lets source order decide, and the
+        // override is emitted last.
         let fontOverrideCSS = """
-        html, body, h1, h2, h3, h4, h5, h6, p { font-family: \(fontType.name); \(fontType.additionalCSSProperties) }
+        html, body, h1, h2, h3, h4, h5, h6, p, p.subheadline, p.footnote, p.caption1, p.caption2 { font-family: \(fontType.name); \(fontType.additionalCSSProperties) }
         """
 
         return customCSS + "\n" + fontOverrideCSS
+    }
+
+    /// Whether the configured font actually differs from what the Dynamic Type shorthands
+    /// already produce.
+    ///
+    /// For the default system font the shorthand result and the configured font are the same,
+    /// so emitting an override would buy nothing and would clobber a caller's own
+    /// `font-family` rule in `customCSS`.
+    private var requiresFontOverride: Bool {
+        fontType.name != RichTextConstants.systemFontName || !fontType.additionalCSSProperties.isEmpty
     }
 
     private func backgroundColor(_ isLight: Bool) -> String {
