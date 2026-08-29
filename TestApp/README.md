@@ -52,8 +52,18 @@ The test app covers all major features:
 7. **Link Behavior**: Test different link opening methods
 8. **Performance**: Load large content and measure render time
 9. **Backward Compatibility**: Ensure deprecated methods still work
+10. **Wide Images**: Load an image wider than the view and confirm it is scaled down, not clipped (v3.1.0)
+11. **Collapsible Content**: Toggle a `<details>` open and confirm the view grows to fit it (v3.1.0)
+12. **Dynamic Type + fontType**: Enable `supportsDynamicType` together with `.monospaced` and confirm both apply (v3.1.0)
 
 ## Expected Behavior
+
+### New in v3.1.0
+- **Images Fit the View**: `max-width: 100%` now applies, so wide images scale down instead of overflowing
+- **Height Tracks the Content**: Opening a `<details>`, late-loading images and web fonts all resize the view instead of being clipped
+- **No Redundant Reloads**: The document is reloaded only when the HTML or base URL changes, so in-page state survives a SwiftUI update
+- **Dynamic Type Keeps `fontType`**: `supportsDynamicType` no longer discards `.monospaced`, `.italic` or `.customName`
+- **More Errors Reported**: Invalid hex colours raise `.cssGenerationFailed`; macOS transparency failures raise `.webViewConfigurationFailed`
 
 ### New in v3.0.0
 - **Better Font Rendering**: Monospaced and italic fonts should display correctly
