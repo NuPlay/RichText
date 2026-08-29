@@ -1,5 +1,6 @@
 import Testing
 import SwiftUI
+import WebKit
 @testable import RichText
 
 #if canImport(UIKit)
@@ -322,6 +323,84 @@ struct RichTextAllTests {
 
             #expect(richText.html == html)
             #expect(richText.placeholder != nil)
+        }
+    }
+
+    @Suite("WebView Behavior Tests", .serialized)
+    struct WebViewBehaviorTests {
+        #if canImport(AppKit)
+        @Test("macOS RichText creates a transparent WebView without a false configuration error")
+        @MainActor
+        func macOSRichTextCreatesTransparentWebView() async throws {
+            var errors: [RichTextError] = []
+            let configuration = Configuration(errorHandler: { errors.append($0) })
+            let host = NSHostingView(
+                rootView: RichText(html: "<p>Test</p>", configuration: configuration)
+                    .frame(width: 320, height: 100)
+            )
+            host.frame = NSRect(x: 0, y: 0, width: 320, height: 100)
+            host.layoutSubtreeIfNeeded()
+
+            let webView = try #require(findWKWebView(in: host))
+            await waitForMainQueueTurn()
+
+            #expect(webView.underPageBackgroundColor.alphaComponent == 0)
+            #expect(!errors.contains(where: isWebViewConfigurationFailure))
+
+            withExtendedLifetime(host) {}
+        }
+
+        @MainActor
+        private func findWKWebView(in view: NSView) -> WKWebView? {
+            if let webView = view as? WKWebView {
+                return webView
+            }
+
+            for subview in view.subviews {
+                if let webView = findWKWebView(in: subview) {
+                    return webView
+                }
+            }
+            return nil
+        }
+
+        private func isWebViewConfigurationFailure(_ error: RichTextError) -> Bool {
+            if case .webViewConfigurationFailed = error {
+                return true
+            }
+            return false
+        }
+
+        @MainActor
+        private func waitForMainQueueTurn() async {
+            await withCheckedContinuation { continuation in
+                DispatchQueue.main.async {
+                    continuation.resume()
+                }
+            }
+        }
+        #endif
+
+        @Test("Error callbacks are deferred until after the current view update")
+        @MainActor
+        func errorCallbacksAreDeferred() async {
+            let callbackWasDeferred: Bool = await withCheckedContinuation { continuation in
+                var reportCallReturned = false
+                let configuration = Configuration(errorHandler: { _ in
+                    continuation.resume(returning: reportCallReturned)
+                })
+                let webView = WebView(
+                    width: 100,
+                    dynamicHeight: .constant(0),
+                    html: "<p>Invalid CSS</p>",
+                    configuration: configuration
+                )
+
+                webView.reportError(.cssGenerationFailed)
+                reportCallReturned = true
+            }
+
+            #expect(callbackWasDeferred)
         }
     }
 
