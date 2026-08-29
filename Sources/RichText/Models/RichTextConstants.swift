@@ -43,11 +43,26 @@ public struct RichTextConstants {
     public static let httpsScheme = "https"
     
     // MARK: - CSS Selectors and Properties (v3.0.0 - Performance optimized)
-    public static let imageCSS = "img{max-height: 100%%; min-height: 100%%; height:auto; max-width: 100%%; width:auto;margin-bottom:5px; border-radius: %@px; loading: lazy;}"
+    // Standard responsive image sizing: cap the width at the container and let the height
+    // follow the aspect ratio.
+    //
+    // The percentage `min-height`/`max-height` that used to sit here resolved against a
+    // containing block of `auto` height, so both were no-ops and neither did anything for
+    // the responsive behaviour. `min-height: 100%` in particular would have stretched every
+    // image to the full container height the moment a definite height appeared.
+    //
+    // `loading: lazy` was also dropped: `loading` is an HTML attribute, not a CSS property,
+    // so no browser ever applied it. Real lazy loading would have to be set on the `<img>`
+    // elements themselves.
+    public static let imageCSS = "img{height:auto; max-width: 100%%; width:auto;margin-bottom:5px; border-radius: %@px;}"
     public static let textCSS = "h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote, figure, figcaption, details, summary, article, section, aside, header, footer, nav, main {text-align:%@; line-height: %@%%; font-family: %@; color: %@; background-color: %@; word-wrap: break-word; }"
-    public static let iframeCSS = "iframe{width:100%%; height:%dpx; border: none;}"
+    // `%ld`, not `%d`: `iframeHeight` is a Swift `Int`, which is 64-bit on every platform this
+    // package supports, while `%d` reads only 32 bits of it. Matches the `%02lX` spelling
+    // already used in `Color+Extension`.
+    public static let iframeCSS = "iframe{width:100%%; height:%ldpx; border: none;}"
     public static let linkCSS = "a:link {color: %@; transition: color 0.2s ease;}"
     public static let linkDecorationCSS = "A {text-decoration: none;} A:hover {text-decoration: underline;}"
+    @available(*, deprecated, message: "Unused. Body margins are emitted directly by cssTemplate and mediaCSSTemplate, and this constant was never applied, so its -webkit-text-size-adjust rule never took effect either.")
     public static let bodyCSS = "body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }"
     
     // MARK: - HTML5 Semantic Elements CSS (v3.0.0 - Enhanced accessibility)

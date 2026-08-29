@@ -32,7 +32,24 @@ public struct Configuration {
     
     public var errorHandler: ErrorHandler?
     
-    public var isColorsImportant: ColorPreference
+    /// Backing storage for ``isColorsImportant``.
+    ///
+    /// Kept separate so the framework can carry the value around without tripping its own
+    /// deprecation warning.
+    var storedColorPreference: ColorPreference
+
+    /// The requested colour enforcement preference.
+    ///
+    /// - Warning: Assigning this does not change the generated CSS. `!important` is driven
+    ///   entirely by ``ColorSet/isImportant`` on ``fontColor`` and ``linkColor``, and this
+    ///   property has never been read during CSS generation. Use
+    ///   ``RichText/colorPreference(forceColor:)``, which sets both colour sets, or pass
+    ///   `ColorSet(light:dark:isImportant:)` directly.
+    @available(*, deprecated, message: "Has no effect on the generated CSS. Use .colorPreference(forceColor:) on the view, or pass ColorSet(light:dark:isImportant:) for fontColor/linkColor.")
+    public var isColorsImportant: ColorPreference {
+        get { storedColorPreference }
+        set { storedColorPreference = newValue }
+    }
     
     public var transition: Animation?
     
@@ -52,7 +69,8 @@ public struct Configuration {
     ///   - baseURL: Base URL for relative resources
     ///   - mediaClickHandler: Handler for image/video click events
     ///   - errorHandler: Handler for error events
-    ///   - isColorsImportant: Color preference enforcement
+    ///   - isColorsImportant: Deprecated. Recorded but never read during CSS generation; use
+    ///     `.colorPreference(forceColor:)` or `ColorSet(light:dark:isImportant:)` instead.
     ///   - transition: Animation for transitions
     public init(
         customCSS: String = "",
@@ -93,7 +111,7 @@ public struct Configuration {
         self.baseURL = baseURL
         self.mediaClickHandler = mediaClickHandler
         self.errorHandler = errorHandler
-        self.isColorsImportant = isColorsImportant
+        self.storedColorPreference = isColorsImportant
         self.transition = transition
         
         if supportsDynamicType {

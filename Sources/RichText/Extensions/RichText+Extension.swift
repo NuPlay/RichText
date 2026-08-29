@@ -160,7 +160,7 @@ extension RichText {
 
     public func colorPreference(forceColor: ColorPreference) -> RichText {
         var result = self
-        result.configuration.isColorsImportant = forceColor
+        result.configuration.storedColorPreference = forceColor
 
         switch forceColor {
         case .all:
