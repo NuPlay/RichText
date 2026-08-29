@@ -86,14 +86,29 @@ public struct ColorSet: Equatable {
     }
     
     /// Validates if the hex color strings are valid
+    ///
+    /// An invalid value is not rejected anywhere - it is interpolated into the stylesheet as
+    /// `color: #whatever`, which the browser silently drops along with the rest of the
+    /// declaration. ``RichText`` reports this through ``RichTextError/cssGenerationFailed``.
+    ///
     /// - Returns: true if both light and dark hex values are valid
     public var isValid: Bool {
         return isValidHexColor(light) && isValidHexColor(dark)
     }
     
     private func isValidHexColor(_ hex: String) -> Bool {
-        let hexRegex = "^[0-9A-Fa-f]{6}$|^[0-9A-Fa-f]{8}$" // 6 or 8 characters
-        let predicate = NSPredicate(format: "SELF MATCHES %@", hexRegex)
-        return predicate.evaluate(with: hex)
+        // `#RGB`, `#RGBA`, `#RRGGBB` and `#RRGGBBAA` are all valid CSS colours. The previous
+        // 6-or-8 rule rejected the two shorthand forms as invalid even though they render
+        // fine, and disagreed with `BackgroundColor.isHexColorLiteral`, which already
+        // accepted all four lengths.
+        let validLengths = [3, 4, 6, 8]
+
+        guard validLengths.contains(hex.count) else {
+            return false
+        }
+
+        return hex.allSatisfy { character in
+            character.isHexDigit
+        }
     }
 }

@@ -846,6 +846,29 @@ struct RichTextAllTests {
 
             let invalidColorSet = ColorSet(light: "INVALID", dark: "00FF00")
             #expect(!invalidColorSet.isValid)
+
+            // `#RGB` and `#RGBA` are valid CSS and were previously reported as invalid.
+            #expect(ColorSet(light: "F00", dark: "0F0").isValid)
+            #expect(ColorSet(light: "F00A", dark: "0F0A").isValid)
+
+            // Wrong length, right length but not hex, and empty.
+            #expect(!ColorSet(light: "FF000", dark: "00FF00").isValid)
+            #expect(!ColorSet(light: "GGGGGG", dark: "00FF00").isValid)
+            #expect(!ColorSet(light: "", dark: "00FF00").isValid)
+        }
+
+        @Test("Every RichTextError case describes itself")
+        func errorCasesAreDescribed() {
+            let errors: [RichTextError] = [
+                .htmlLoadingFailed("<p>x</p>"),
+                .webViewConfigurationFailed,
+                .cssGenerationFailed,
+                .mediaHandlingFailed("image")
+            ]
+
+            for error in errors {
+                #expect(error.errorDescription?.isEmpty == false)
+            }
         }
 
         @Test("ColorSet raw values work correctly")
