@@ -316,10 +316,13 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
 .onError { error in
     switch error {
     case .htmlLoadingFailed(let html):
+        // The web view failed to load the generated document
         print("Failed to load HTML: \(html)")
     case .webViewConfigurationFailed:
+        // The web view could not be configured as requested (macOS transparency)
         print("WebView configuration failed")
     case .cssGenerationFailed:
+        // A colour was given as an invalid hex value, so the browser drops the declaration
         print("CSS generation failed")
     case .mediaHandlingFailed(let media):
         print("Media handling failed: \(media)")
@@ -361,7 +364,6 @@ let config = Configuration(
     baseURL: Bundle.main.bundleURL,
     mediaClickHandler: { media in /* handle clicks */ },
     errorHandler: { error in /* handle errors */ },
-    isColorsImportant: .onlyLinks,
     transition: .easeInOut(duration: 0.3)
 )
 
@@ -556,7 +558,6 @@ RichText(html: largeHtmlContent)
         img {
             max-width: 100%;
             height: auto;
-            loading: lazy;                  /* Native lazy loading */
         }
     """)
     .loadingTransition(.none)              // Disable transitions for faster rendering

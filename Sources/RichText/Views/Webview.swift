@@ -104,8 +104,18 @@ extension WebView: NSViewRepresentable {
         // Set delegate
         webview.navigationDelegate = context.coordinator
         
-        // Configure appearance
-        webview.setValue(false, forKey: "drawsBackground")
+        // Configure appearance.
+        //
+        // `drawsBackground` is not part of WKWebView's public API, it is reached through KVC.
+        // `setValue(_:forKey:)` raises NSUnknownKeyException if the key ever goes away, and
+        // that is an Objective-C exception Swift cannot catch, so it would take the host app
+        // down. Probe for the setter and report a configuration failure instead.
+        if webview.responds(to: NSSelectorFromString("setDrawsBackground:")) {
+            webview.setValue(false, forKey: "drawsBackground")
+        } else {
+            webViewLogger.error("WKWebView no longer exposes drawsBackground; background will not be transparent")
+            conf.errorHandler?(.webViewConfigurationFailed)
+        }
         
         // Load HTML content
         loadHTMLIfNeeded(in: webview, coordinator: context.coordinator)
@@ -309,6 +319,15 @@ extension WebView {
         guard coordinator.loadedHTML != htmlString || coordinator.loadedBaseURL != baseURL else {
             webViewLogger.debug("Skipping reload, generated HTML and base URL are unchanged")
             return
+        }
+        
+        // A malformed hex value is not rejected anywhere: it reaches the stylesheet as
+        // `color: #whatever`, and the browser drops that declaration along with the rest of
+        // the rule. The text or link colour then silently falls back to the default, which is
+        // very hard to trace from the outside, so surface it.
+        if !conf.fontColor.isValid || !conf.linkColor.isValid {
+            webViewLogger.error("Invalid hex colour in fontColor or linkColor; the declaration will be dropped by the browser")
+            conf.errorHandler?(.cssGenerationFailed)
         }
         
         coordinator.loadedHTML = htmlString
