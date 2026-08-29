@@ -24,15 +24,17 @@
     </a>
 </p>
 
-A modern, powerful, and type-safe SwiftUI component for rendering HTML content with extensive styling options, async/await support, media interaction, and comprehensive error handling. Built for Swift 5.9+ and optimized for iOS 15.0+ and macOS 12.0+.
+**Render HTML in SwiftUI.**
+
+RichText sizes itself to its content, so HTML fits into a layout like any other view.
+
+Styling, light and dark theming, custom fonts, media callbacks and typed errors are built in.
 
 ![github](https://user-images.githubusercontent.com/73557895/128497417-52d47524-05bf-48af-ae0a-e0cdffdbedf5.png)
 
 | <img width="1440" alt="Light Mode Screenshot" src="https://user-images.githubusercontent.com/73557895/131149958-bbc28435-02e2-4a02-8ad5-43627cd333e0.png"> 	| <img width="1440" alt="Dark Mode Screenshot" src="https://user-images.githubusercontent.com/73557895/131149926-211e2111-6d6e-4aac-94b8-44c7230b6244.png"> 	|
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------:	|:------------------------------------------------------------------------------------------------------------------------------:	|
 | Light Mode                                                                                                                                                                 	| Dark Mode                                                                                                                        	|
-
----
 
 ---
 
