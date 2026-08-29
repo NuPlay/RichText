@@ -155,6 +155,47 @@ struct RichTextAllTests {
             #expect(FontType.monospaced.name != RichTextConstants.systemFontName)
             #expect(FontType.italic.name == RichTextConstants.systemFontName)
         }
+
+        @Test("Font names are valid CSS identifiers or quoted strings")
+        func fontNamesAreValidCSS() {
+            // A raw PostScript name such as `.AppleSystemUIFontMonospaced-Regular` is not a
+            // valid unquoted CSS family, so WebKit dropped the whole declaration and fell back
+            // to the default serif face.
+            #expect(!FontType.monospaced.name.hasPrefix("."))
+            #expect(!FontType.customName("Custom Font").name.hasPrefix("."))
+            #expect(FontType.customName("Custom Font").name == "'Custom Font'")
+            #expect(FontType.monospaced.name.contains("monospace"))
+        }
+
+        @Test("Dynamic Type does not discard the configured font type", arguments: [
+            FontType.monospaced,
+            FontType.italic,
+            FontType.customName("Custom Font")
+        ])
+        func dynamicTypeKeepsFontType(fontType: FontType) {
+            let config = Configuration(supportsDynamicType: true, fontType: fontType)
+            let css = config.generateCompleteCSS(colorScheme: .light, alignment: .leading)
+
+            let shorthandRange = css.range(of: "font: -apple-system-body")
+            let familyRange = css.range(of: "font-family: \(fontType.name)", options: .backwards)
+
+            #expect(shorthandRange != nil)
+            #expect(familyRange != nil)
+
+            // The `font` shorthand resets `font-family`, so the family has to be re-applied
+            // after the Dynamic Type rules to survive the cascade.
+            if let shorthandRange, let familyRange {
+                #expect(familyRange.lowerBound > shorthandRange.lowerBound)
+            }
+        }
+
+        @Test("Custom CSS is untouched when Dynamic Type is off")
+        func resolvedCustomCSSWithoutDynamicType() {
+            let config = Configuration(customCSS: "p { color: red; }", fontType: .monospaced)
+
+            #expect(config.resolvedCustomCSS == "p { color: red; }")
+            #expect(config.resolvedCustomCSS == config.customCSS)
+        }
     }
 
     @Suite("RichText Initialization Tests")

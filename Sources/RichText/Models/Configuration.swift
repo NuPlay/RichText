@@ -102,6 +102,26 @@ public struct Configuration {
     }
     
     
+    /// `customCSS` plus the framework-managed overrides that have to win the cascade.
+    ///
+    /// Dynamic Type is expressed with the `font` shorthand (`font: -apple-system-body`), and a
+    /// shorthand resets every longhand it covers, which includes `font-family` and `font-style`.
+    /// Since `customCSS` is emitted after the generated rules, turning on `supportsDynamicType`
+    /// silently discarded `fontType`: `.monospaced`, `.italic` and `.customName` all fell back to
+    /// the default family. Re-assert the configured font after the Dynamic Type rules so the two
+    /// options can be used together.
+    public var resolvedCustomCSS: String {
+        guard supportsDynamicType else {
+            return customCSS
+        }
+
+        let fontOverrideCSS = """
+        html, body, h1, h2, h3, h4, h5, h6, p { font-family: \(fontType.name); \(fontType.additionalCSSProperties) }
+        """
+
+        return customCSS + "\n" + fontOverrideCSS
+    }
+
     private func backgroundColor(_ isLight: Bool) -> String {
         let baseColor: String
         
@@ -162,9 +182,9 @@ public struct Configuration {
         
         switch scheme {
         case .light:
-            return css(isLight: true, alignment: alignment) + "\n" + customCSS
+            return css(isLight: true, alignment: alignment) + "\n" + resolvedCustomCSS
         case .dark:
-            return css(isLight: false, alignment: alignment) + "\n" + customCSS
+            return css(isLight: false, alignment: alignment) + "\n" + resolvedCustomCSS
         case .auto:
             return """
             @media (prefers-color-scheme: light) {
@@ -173,7 +193,7 @@ public struct Configuration {
             @media (prefers-color-scheme: dark) {
                 \(css(isLight: false, alignment: alignment))
             }
-            \(customCSS)
+            \(resolvedCustomCSS)
             """
         }
     }
