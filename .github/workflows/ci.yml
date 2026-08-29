@@ -37,10 +37,24 @@ jobs:
             /Applications/Xcode_26.0.1.app \
             /Applications/Xcode.app
           do
-            if [ -d "${candidate}" ] && DEVELOPER_DIR="${candidate}/Contents/Developer" xcodebuild -version | grep -q '^Xcode 26'; then
-              XCODE_APP="${candidate}"
-              break
-            fi
+            [ -d "${candidate}" ] || continue
+
+            # Do not pipe `xcodebuild -version` straight into `grep -q` here.
+            # `grep -q` exits as soon as it matches, xcodebuild then takes SIGPIPE while
+            # still writing, dies with an uncaught NSFileHandleOperationException
+            # ("Broken pipe", Abort trap: 6), and `set -o pipefail` reports the whole
+            # pipeline as failed - even though the version actually matched. Whether
+            # xcodebuild finishes writing before grep closes the pipe is a race, so this
+            # failed intermittently and only ever on the candidate that *was* Xcode 26.
+            # Capture the output first, then match it without a pipe.
+            version="$(DEVELOPER_DIR="${candidate}/Contents/Developer" xcodebuild -version 2>/dev/null || true)"
+
+            case "${version}" in
+              "Xcode 26"*)
+                XCODE_APP="${candidate}"
+                break
+                ;;
+            esac
           done
 
           if [ -z "${XCODE_APP}" ]; then
