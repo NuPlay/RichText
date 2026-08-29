@@ -45,15 +45,15 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
 .fontType(.custom(UIFont.systemFont(ofSize: 16))) // Custom UIFont (iOS only)
 
 // Text colors - Modern API (v3.0.0+)
-.textColor(light: .primary, dark: .primary)         // Modern semantic naming
+.textColor(light: Color.primary, dark: Color.primary) // Modern semantic naming
 
 // Legacy text colors (deprecated but supported)
-.foregroundColor(light: .primary, dark: .primary)   // SwiftUI Colors (deprecated)
+.foregroundColor(light: Color.primary, dark: Color.primary) // SwiftUI Colors (deprecated)
 .foregroundColor(light: UIColor.black, dark: UIColor.white) // UIColors (deprecated)
 .foregroundColor(light: NSColor.black, dark: NSColor.white) // NSColors (deprecated)
 
 // Link colors
-.linkColor(light: .blue, dark: .cyan)      // SwiftUI Colors
+.linkColor(light: Color.blue, dark: Color.cyan) // SwiftUI Colors
 .linkColor(light: UIColor.blue, dark: UIColor.cyan) // UIColors
 
 // Color enforcement
@@ -140,7 +140,7 @@ RichText(html: String, configuration: Configuration, placeholder: AnyView?)
         // The web view could not be configured as requested (macOS transparency)
         print("WebView configuration failed")
     case .cssGenerationFailed:
-        // A colour was given as an invalid hex value, so the browser drops the declaration
+        // A color was given as an invalid hex value, so the browser drops the declaration
         print("CSS generation failed")
     case .mediaHandlingFailed(let media):
         print("Media handling failed: \(media)")
@@ -193,11 +193,11 @@ RichText(html: htmlContent, configuration: config)
 ```swift
 // Generate CSS programmatically (v3.0.0+)
 let richText = RichText(html: html)
-let css = richText.generateCSS(colorScheme: .light, alignment: .center)
+let richTextCSS = richText.generateCSS(colorScheme: .light, alignment: .center)
 
 // Generate CSS from configuration
 let config = Configuration(lineHeight: 150)
-let css = config.generateCompleteCSS(colorScheme: .dark)
+let configurationCSS = config.generateCompleteCSS(colorScheme: .dark)
 ```
 
 Individual rules can be built directly (v3.1.0+). These replace the deprecated

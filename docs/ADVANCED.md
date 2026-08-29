@@ -53,8 +53,8 @@ RichText(html: html)
 
 ```swift
 RichText(html: html)
-    .foregroundColor(light: .primary, dark: .primary)
-    .linkColor(light: .blue, dark: .cyan)
+    .textColor(light: Color.primary, dark: Color.primary)
+    .linkColor(light: Color.blue, dark: Color.cyan)
     .backgroundColor(.system)
     .colorPreference(forceColor: .all)      // Override HTML colors
 ```
@@ -62,24 +62,26 @@ RichText(html: html)
 ### Interactive Media Handling
 
 ```swift
+private struct SelectedImage: Identifiable {
+    let url: String
+    var id: String { url }
+}
+
 struct ContentView: View {
-    @State private var selectedImage: String?
-    
+    @State private var selectedImage: SelectedImage?
+
     var body: some View {
         RichText(html: htmlWithImages)
             .onMediaClick { media in
                 switch media {
                 case .image(let src):
-                    selectedImage = src
+                    selectedImage = SelectedImage(url: src)
                 case .video(let src):
                     openVideoPlayer(url: src)
                 }
             }
-            .fullScreenCover(item: Binding<String?>(
-                get: { selectedImage },
-                set: { selectedImage = $0 }
-            )) { imageURL in
-                ImageViewer(url: imageURL)
+            .sheet(item: $selectedImage) { image in
+                ImageViewer(url: image.url)
             }
     }
 }
@@ -90,13 +92,13 @@ struct ContentView: View {
 ```swift
 struct ContentView: View {
     @State private var lastError: RichTextError?
-    
+
     var body: some View {
         VStack {
             if let error = lastError {
                 ErrorBanner(error: error)
             }
-            
+
             RichText(html: html)
                 .onError { error in
                     lastError = error
@@ -132,7 +134,7 @@ RichText(html: largeHtmlContent)
 ```swift
 struct ContentView: View {
     @StateObject private var htmlManager = HTMLContentManager()
-    
+
     var body: some View {
         RichText(html: htmlManager.currentHTML)
             .onError { error in
@@ -154,14 +156,14 @@ struct ContentView: View {
 ```swift
 struct BlogPostView: View {
     let post: BlogPost
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text(post.title)
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                
+
                 RichText(html: post.content)
                     .lineHeight(175)
                     .imageRadius(8)
@@ -187,7 +189,7 @@ struct BlogPostView: View {
             .padding()
         }
     }
-    
+
     private func handleMediaClick(_ media: MediaClickType) {
         // Custom media handling
     }
@@ -200,7 +202,7 @@ struct BlogPostView: View {
 struct EmailView: View {
     let emailHTML: String
     @State private var isLoading = true
-    
+
     var body: some View {
         RichText(html: emailHTML)
             .backgroundColor(.system)
@@ -222,7 +224,7 @@ struct EmailView: View {
                 print("Email loading error: \(error)")
             }
     }
-    
+
     private func showLinkConfirmation(_ url: URL) {
         // Show confirmation dialog
     }
@@ -234,7 +236,7 @@ struct EmailView: View {
 ```swift
 struct DocumentationView: View {
     let markdownHTML: String
-    
+
     var body: some View {
         NavigationView {
             RichText(html: markdownHTML)
@@ -242,8 +244,8 @@ struct DocumentationView: View {
                 .lineHeight(170)
                 .backgroundColor(.transparent)
                 .customCSS("""
-                    h1, h2, h3 { 
-                        color: #1d4ed8; 
+                    h1, h2, h3 {
+                        color: #1d4ed8;
                         margin-top: 24px;
                         margin-bottom: 12px;
                     }

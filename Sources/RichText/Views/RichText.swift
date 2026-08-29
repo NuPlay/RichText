@@ -19,7 +19,7 @@ import SwiftUI
 ///     .fontType(.system)
 ///     .lineHeight(150)
 ///     .imageRadius(8)
-///     .linkColor(light: .blue, dark: .cyan)
+///     .linkColor(light: Color.blue, dark: Color.cyan)
 ///     .placeholder {
 ///         ProgressView("Loading...")
 ///     }

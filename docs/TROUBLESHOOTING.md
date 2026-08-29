@@ -62,7 +62,7 @@ RichText(html: largeContent)
 RichText(html: html)
     .colorScheme(.auto)
     .forceColorSchemeBackground(true)
-    .foregroundColor(light: .black, dark: .white)
+    .textColor(light: Color.black, dark: Color.white)
 ```
 
 ### Platform-Specific Issues
@@ -97,7 +97,7 @@ If you experience memory issues with large content:
 // Implement proper cleanup
 struct ContentView: View {
     @State private var html = ""
-    
+
     var body: some View {
         RichText(html: html)
             .onDisappear {

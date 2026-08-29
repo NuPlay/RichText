@@ -42,7 +42,7 @@ Styling, light and dark theming, custom fonts, media callbacks and typed errors 
 
 - **Cross-platform** — iOS 15.0+ and macOS 12.0+, Swift 5.9+
 - **Automatic sizing** — the view resizes itself as the content lays out, including late images, web fonts and `<details>` toggles
-- **Theming** — automatic light/dark mode, custom colour sets, transparent or custom backgrounds
+- **Theming** — automatic light/dark mode, custom color sets, transparent or custom backgrounds
 - **Typography** — system, monospaced, italic, custom and bundled fonts, with Dynamic Type support
 - **Interactive media** — click callbacks for images and videos
 - **Link handling** — Safari, `SFSafariViewController`, or your own handler
@@ -94,7 +94,7 @@ See [the API reference](docs/API.md) for every modifier, and [advanced usage](do
    ```
    https://github.com/NuPlay/RichText.git
    ```
-3. Select version rule: **"Up to Next Major Version"** from **"3.1.0"**
+3. Select version rule: **"Up to Next Major Version"** from **"3.1.1"**
 4. Click **Add Package**
 
 ### Manual Package.swift
@@ -103,7 +103,7 @@ Add RichText to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "3.1.0"))
+    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "3.1.1"))
 ],
 targets: [
     .target(

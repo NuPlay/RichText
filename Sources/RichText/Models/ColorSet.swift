@@ -97,7 +97,7 @@ public struct ColorSet: Equatable {
     }
     
     private func isValidHexColor(_ hex: String) -> Bool {
-        // `#RGB`, `#RGBA`, `#RRGGBB` and `#RRGGBBAA` are all valid CSS colours. The previous
+        // `#RGB`, `#RGBA`, `#RRGGBB` and `#RRGGBBAA` are all valid CSS colors. The previous
         // 6-or-8 rule rejected the two shorthand forms as invalid even though they render
         // fine, and disagreed with `BackgroundColor.isHexColorLiteral`, which already
         // accepted all four lengths.
