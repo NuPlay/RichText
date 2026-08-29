@@ -152,6 +152,14 @@ extension WebView {
         
         private func handleNavigationError(_ error: Error) {
             webViewLogger.error("Navigation error: \(error.localizedDescription)")
+
+            // Drop the cached document so the next update retries the load. Without this the
+            // guard in `loadHTMLIfNeeded` would keep matching the document that failed and the
+            // web view would stay blank forever, whereas the previous unconditional reload
+            // recovered on the next SwiftUI update.
+            loadedHTML = nil
+            loadedBaseURL = nil
+
             Task { @MainActor in
                 self.parent.conf.errorHandler?(.htmlLoadingFailed("\(error.localizedDescription): \(self.parent.html.prefix(100))"))
             }
