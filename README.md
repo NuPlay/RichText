@@ -128,12 +128,14 @@ targets: [
 
 ## 🌟 Used By
 
-RichText is used in public Swift projects such as:
+Open-source apps that render their content with RichText:
 
-- [IBM/mac-ibm-notifications](https://github.com/IBM/mac-ibm-notifications) - macOS notification and alert agent
-- [AudioBooth/AudioBooth](https://github.com/AudioBooth/AudioBooth) - iOS companion app for Audiobookshelf
+| Project | What it is |
+|---|---|
+| [IBM/mac-ibm-notifications](https://github.com/IBM/mac-ibm-notifications) | macOS agent for displaying notifications and alerts to managed devices |
+| [AudioBooth](https://github.com/AudioBooth/AudioBooth) | iOS companion app for Audiobookshelf |
 
-No affiliation or endorsement implied. Using RichText in your project? Feel free to open a PR to add it here.
+Each of these declares RichText in its public dependency manifest. No affiliation or endorsement is implied in either direction. Using RichText in your project? Open a PR to add it.
 
 ---
 
