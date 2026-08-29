@@ -94,7 +94,7 @@ See [the API reference](docs/API.md) for every modifier, and [advanced usage](do
    ```
    https://github.com/NuPlay/RichText.git
    ```
-3. Select version rule: **"Up to Next Major Version"** from **"3.1.0"**
+3. Select version rule: **"Up to Next Major Version"** from **"3.1.1"**
 4. Click **Add Package**
 
 ### Manual Package.swift
@@ -103,7 +103,7 @@ Add RichText to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "3.1.0"))
+    .package(url: "https://github.com/NuPlay/RichText.git", .upToNextMajor(from: "3.1.1"))
 ],
 targets: [
     .target(
