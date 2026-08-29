@@ -4,6 +4,41 @@ All notable changes to RichText are documented here.
 
 ---
 
+## 3.1.1
+
+Two regressions from 3.1.0.
+
+**macOS backgrounds were no longer transparent.**
+
+3.1.0 guarded the `drawsBackground` KVC call with `responds(to:)`.
+KVC does not need that selector, it falls back to the `_drawsBackground` ivar.
+So the guard always failed: the background stayed opaque, and every macOS launch
+emitted a spurious `webViewConfigurationFailed`.
+
+Now uses `underPageBackgroundColor`, public API on iOS 15 and macOS 12.
+
+**`cssGenerationFailed` fired during a SwiftUI view update.**
+
+The handler ran synchronously from `makeUIView` and `updateUIView`.
+Mutating state inside it produced "Modifying state during view update" — the
+warning #72 had already fixed.
+
+Errors are now delivered on the next main-queue turn.
+
+Both are covered by regression tests.
+macOS transparency is asserted against a real hosted `WKWebView` rather than a
+string comparison, which is why 3.1.0 shipped without catching it.
+
+**Docs.**
+
+Fixed examples that did not compile: ambiguous `.blue` and `.cyan` colour
+literals, a redeclared `let css`, and `fullScreenCover(item:)` bound to a
+non-`Identifiable` `String`.
+
+Removed 18 trailing-whitespace errors.
+
+---
+
 ## 3.1.0
 
 A correctness release. Every change below is source-compatible - nothing public was removed.
