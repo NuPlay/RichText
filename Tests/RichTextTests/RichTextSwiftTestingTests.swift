@@ -76,6 +76,56 @@ struct RichTextAllTests {
             #expect(css.contains("line-height: 150.0%"))
             #expect(css.contains(expectedAlignment))
         }
+
+        @Test("Percent signs survive String(format:) based CSS generation")
+        func percentSignsSurviveFormatting() {
+            let css = Configuration(lineHeight: 150, imageRadius: 5).css(isLight: true, alignment: .leading)
+
+            // Every CSS constant runs through `String(format:)`, which consumes a bare `%`.
+            // A literal percent sign therefore has to be written as `%%` in the constant.
+            // Missing one is silent: `max-width: 100%` becomes `max-width: 100`, an invalid
+            // length that WebKit drops, and images then overflow the web view instead of
+            // being constrained to its width.
+            #expect(css.contains("max-width: 100%"))
+            #expect(css.contains("max-height: 100%"))
+            #expect(css.contains("width:100%;"))
+            #expect(css.contains("line-height: 150.0%"))
+
+            #expect(!css.contains("max-width: 100;"))
+            #expect(!css.contains("max-height: 100;"))
+            #expect(!css.contains("width:100;"))
+        }
+
+        @Test("Percent based CSS constants are escaped for String(format:)")
+        func percentBasedConstantsAreEscaped() {
+            let formattedConstants = [
+                RichTextConstants.imageCSS,
+                RichTextConstants.textCSS,
+                RichTextConstants.iframeCSS
+            ]
+
+            for constant in formattedConstants {
+                // Walk the constant and make sure no `%` is followed by something that
+                // `String(format:)` would treat as a conversion other than the intended
+                // `%%`, `%@` and `%d`.
+                let characters = Array(constant)
+                var index = 0
+
+                while index < characters.count {
+                    guard characters[index] == "%" else {
+                        index += 1
+                        continue
+                    }
+
+                    let next = index + 1 < characters.count ? characters[index + 1] : nil
+                    #expect(
+                        next == "%" || next == "@" || next == "d",
+                        "Unescaped percent sign in CSS constant: \(constant)"
+                    )
+                    index += 2
+                }
+            }
+        }
     }
 
     @Suite("ColorSet Tests")
