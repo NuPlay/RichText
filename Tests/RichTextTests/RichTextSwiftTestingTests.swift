@@ -279,6 +279,46 @@ struct RichTextAllTests {
             #expect(RichTextConstants.richTextContainerID == "NuPlay_RichText")
             #expect(!RichTextConstants.systemFontName.isEmpty)
         }
+
+        @Test("HTML template keeps measuring the content after the first layout pass")
+        func htmlTemplateObservesHeightChanges() {
+            let template = RichTextConstants.htmlTemplate
+
+            // A one-shot `window.onload` measurement misses late images, web fonts and
+            // `<details>` toggles, which is what caused the content to be clipped.
+            #expect(template.contains("ResizeObserver"))
+            #expect(template.contains("MutationObserver"))
+            #expect(template.contains("document.addEventListener('toggle', syncHeight, true)"))
+            #expect(template.contains("document.fonts.ready"))
+            #expect(!template.contains("window.onload = function"))
+        }
+
+        @Test("HTML template placeholders stay in the order WebView.generateHTML supplies them")
+        func htmlTemplatePlaceholderOrder() {
+            let placeholderCount = RichTextConstants.htmlTemplate.components(separatedBy: "%@").count - 1
+
+            // css, container id, html body, height handler, container id, media handler, media handler
+            #expect(placeholderCount == 7)
+
+            // Mirrors the argument list in `WebView.generateHTML()`. `String(format:)` is
+            // positional, so reordering the placeholders inside the template silently
+            // produces a broken document; this pins the mapping down.
+            let document = String(
+                format: RichTextConstants.htmlTemplate,
+                "<style type='text/css'></style>",
+                RichTextConstants.richTextContainerID,
+                "<p>Hello</p>",
+                RichTextConstants.heightNotificationHandler,
+                RichTextConstants.richTextContainerID,
+                RichTextConstants.mediaClickHandler,
+                RichTextConstants.mediaClickHandler
+            )
+
+            #expect(document.contains("<div id=\"\(RichTextConstants.richTextContainerID)\"><p>Hello</p></div>"))
+            #expect(document.contains("var richTextHeightHandler = '\(RichTextConstants.heightNotificationHandler)'"))
+            #expect(document.contains("document.getElementById('\(RichTextConstants.richTextContainerID)')"))
+            #expect(document.contains("window.webkit.messageHandlers.\(RichTextConstants.mediaClickHandler).postMessage({"))
+        }
     }
 
     @Suite("Enum Extensions Tests")

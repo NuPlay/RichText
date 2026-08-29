@@ -95,12 +95,26 @@ public struct RichTextConstants {
         <div id="%@">%@</div>
         </BODY>
         <script>
+            var richTextHeightHandler = '%@';
+            var richTextContainer = document.getElementById('%@');
+            var richTextLastReportedHeight = -1;
+
             function syncHeight() {
-              window.webkit.messageHandlers.%@.postMessage(
-                document.getElementById('%@').offsetHeight
-              );
+              if (!richTextContainer) { return; }
+              if (!window.webkit || !window.webkit.messageHandlers) { return; }
+
+              var handler = window.webkit.messageHandlers[richTextHeightHandler];
+              if (!handler) { return; }
+
+              var boundingHeight = richTextContainer.getBoundingClientRect().height;
+              var height = Math.ceil(Math.max(richTextContainer.scrollHeight, boundingHeight));
+
+              // Skip redundant round trips; the native side re-renders on every update.
+              if (height === richTextLastReportedHeight) { return; }
+              richTextLastReportedHeight = height;
+              handler.postMessage(height);
             }
-            
+
             function handleMediaClick(element, type) {
               if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.%@) {
                 window.webkit.messageHandlers.%@.postMessage({
@@ -109,28 +123,57 @@ public struct RichTextConstants {
                 });
               }
             }
-            
-            window.onload = function () {
-              syncHeight();
 
-              // Handle height changes
+            function attachMediaHandlers() {
               var imgs = document.getElementsByTagName('img');
               for (var i = 0; i < imgs.length; i++) {
-                imgs[i].onload = syncHeight;
-                // Add click handler for images
-                imgs[i].onclick = function() {
+                if (imgs[i].dataset.richTextBound) { continue; }
+                imgs[i].dataset.richTextBound = '1';
+                imgs[i].addEventListener('load', syncHeight);
+                imgs[i].addEventListener('error', syncHeight);
+                imgs[i].onclick = function () {
                   handleMediaClick(this, 'image');
                 };
               }
-              
-              // Add click handler for videos
+
               var videos = document.getElementsByTagName('video');
-              for (var i = 0; i < videos.length; i++) {
-                videos[i].onclick = function() {
+              for (var j = 0; j < videos.length; j++) {
+                if (videos[j].dataset.richTextBound) { continue; }
+                videos[j].dataset.richTextBound = '1';
+                videos[j].addEventListener('loadedmetadata', syncHeight);
+                videos[j].onclick = function () {
                   handleMediaClick(this, 'video');
                 };
               }
-            };
+            }
+
+            attachMediaHandlers();
+            syncHeight();
+
+            // The rendered height keeps changing after the first layout pass: images and
+            // web fonts finish loading, <details> elements are toggled open, the device is
+            // rotated, Dynamic Type changes. A one-shot measurement on window.onload misses
+            // all of those and the content ends up clipped, so observe the container instead.
+            if (window.ResizeObserver && richTextContainer) {
+              new ResizeObserver(syncHeight).observe(richTextContainer);
+            }
+
+            if (window.MutationObserver && richTextContainer) {
+              new MutationObserver(function () {
+                attachMediaHandlers();
+                syncHeight();
+              }).observe(richTextContainer, { childList: true, subtree: true });
+            }
+
+            // `toggle` does not bubble, so it has to be observed during the capture phase.
+            document.addEventListener('toggle', syncHeight, true);
+            window.addEventListener('load', syncHeight);
+            window.addEventListener('resize', syncHeight);
+            window.addEventListener('orientationchange', syncHeight);
+
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(syncHeight);
+            }
         </script>
         </HTML>
         """

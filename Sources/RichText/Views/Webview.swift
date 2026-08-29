@@ -63,14 +63,14 @@ extension WebView: UIViewRepresentable {
         webview.scrollView.backgroundColor = UIColor.clear
         
         // Load HTML content
-        loadHTML(in: webview)
+        loadHTMLIfNeeded(in: webview, coordinator: context.coordinator)
         
         return webview
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         context.coordinator.parent = self
-        loadHTML(in: uiView)
+        loadHTMLIfNeeded(in: uiView, coordinator: context.coordinator)
         
         // Update frame directly without timer to avoid state modification during view update
         uiView.frame.size = .init(width: self.width, height: self.dynamicHeight)
@@ -108,14 +108,14 @@ extension WebView: NSViewRepresentable {
         webview.setValue(false, forKey: "drawsBackground")
         
         // Load HTML content
-        loadHTML(in: webview)
+        loadHTMLIfNeeded(in: webview, coordinator: context.coordinator)
 
         return webview
     }
 
     func updateNSView(_ nsView: WKWebView, context: Context) {
         context.coordinator.parent = self
-        loadHTML(in: nsView)
+        loadHTMLIfNeeded(in: nsView, coordinator: context.coordinator)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -127,6 +127,21 @@ extension WebView: NSViewRepresentable {
 extension WebView {
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         var parent: WebView
+
+        /// The document that is currently loaded in the web view.
+        ///
+        /// SwiftUI calls `updateUIView`/`updateNSView` on every state change, including the
+        /// dynamic height updates this view produces itself. Reloading the document each time
+        /// threw away all in-page state (open `<details>`, playing media, scroll position) and
+        /// re-paid the full parse and layout cost, so the content could never settle.
+        var loadedHTML: String?
+
+        /// The base URL the current document was loaded with.
+        ///
+        /// Tracked alongside the HTML because `loadHTMLString(_:baseURL:)` resolves relative
+        /// resources against it. Changing `baseURL` while leaving the HTML untouched has to
+        /// force a reload, otherwise relative URLs would keep resolving against the old base.
+        var loadedBaseURL: URL?
         
         init(_ parent: WebView) {
             self.parent = parent
@@ -142,6 +157,14 @@ extension WebView {
         
         private func handleNavigationError(_ error: Error) {
             webViewLogger.error("Navigation error: \(error.localizedDescription)")
+
+            // Drop the cached document so the next update retries the load. Without this the
+            // guard in `loadHTMLIfNeeded` would keep matching the document that failed and the
+            // web view would stay blank forever, whereas the previous unconditional reload
+            // recovered on the next SwiftUI update.
+            loadedHTML = nil
+            loadedBaseURL = nil
+
             Task { @MainActor in
                 self.parent.conf.errorHandler?(.htmlLoadingFailed("\(error.localizedDescription): \(self.parent.html.prefix(100))"))
             }
@@ -274,15 +297,26 @@ extension WebView {
 }
 
 extension WebView {
-    /// Loads HTML content into the WebView safely on main thread
-    /// - Parameter webView: The WKWebView instance to load content into
+    /// Loads HTML content into the WebView safely on main thread, skipping redundant reloads
+    /// - Parameters:
+    ///   - webView: The WKWebView instance to load content into
+    ///   - coordinator: The coordinator that tracks the currently loaded document
     @MainActor
-    private func loadHTML(in webView: WKWebView) {
+    private func loadHTMLIfNeeded(in webView: WKWebView, coordinator: Coordinator) {
         let htmlString = generateHTML()
+        let baseURL = conf.baseURL
+        
+        guard coordinator.loadedHTML != htmlString || coordinator.loadedBaseURL != baseURL else {
+            webViewLogger.debug("Skipping reload, generated HTML and base URL are unchanged")
+            return
+        }
+        
+        coordinator.loadedHTML = htmlString
+        coordinator.loadedBaseURL = baseURL
         
         webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
         
-        webView.loadHTMLString(htmlString, baseURL: conf.baseURL)
+        webView.loadHTMLString(htmlString, baseURL: baseURL)
     }
     
     /// Generates the complete HTML string for the WebView
