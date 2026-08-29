@@ -6,8 +6,13 @@
 //  https://github.com/NuPlay/RichText
 
 import Foundation
-import SafariServices
 import SwiftUI
+
+// `SFSafariViewController` is UIKit-only, and SafariServices does not exist at all on some
+// platforms (tvOS), where importing it unconditionally fails to compile.
+#if canImport(UIKit) && canImport(SafariServices)
+import SafariServices
+#endif
 
 /// Defines the font types available for text rendering
 public enum FontType {
@@ -60,7 +65,7 @@ public enum FontType {
 
 /// Defines how links should be opened when tapped
 public enum LinkOpenType {
-    #if canImport(UIKit)
+    #if canImport(UIKit) && canImport(SafariServices)
     /// Open in SFSafariViewController with optional configuration
     case SFSafariView(configuration: SFSafariViewController.Configuration = .init(), isReaderActivated: Bool? = nil, isAnimated: Bool = true)
     #endif

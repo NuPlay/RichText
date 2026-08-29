@@ -7,8 +7,13 @@
 
 import SwiftUI
 import WebKit
-import SafariServices
 import os.log
+
+// `SFSafariViewController` is UIKit-only, and SafariServices does not exist at all on some
+// platforms (tvOS), where importing it unconditionally fails to compile.
+#if canImport(UIKit) && canImport(SafariServices)
+import SafariServices
+#endif
 
 /// Logger for WebView performance monitoring
 private let webViewLogger = Logger(subsystem: "com.nuplay.richtext", category: "WebView")
@@ -231,7 +236,7 @@ extension WebView {
                     #endif
                 case RichTextConstants.httpScheme, RichTextConstants.httpsScheme:
                     switch parent.conf.linkOpenType {
-                        #if canImport(UIKit)
+                        #if canImport(UIKit) && canImport(SafariServices)
                     case let .SFSafariView(conf, isReaderActivated, isAnimated):
                         if let reader = isReaderActivated {
                             conf.entersReaderIfAvailable = reader

@@ -59,7 +59,7 @@ A modern, powerful, and type-safe SwiftUI component for rendering HTML content w
 - 🔧 **Backward Compatible**: 100% compatibility with v2.x while providing modern APIs
 
 ### 📱 **Platform Support** 
-- 📱 **Cross-platform**: iOS 15.0+ and macOS 12.0+ with Swift 5.9+
+- 📱 **Cross-platform**: iOS 15.0+ and macOS 12.0+ with Swift 5.9+ (tvOS and watchOS are not supported, as `WKWebView` is unavailable there)
 - 🎨 **Theme Support**: Automatic light/dark mode with custom color schemes
 - 🔤 **Typography**: System fonts, custom fonts, monospace, italic, and Dynamic Type support
 
@@ -785,6 +785,12 @@ RichText(html: html)
 **Issue**: SFSafariViewController not presenting
 - **Solution**: Ensure you have a presented view controller
 - **Alternative**: Use `.linkOpenType(.Safari)` as fallback
+
+#### tvOS / watchOS
+
+**Issue**: The package does not build for tvOS or watchOS
+- **Cause**: `RichText` renders HTML through `WKWebView`, and Apple does not ship `WKWebView` on tvOS or watchOS. There is no supported way to display a web view on those platforms.
+- **Solution**: Render the content natively on those platforms, for example with `AttributedString` and `Text`.
 
 ### Memory Management
 
