@@ -319,12 +319,12 @@ extension WebView {
     private func loadHTMLIfNeeded(in webView: WKWebView, coordinator: Coordinator) {
         let htmlString = generateHTML()
         let baseURL = conf.baseURL
-        
+
         guard coordinator.loadedHTML != htmlString || coordinator.loadedBaseURL != baseURL else {
             webViewLogger.debug("Skipping reload, generated HTML and base URL are unchanged")
             return
         }
-        
+
         // A malformed hex value is not rejected anywhere: it reaches the stylesheet as
         // `color: #whatever`, and the browser drops that declaration along with the rest of
         // the rule. The text or link colour then silently falls back to the default, which is
@@ -333,7 +333,7 @@ extension WebView {
             webViewLogger.error("Invalid hex colour in fontColor or linkColor; the declaration will be dropped by the browser")
             reportError(.cssGenerationFailed)
         }
-        
+
         coordinator.loadedHTML = htmlString
         coordinator.loadedBaseURL = baseURL
         

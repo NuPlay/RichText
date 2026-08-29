@@ -129,7 +129,7 @@ Configuration(fontColor: ColorSet(light: "000000", dark: "FFFFFF", isImportant: 
 Version 3.0.0 maintains **100% backward compatibility** for v2.x users while providing a clear path to modern APIs:
 
 - ✅ **Zero Breaking Changes**: All existing v2.x code works unchanged
-- ✅ **Automatic Performance**: Better async/await performance and font rendering without code changes  
+- ✅ **Automatic Performance**: Better async/await performance and font rendering without code changes
 - ✅ **Guided Migration**: Helpful deprecation warnings with clear modern API alternatives
 - ✅ **Additive Enhancement**: New features are optional and don't affect existing functionality
 - ✅ **Future-Proof**: Modern architecture ready for Swift 6+ and future iOS/macOS versions

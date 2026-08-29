@@ -12,7 +12,7 @@ RichText(html: html)
 // 🚀 v3.0.0 - Recommended approaches
 RichText(html: html)
     .transparentBackground()           // Easiest for transparent
-    .backgroundColorHex("#FF0000")     // For hex colors  
+    .backgroundColorHex("#FF0000")     // For hex colors
     .backgroundColorSwiftUI(.blue)     // For SwiftUI colors
     .backgroundColor(.system)          // For system colors
 ```
@@ -56,11 +56,11 @@ RichText(html: html)
 ```swift
 // ✅ v2.x - Still works, but deprecated
 RichText(html: html)
-    .foregroundColor(light: .black, dark: .white)  // Deprecated
+    .foregroundColor(light: Color.black, dark: Color.white) // Deprecated
 
 // 🚀 v3.0.0 - Modern semantic naming
 RichText(html: html)
-    .textColor(light: .black, dark: .white)        // Modern & clear
+    .textColor(light: Color.black, dark: Color.white) // Modern & clear
 ```
 
 #### Enhanced Font Rendering
