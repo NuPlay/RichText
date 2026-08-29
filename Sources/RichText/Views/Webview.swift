@@ -58,14 +58,14 @@ extension WebView: UIViewRepresentable {
         webview.scrollView.backgroundColor = UIColor.clear
         
         // Load HTML content
-        loadHTML(in: webview)
+        loadHTMLIfNeeded(in: webview, coordinator: context.coordinator)
         
         return webview
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         context.coordinator.parent = self
-        loadHTML(in: uiView)
+        loadHTMLIfNeeded(in: uiView, coordinator: context.coordinator)
         
         // Update frame directly without timer to avoid state modification during view update
         uiView.frame.size = .init(width: self.width, height: self.dynamicHeight)
@@ -103,14 +103,14 @@ extension WebView: NSViewRepresentable {
         webview.setValue(false, forKey: "drawsBackground")
         
         // Load HTML content
-        loadHTML(in: webview)
+        loadHTMLIfNeeded(in: webview, coordinator: context.coordinator)
 
         return webview
     }
 
     func updateNSView(_ nsView: WKWebView, context: Context) {
         context.coordinator.parent = self
-        loadHTML(in: nsView)
+        loadHTMLIfNeeded(in: nsView, coordinator: context.coordinator)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -122,6 +122,14 @@ extension WebView: NSViewRepresentable {
 extension WebView {
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         var parent: WebView
+
+        /// The document that is currently loaded in the web view.
+        ///
+        /// SwiftUI calls `updateUIView`/`updateNSView` on every state change, including the
+        /// dynamic height updates this view produces itself. Reloading the document each time
+        /// threw away all in-page state (open `<details>`, playing media, scroll position) and
+        /// re-paid the full parse and layout cost, so the content could never settle.
+        var loadedHTML: String?
         
         init(_ parent: WebView) {
             self.parent = parent
@@ -269,11 +277,20 @@ extension WebView {
 }
 
 extension WebView {
-    /// Loads HTML content into the WebView safely on main thread
-    /// - Parameter webView: The WKWebView instance to load content into
+    /// Loads HTML content into the WebView safely on main thread, skipping redundant reloads
+    /// - Parameters:
+    ///   - webView: The WKWebView instance to load content into
+    ///   - coordinator: The coordinator that tracks the currently loaded document
     @MainActor
-    private func loadHTML(in webView: WKWebView) {
+    private func loadHTMLIfNeeded(in webView: WKWebView, coordinator: Coordinator) {
         let htmlString = generateHTML()
+        
+        guard coordinator.loadedHTML != htmlString else {
+            webViewLogger.debug("Skipping reload, generated HTML is unchanged")
+            return
+        }
+        
+        coordinator.loadedHTML = htmlString
         
         webViewLogger.debug("Loading HTML content (\(htmlString.count) characters)")
         
