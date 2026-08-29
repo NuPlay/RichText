@@ -31,8 +31,10 @@ RichText(html: html)
         case .cssGenerationFailed:
             // fontColor or linkColor holds an invalid hex value, so the browser
             // is dropping the declaration and the colour falls back to default
+            break
         case .webViewConfigurationFailed:
             // macOS: the web view background could not be made transparent
+            break
         default:
             break
         }
