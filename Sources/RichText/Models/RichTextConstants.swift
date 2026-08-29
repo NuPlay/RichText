@@ -54,12 +54,16 @@ public struct RichTextConstants {
     // `loading: lazy` was also dropped: `loading` is an HTML attribute, not a CSS property,
     // so no browser ever applied it. Real lazy loading would have to be set on the `<img>`
     // elements themselves.
+    @available(*, deprecated, message: "Use the imageCSS(radius:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let imageCSS = "img{height:auto; max-width: 100%%; width:auto;margin-bottom:5px; border-radius: %@px;}"
+    @available(*, deprecated, message: "Use the textCSS(alignment:lineHeight:fontFamily:color:backgroundColor:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let textCSS = "h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote, figure, figcaption, details, summary, article, section, aside, header, footer, nav, main {text-align:%@; line-height: %@%%; font-family: %@; color: %@; background-color: %@; word-wrap: break-word; }"
     // `%ld`, not `%d`: `iframeHeight` is a Swift `Int`, which is 64-bit on every platform this
     // package supports, while `%d` reads only 32 bits of it. Matches the `%02lX` spelling
     // already used in `Color+Extension`.
+    @available(*, deprecated, message: "Use the iframeCSS(height:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let iframeCSS = "iframe{width:100%%; height:%ldpx; border: none;}"
+    @available(*, deprecated, message: "Use the linkCSS(color:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let linkCSS = "a:link {color: %@; transition: color 0.2s ease;}"
     public static let linkDecorationCSS = "A {text-decoration: none;} A:hover {text-decoration: underline;}"
     @available(*, deprecated, message: "Unused. Body margins are emitted directly by cssTemplate and mediaCSSTemplate, and this constant was never applied, so its -webkit-text-size-adjust rule never took effect either.")
@@ -101,6 +105,7 @@ public struct RichTextConstants {
         """
     
     // MARK: - HTML Templates (v3.0.0 - Modern, accessible markup)
+    @available(*, deprecated, message: "Use the htmlDocument(css:body:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let htmlTemplate = """
         <HTML>
         <head>
@@ -193,6 +198,7 @@ public struct RichTextConstants {
         </HTML>
         """
     
+    @available(*, deprecated, message: "Use the styleDocument(css:customCSS:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let cssTemplate = """
         <style type='text/css'>
             %@
@@ -205,6 +211,7 @@ public struct RichTextConstants {
         <BODY>
         """
     
+    @available(*, deprecated, message: "Use the styleDocument(lightCSS:darkCSS:customCSS:) builder instead. This is a printf format string, so every literal percent sign has to be written as %%, which is what caused images to lose their max-width.")
     public static let mediaCSSTemplate = """
         <style type='text/css'>
         @media (prefers-color-scheme: light) {
@@ -221,4 +228,182 @@ public struct RichTextConstants {
         </style>
         <BODY>
         """
+}
+
+// MARK: - Builders
+
+/// Interpolated replacements for the printf format strings above.
+///
+/// The format strings were rendered with `String(format:)`, which treats `%` as the start of
+/// a conversion. Every literal percent sign in CSS - and CSS is full of them - therefore had
+/// to be written `%%`. Missing one was silent and produced invalid CSS: `max-width: 100%`
+/// became `max-width: 100`, which the browser drops. That is what left images unconstrained
+/// by the web view width for months.
+///
+/// The same mechanism cost two more defects: `%d` was reading 32 bits of a 64-bit Swift `Int`,
+/// and the HTML template took seven positional arguments whose order nothing enforced.
+///
+/// String interpolation removes all three classes at once: percent signs are literal, the
+/// compiler checks the types, and arguments are named.
+extension RichTextConstants {
+
+    /// Responsive image sizing.
+    public static func imageCSS(radius: CGFloat) -> String {
+        "img{height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(radius)px;}"
+    }
+
+    /// Block level text styling.
+    public static func textCSS(
+        alignment: String,
+        lineHeight: CGFloat,
+        fontFamily: String,
+        color: String,
+        backgroundColor: String
+    ) -> String {
+        "h1, h2, h3, h4, h5, h6, p, div, dl, ol, ul, pre, blockquote, figure, figcaption, details, summary, article, section, aside, header, footer, nav, main {text-align:\(alignment); line-height: \(lineHeight)%; font-family: \(fontFamily); color: \(color); background-color: \(backgroundColor); word-wrap: break-word; }"
+    }
+
+    /// Embedded iframe sizing.
+    public static func iframeCSS(height: Int = RichTextConstants.iframeHeight) -> String {
+        "iframe{width:100%; height:\(height)px; border: none;}"
+    }
+
+    /// Link colouring.
+    public static func linkCSS(color: String) -> String {
+        "a:link {color: \(color); transition: color 0.2s ease;}"
+    }
+
+    /// A `<style>` block for a single colour scheme, followed by the opening `<BODY>` tag.
+    public static func styleDocument(css: String, customCSS: String) -> String {
+        """
+        <style type='text/css'>
+            \(css)
+            \(customCSS)
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+        <BODY>
+        """
+    }
+
+    /// A `<style>` block that switches on `prefers-color-scheme`, followed by `<BODY>`.
+    public static func styleDocument(lightCSS: String, darkCSS: String, customCSS: String) -> String {
+        """
+        <style type='text/css'>
+        @media (prefers-color-scheme: light) {
+            \(lightCSS)
+        }
+        @media (prefers-color-scheme: dark) {
+            \(darkCSS)
+        }
+        \(customCSS)
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        </style>
+        <BODY>
+        """
+    }
+
+    /// The complete HTML document handed to the web view.
+    ///
+    /// The container id and the two script message handler names are constants, so unlike the
+    /// old seven-placeholder format string there is nothing here for a caller to get out of
+    /// order.
+    public static func htmlDocument(css: String, body: String) -> String {
+        """
+        <HTML>
+        <head>
+            <meta name='viewport' content='width=device-width, shrink-to-fit=YES, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+        </head>
+        \(css)
+        <div id="\(richTextContainerID)">\(body)</div>
+        </BODY>
+        <script>
+            var richTextHeightHandler = '\(heightNotificationHandler)';
+            var richTextContainer = document.getElementById('\(richTextContainerID)');
+            var richTextLastReportedHeight = -1;
+
+            function syncHeight() {
+              if (!richTextContainer) { return; }
+              if (!window.webkit || !window.webkit.messageHandlers) { return; }
+
+              var handler = window.webkit.messageHandlers[richTextHeightHandler];
+              if (!handler) { return; }
+
+              var boundingHeight = richTextContainer.getBoundingClientRect().height;
+              var height = Math.ceil(Math.max(richTextContainer.scrollHeight, boundingHeight));
+
+              // Skip redundant round trips; the native side re-renders on every update.
+              if (height === richTextLastReportedHeight) { return; }
+              richTextLastReportedHeight = height;
+              handler.postMessage(height);
+            }
+
+            function handleMediaClick(element, type) {
+              if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.\(mediaClickHandler)) {
+                window.webkit.messageHandlers.\(mediaClickHandler).postMessage({
+                  type: type,
+                  src: element.src || element.getAttribute('src')
+                });
+              }
+            }
+
+            function attachMediaHandlers() {
+              var imgs = document.getElementsByTagName('img');
+              for (var i = 0; i < imgs.length; i++) {
+                if (imgs[i].dataset.richTextBound) { continue; }
+                imgs[i].dataset.richTextBound = '1';
+                imgs[i].addEventListener('load', syncHeight);
+                imgs[i].addEventListener('error', syncHeight);
+                imgs[i].onclick = function () {
+                  handleMediaClick(this, 'image');
+                };
+              }
+
+              var videos = document.getElementsByTagName('video');
+              for (var j = 0; j < videos.length; j++) {
+                if (videos[j].dataset.richTextBound) { continue; }
+                videos[j].dataset.richTextBound = '1';
+                videos[j].addEventListener('loadedmetadata', syncHeight);
+                videos[j].onclick = function () {
+                  handleMediaClick(this, 'video');
+                };
+              }
+            }
+
+            attachMediaHandlers();
+            syncHeight();
+
+            // The rendered height keeps changing after the first layout pass: images and
+            // web fonts finish loading, <details> elements are toggled open, the device is
+            // rotated, Dynamic Type changes. A one-shot measurement on window.onload misses
+            // all of those and the content ends up clipped, so observe the container instead.
+            if (window.ResizeObserver && richTextContainer) {
+              new ResizeObserver(syncHeight).observe(richTextContainer);
+            }
+
+            if (window.MutationObserver && richTextContainer) {
+              new MutationObserver(function () {
+                attachMediaHandlers();
+                syncHeight();
+              }).observe(richTextContainer, { childList: true, subtree: true });
+            }
+
+            // `toggle` does not bubble, so it has to be observed during the capture phase.
+            document.addEventListener('toggle', syncHeight, true);
+            window.addEventListener('load', syncHeight);
+            window.addEventListener('resize', syncHeight);
+            window.addEventListener('orientationchange', syncHeight);
+
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(syncHeight);
+            }
+        </script>
+        </HTML>
+        """
+    }
 }

@@ -341,16 +341,7 @@ extension WebView {
     /// Generates the complete HTML string for the WebView
     /// - Returns: Complete HTML document string
     func generateHTML() -> String {
-        return String(
-            format: RichTextConstants.htmlTemplate,
-            generateCSS(),
-            RichTextConstants.richTextContainerID,
-            html,
-            RichTextConstants.heightNotificationHandler,
-            RichTextConstants.richTextContainerID,
-            RichTextConstants.mediaClickHandler,
-            RichTextConstants.mediaClickHandler
-        )
+        return RichTextConstants.htmlDocument(css: generateCSS(), body: html)
     }
     
     /// Generates CSS styles based on color scheme configuration
@@ -358,23 +349,20 @@ extension WebView {
     func generateCSS() -> String {
         switch conf.colorScheme {
         case .light:
-            return String(
-                format: RichTextConstants.cssTemplate,
-                conf.css(isLight: true, alignment: alignment),
-                conf.resolvedCustomCSS
+            return RichTextConstants.styleDocument(
+                css: conf.css(isLight: true, alignment: alignment),
+                customCSS: conf.resolvedCustomCSS
             )
         case .dark:
-            return String(
-                format: RichTextConstants.cssTemplate,
-                conf.css(isLight: false, alignment: alignment),
-                conf.resolvedCustomCSS
+            return RichTextConstants.styleDocument(
+                css: conf.css(isLight: false, alignment: alignment),
+                customCSS: conf.resolvedCustomCSS
             )
         case .auto:
-            return String(
-                format: RichTextConstants.mediaCSSTemplate,
-                conf.css(isLight: true, alignment: alignment),
-                conf.css(isLight: false, alignment: alignment),
-                conf.resolvedCustomCSS
+            return RichTextConstants.styleDocument(
+                lightCSS: conf.css(isLight: true, alignment: alignment),
+                darkCSS: conf.css(isLight: false, alignment: alignment),
+                customCSS: conf.resolvedCustomCSS
             )
         }
     }

@@ -87,9 +87,8 @@ struct RichTextAllTests {
             #expect(css.contains("max-width: 100%"))
             #expect(css.contains("height:auto"))
 
-            // `iframeHeight` is a Swift `Int`, so the format string has to use `%ld`.
-            // With `%d` only the low 32 bits are read, which happens to work for small
-            // values and silently would not for large ones.
+            // The iframe height is interpolated, so there is no `%d` reading 32 bits of a
+            // 64-bit `Int` any more.
             #expect(css.contains("height:\(RichTextConstants.iframeHeight)px"))
         }
 
@@ -120,66 +119,21 @@ struct RichTextAllTests {
             #expect(css.contains(expectedAlignment))
         }
 
-        @Test("Percent signs survive String(format:) based CSS generation")
-        func percentSignsSurviveFormatting() {
+        @Test("Percentage lengths reach the generated CSS intact")
+        func percentageLengthsReachTheCSS() {
             let css = Configuration(lineHeight: 150, imageRadius: 5).css(isLight: true, alignment: .leading)
 
-            // The CSS constants that carry substitutions are rendered with `String(format:)`,
-            // which consumes a bare `%`. A literal percent sign therefore has to be written as
-            // `%%` in those constants. Missing one is silent: `max-width: 100%` becomes
-            // `max-width: 100`, an invalid length that WebKit drops, and images then overflow
-            // the web view instead of being constrained to its width.
+            // These used to go through `String(format:)`, which consumes a bare `%`, so every
+            // literal percent sign had to be written `%%`. Missing one was silent:
+            // `max-width: 100%` became `max-width: 100`, an invalid length that WebKit drops,
+            // and images overflowed the web view. The builders interpolate instead, so the
+            // escaping cannot be forgotten - this just pins the output down.
             #expect(css.contains("max-width: 100%"))
             #expect(css.contains("width:100%;"))
             #expect(css.contains("line-height: 150.0%"))
 
             #expect(!css.contains("max-width: 100;"))
             #expect(!css.contains("width:100;"))
-        }
-
-        @Test("Percent based CSS constants are escaped for String(format:)", arguments: [
-            ("imageCSS", RichTextConstants.imageCSS),
-            ("textCSS", RichTextConstants.textCSS),
-            ("iframeCSS", RichTextConstants.iframeCSS),
-            ("linkCSS", RichTextConstants.linkCSS),
-            ("cssTemplate", RichTextConstants.cssTemplate),
-            ("mediaCSSTemplate", RichTextConstants.mediaCSSTemplate),
-            ("htmlTemplate", RichTextConstants.htmlTemplate)
-        ])
-        func percentBasedConstantsAreEscaped(name: String, constant: String) {
-            // Covers every constant that `Configuration.css(isLight:alignment:)`,
-            // `WebView.generateCSS()` and `WebView.generateHTML()` pass to `String(format:)`.
-            //
-            // Look for the shape the bug actually takes rather than whitelisting conversion
-            // characters. A literal percent sign in CSS is always followed by a delimiter -
-            // `100%;`, `100% }`, `100%,` - while a conversion is followed by a specifier or a
-            // length modifier. Checking the delimiters catches a missing `%%` without pinning
-            // down which conversions the constants are allowed to use, so `%d` can still be
-            // widened to `%ld` later without this test standing in the way.
-            let cssDelimiters: Set<Character> = [";", "}", ",", ")", " ", "\n", "\t"]
-            let characters = Array(constant)
-            var index = 0
-
-            while index < characters.count {
-                guard characters[index] == "%" else {
-                    index += 1
-                    continue
-                }
-
-                let next = index + 1 < characters.count ? characters[index + 1] : nil
-
-                // `%%` is an escaped literal percent, which is exactly what we want to see.
-                if next == "%" {
-                    index += 2
-                    continue
-                }
-
-                #expect(
-                    next != nil && !cssDelimiters.contains(next!),
-                    "Unescaped percent sign in \(name): a literal % must be written as %%"
-                )
-                index += 1
-            }
         }
     }
 
@@ -385,44 +339,31 @@ struct RichTextAllTests {
             #expect(!RichTextConstants.systemFontName.isEmpty)
         }
 
-        @Test("HTML template keeps measuring the content after the first layout pass")
-        func htmlTemplateObservesHeightChanges() {
-            let template = RichTextConstants.htmlTemplate
+        @Test("Generated document keeps measuring the content after the first layout pass")
+        func generatedDocumentObservesHeightChanges() {
+            let document = RichTextConstants.htmlDocument(css: "<style></style>", body: "<p>Hello</p>")
 
             // A one-shot `window.onload` measurement misses late images, web fonts and
             // `<details>` toggles, which is what caused the content to be clipped.
-            #expect(template.contains("ResizeObserver"))
-            #expect(template.contains("MutationObserver"))
-            #expect(template.contains("document.addEventListener('toggle', syncHeight, true)"))
-            #expect(template.contains("document.fonts.ready"))
-            #expect(!template.contains("window.onload = function"))
+            #expect(document.contains("ResizeObserver"))
+            #expect(document.contains("MutationObserver"))
+            #expect(document.contains("document.addEventListener('toggle', syncHeight, true)"))
+            #expect(document.contains("document.fonts.ready"))
+            #expect(!document.contains("window.onload = function"))
         }
 
-        @Test("HTML template placeholders stay in the order WebView.generateHTML supplies them")
-        func htmlTemplatePlaceholderOrder() {
-            let placeholderCount = RichTextConstants.htmlTemplate.components(separatedBy: "%@").count - 1
-
-            // css, container id, html body, height handler, container id, media handler, media handler
-            #expect(placeholderCount == 7)
-
-            // Mirrors the argument list in `WebView.generateHTML()`. `String(format:)` is
-            // positional, so reordering the placeholders inside the template silently
-            // produces a broken document; this pins the mapping down.
-            let document = String(
-                format: RichTextConstants.htmlTemplate,
-                "<style type='text/css'></style>",
-                RichTextConstants.richTextContainerID,
-                "<p>Hello</p>",
-                RichTextConstants.heightNotificationHandler,
-                RichTextConstants.richTextContainerID,
-                RichTextConstants.mediaClickHandler,
-                RichTextConstants.mediaClickHandler
-            )
+        @Test("Generated document wires the script bridge to the rendered container")
+        func generatedDocumentWiresTheBridge() {
+            let document = RichTextConstants.htmlDocument(css: "<style></style>", body: "<p>Hello</p>")
 
             #expect(document.contains("<div id=\"\(RichTextConstants.richTextContainerID)\"><p>Hello</p></div>"))
             #expect(document.contains("var richTextHeightHandler = '\(RichTextConstants.heightNotificationHandler)'"))
             #expect(document.contains("document.getElementById('\(RichTextConstants.richTextContainerID)')"))
             #expect(document.contains("window.webkit.messageHandlers.\(RichTextConstants.mediaClickHandler).postMessage({"))
+
+            // The container id and the handler names are constants inside the builder, so
+            // there are no positional arguments left for a caller to get out of order.
+            #expect(!document.contains("%@"))
         }
     }
 

@@ -178,17 +178,16 @@ public struct Configuration {
     ///   - alignment: Text alignment preference
     /// - Returns: Generated CSS string
     public func css(isLight: Bool, alignment: TextAlignment) -> String {
-        let imageCSS = String(format: RichTextConstants.imageCSS, "\(imageRadius)")
-        let textCSS = String(
-            format: RichTextConstants.textCSS,
-            alignment.htmlDescription,
-            "\(lineHeight)",
-            fontType.name,
-            fontColor.value(isLight),
-            backgroundColor(isLight)
+        let imageCSS = RichTextConstants.imageCSS(radius: imageRadius)
+        let textCSS = RichTextConstants.textCSS(
+            alignment: alignment.htmlDescription,
+            lineHeight: lineHeight,
+            fontFamily: fontType.name,
+            color: fontColor.value(isLight),
+            backgroundColor: backgroundColor(isLight)
         )
-        let iframeCSS = String(format: RichTextConstants.iframeCSS, RichTextConstants.iframeHeight)
-        let linkCSS = String(format: RichTextConstants.linkCSS, linkColor.value(isLight))
+        let iframeCSS = RichTextConstants.iframeCSS()
+        let linkCSS = RichTextConstants.linkCSS(color: linkColor.value(isLight))
         
         // Add font-specific CSS properties
         let fontSpecificCSS = !fontType.additionalCSSProperties.isEmpty ? 
