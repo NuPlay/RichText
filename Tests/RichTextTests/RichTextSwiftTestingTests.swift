@@ -109,8 +109,13 @@ struct RichTextAllTests {
             // Covers every constant that `Configuration.css(isLight:alignment:)`,
             // `WebView.generateCSS()` and `WebView.generateHTML()` pass to `String(format:)`.
             //
-            // Walk the constant and make sure no `%` is followed by something other than the
-            // intended `%%`, `%@` and `%d` conversions.
+            // Look for the shape the bug actually takes rather than whitelisting conversion
+            // characters. A literal percent sign in CSS is always followed by a delimiter -
+            // `100%;`, `100% }`, `100%,` - while a conversion is followed by a specifier or a
+            // length modifier. Checking the delimiters catches a missing `%%` without pinning
+            // down which conversions the constants are allowed to use, so `%d` can still be
+            // widened to `%ld` later without this test standing in the way.
+            let cssDelimiters: Set<Character> = [";", "}", ",", ")", " ", "\n", "\t"]
             let characters = Array(constant)
             var index = 0
 
@@ -121,11 +126,18 @@ struct RichTextAllTests {
                 }
 
                 let next = index + 1 < characters.count ? characters[index + 1] : nil
+
+                // `%%` is an escaped literal percent, which is exactly what we want to see.
+                if next == "%" {
+                    index += 2
+                    continue
+                }
+
                 #expect(
-                    next == "%" || next == "@" || next == "d",
+                    next != nil && !cssDelimiters.contains(next!),
                     "Unescaped percent sign in \(name): a literal % must be written as %%"
                 )
-                index += 2
+                index += 1
             }
         }
     }
