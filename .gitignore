@@ -4,5 +4,12 @@
 /*.xcodeproj
 xcuserdata/
 DerivedData/
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 TestApp/.build
+
+# Xcode workspace state. These patterns contain a slash, so without the leading `**`
+# git anchors them to the repository root and the copies under TestApp/ slip through.
+**/.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+**/.swiftpm/xcode/package.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# Local agent/tool settings
+.claude/
