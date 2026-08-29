@@ -303,20 +303,20 @@ extension WebView {
             return String(
                 format: RichTextConstants.cssTemplate,
                 conf.css(isLight: true, alignment: alignment),
-                conf.customCSS
+                conf.resolvedCustomCSS
             )
         case .dark:
             return String(
                 format: RichTextConstants.cssTemplate,
                 conf.css(isLight: false, alignment: alignment),
-                conf.customCSS
+                conf.resolvedCustomCSS
             )
         case .auto:
             return String(
                 format: RichTextConstants.mediaCSSTemplate,
                 conf.css(isLight: true, alignment: alignment),
                 conf.css(isLight: false, alignment: alignment),
-                conf.customCSS
+                conf.resolvedCustomCSS
             )
         }
     }

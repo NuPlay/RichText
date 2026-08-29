@@ -155,6 +155,81 @@ struct RichTextAllTests {
             #expect(FontType.monospaced.name != RichTextConstants.systemFontName)
             #expect(FontType.italic.name == RichTextConstants.systemFontName)
         }
+
+        @Test("Font names are valid CSS identifiers or quoted strings")
+        func fontNamesAreValidCSS() {
+            // A raw PostScript name such as `.AppleSystemUIFontMonospaced-Regular` is not a
+            // valid unquoted CSS family, so WebKit dropped the whole declaration and fell back
+            // to the default serif face.
+            #expect(!FontType.monospaced.name.hasPrefix("."))
+            #expect(!FontType.customName("Custom Font").name.hasPrefix("."))
+            #expect(FontType.customName("Custom Font").name == "'Custom Font'")
+            #expect(FontType.monospaced.name.contains("monospace"))
+        }
+
+        @Test("Dynamic Type does not discard the configured font type", arguments: [
+            FontType.monospaced,
+            FontType.italic,
+            FontType.customName("Custom Font")
+        ])
+        func dynamicTypeKeepsFontType(fontType: FontType) {
+            let config = Configuration(supportsDynamicType: true, fontType: fontType)
+            let css = config.generateCompleteCSS(colorScheme: .light, alignment: .leading)
+
+            // Compare against the *last* Dynamic Type shorthand, not the first: every one of
+            // them resets `font-family`, so the override only works if it follows all of them.
+            let lastShorthandRange = css.range(of: "font: -apple-system-", options: .backwards)
+            let familyRange = css.range(of: "font-family: \(fontType.name)", options: .backwards)
+
+            #expect(lastShorthandRange != nil)
+            #expect(familyRange != nil)
+
+            if let lastShorthandRange, let familyRange {
+                #expect(familyRange.lowerBound > lastShorthandRange.lowerBound)
+            }
+        }
+
+        @Test("Font override matches the specificity of the Dynamic Type paragraph classes")
+        func dynamicTypeOverrideCoversParagraphClasses() {
+            let config = Configuration(supportsDynamicType: true, fontType: .monospaced)
+            let css = config.generateCompleteCSS(colorScheme: .light, alignment: .leading)
+
+            let overrideLine = css
+                .split(separator: "\n")
+                .last { $0.contains("font-family: \(FontType.monospaced.name)") }
+
+            #expect(overrideLine != nil)
+
+            // A bare `p` selector is specificity (0,0,1) and loses to the Dynamic Type
+            // `p.subheadline { font: ... }` rule at (0,1,1) regardless of source order, so
+            // those classes have to be named explicitly in the override.
+            if let overrideLine {
+                for selector in ["p.subheadline", "p.footnote", "p.caption1", "p.caption2"] {
+                    #expect(overrideLine.contains(selector), "override must also match \(selector)")
+                }
+            }
+        }
+
+        @Test("No font override is emitted for the default system font")
+        func noFontOverrideForSystemFont() {
+            // `.system` is exactly what the Dynamic Type shorthands already produce, so an
+            // override would buy nothing and would clobber the caller's own font-family rule.
+            let config = Configuration(
+                customCSS: "body { font-family: Georgia; }",
+                supportsDynamicType: true
+            )
+
+            #expect(config.fontType.name == RichTextConstants.systemFontName)
+            #expect(config.resolvedCustomCSS == config.customCSS)
+        }
+
+        @Test("Custom CSS is untouched when Dynamic Type is off")
+        func resolvedCustomCSSWithoutDynamicType() {
+            let config = Configuration(customCSS: "p { color: red; }", fontType: .monospaced)
+
+            #expect(config.resolvedCustomCSS == "p { color: red; }")
+            #expect(config.resolvedCustomCSS == config.customCSS)
+        }
     }
 
     @Suite("RichText Initialization Tests")
